@@ -1,15 +1,16 @@
+// src/components/Navbar.jsx
 import { useState } from "react";
 import "./Navbar.css";
+import { useLanguage } from "../contexts/LanguageContext";
+import { texts } from "../i18n/texts";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [language, setLanguage] = useState("EN"); // EN or AM
+  const { lang, toggleLanguage } = useLanguage();
+  const t = texts[lang];
 
+  const closeMenu = () => setIsOpen(false);
   const toggleMenu = () => setIsOpen((prev) => !prev);
-
-  const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "EN" ? "AM" : "EN"));
-  };
 
   return (
     <header className="navbar">
@@ -20,41 +21,55 @@ function Navbar() {
             <span className="logo-cross-vertical" />
             <span className="logo-cross-horizontal" />
           </div>
-          <span className="logo-text">SELASSIE</span>
+          <span className="logo-text">{t.nav.title}</span>
         </div>
 
         {/* Links */}
         <ul className={`navbar-links ${isOpen ? "is-open" : ""}`}>
           <li>
-            <a href="#home">Home</a>
+            <a href="#home" onClick={closeMenu}>
+              {t.nav.home}
+            </a>
           </li>
           <li>
-            <a href="#about">About</a>
+            <a href="#about" onClick={closeMenu}>
+              {t.nav.about}
+            </a>
           </li>
           <li>
-            <a href="#services">Services</a>
+            <a href="#sermons" onClick={closeMenu}>
+              {t.nav.sermons}
+            </a>
           </li>
           <li>
-            <a href="#sermons">Sermons</a>
+            <a href="#events" onClick={closeMenu}>
+              {t.nav.events}
+            </a>
           </li>
           <li>
-            <a href="#events">Events</a>
+            <a href="#contact" onClick={closeMenu}>
+              {t.nav.contact}
+            </a>
           </li>
           <li>
             <button
               className={`language-btn ${
-                language === "AM" ? "language-btn-active" : ""
+                lang === "am" ? "language-btn-active" : ""
               }`}
-              onClick={toggleLanguage}
+              onClick={() => {
+                toggleLanguage();
+                closeMenu();
+              }}
             >
-              {language === "EN" ? "Amharic" : "English"}
+              {lang === "en" ? t.nav.amharicToggle : t.nav.englishToggle}
             </button>
           </li>
         </ul>
 
-        {/* Mobile burger */}
+        {/* Burger button (mobile) */}
         <button
           className="navbar-toggle"
+          type="button"
           onClick={toggleMenu}
           aria-label="Toggle navigation"
         >

@@ -1,22 +1,30 @@
 import "./Hero.css";
+import { useLanguage } from "../contexts/LanguageContext";
+import { texts } from "../i18n/texts";
+import heroImage from "../assets/images/selassie.png";
 
 function Hero() {
+  const { lang } = useLanguage();
+  const t = texts[lang];
+
   return (
-    <section className="hero" id="home">
+    <section
+      className="hero fade-in-up"
+      id="home"
+      style={{
+        backgroundImage: `url(${heroImage})`,
+      }}
+    >
       <div className="hero-content">
-        <div className="hero-text fade-in-up">
-          <h1>Selassie Ethiopian Orthodox Church in London</h1>
-          <p>
-            A spiritual home for the Ethiopian Orthodox community in London. Join
-            us in worship, prayer, and fellowship as we walk together in faith and
-            love.
-          </p>
+        <div className="hero-text">
+          <h1>{t.hero.title}</h1>
+          <p>{t.hero.subtitle}</p>
           <div className="hero-actions">
-            <a href="#services" className="hero-btn hero-btn-primary">
-              View Service Times
+            <a href="#sermons" className="hero-btn hero-btn-primary">
+              {t.hero.btnPrimary}
             </a>
-            <a href="#visit" className="hero-btn hero-btn-ghost">
-              Plan Your Visit
+            <a href="#contact" className="hero-btn hero-btn-ghost">
+              {t.hero.btnSecondary}
             </a>
           </div>
         </div>
