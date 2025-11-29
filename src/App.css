@@ -1,0 +1,444 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+/* Make anchor links stop below navbar */
+.page section {
+  scroll-margin-top: 90px;
+}
+
+/* Reusable card style */
+.card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 10px 30px rgba(10, 34, 57, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 38px rgba(10, 34, 57, 0.16);
+}
+
+/* Welcome + Service Times layout */
+.welcome-section {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.6fr);
+  gap: 40px;
+  margin-top: 40px;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.welcome-text h2 {
+  font-family: "Merriweather", serif;
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.welcome-text p {
+  margin-top: 0;
+  margin-bottom: 14px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+/* Service times card */
+.service-times {
+  background-color: #e8f1f6;
+  border-radius: 16px;
+  padding: 20px 22px;
+}
+
+.service-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.service-icon {
+  font-size: 1.6rem;
+}
+
+.service-header h3 {
+  font-family: "Merriweather", serif;
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.service-header p {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.service-row {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.service-row:hover {
+  background-color: #f5fafc;
+  transform: translateY(-2px);
+}
+
+.service-label {
+  display: block;
+  font-weight: 600;
+}
+
+.service-sub {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.service-time {
+  font-weight: 600;
+}
+
+/* Mission section */
+.mission-section {
+  margin-top: 60px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 2fr);
+  gap: 32px;
+  align-items: center;
+  animation: fadeInUp 0.8s ease-out 0.3s both;
+}
+
+.mission-image {
+  display: flex;
+  justify-content: center;
+}
+
+.icon-placeholder {
+  width: 220px;
+  height: 260px;
+  border-radius: 18px;
+  background: radial-gradient(circle at 30% 20%, #f6e2b3, #b47f32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.icon-inner-circle {
+  width: 120px;
+  height: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 20%, #ffeec4, #b95e3e);
+}
+
+.icon-placeholder:hover {
+  transform: translateY(-4px);
+}
+
+.mission-text h2 {
+  font-family: "Merriweather", serif;
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.mission-text p {
+  margin-top: 0;
+  margin-bottom: 14px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+/* Section header utility */
+.section-header h2 {
+  font-family: "Merriweather", serif;
+  font-size: 1.9rem;
+  margin-bottom: 6px;
+}
+
+.section-header p {
+  margin-top: 0;
+  color: var(--text-muted);
+}
+
+/* Sermons */
+.sermons-section {
+  margin-top: 60px;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.sermon-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.sermon-card h3 {
+  margin: 8px 0 6px;
+}
+
+.card-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.card-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background-color: #132e4a;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.12s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 8px 18px rgba(10, 34, 57, 0.26);
+}
+
+.card-btn:hover {
+  background-color: #1a3a5a;
+  transform: translateY(-1px);
+}
+
+.card-btn:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: none;
+}
+
+/* Tag pill */
+.tag-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: #f1f5ff;
+  color: #2b3d7b;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* Events */
+.events-section {
+  margin-top: 60px;
+  animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+
+.event-list {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.event-card {
+  display: flex;
+  gap: 16px;
+}
+
+.event-date {
+  min-width: 64px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #132e4a, #275b9f);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.event-day {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.event-month {
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+}
+
+.event-content h3 {
+  margin: 0 0 4px;
+}
+
+/* Visit */
+.visit-section {
+  margin-top: 60px;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+  gap: 30px;
+  align-items: stretch;
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.visit-text h2 {
+  font-family: "Merriweather", serif;
+  font-size: 1.9rem;
+  margin-bottom: 10px;
+}
+
+.visit-text p {
+  margin-top: 0;
+  color: var(--text-muted);
+}
+
+.visit-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.visit-grid h3 {
+  margin: 0 0 6px;
+}
+
+.visit-map-placeholder {
+  border-radius: 18px;
+  background: radial-gradient(circle at 10% 0, #f6e2b3, #475b8b);
+  color: #ffffff;
+  padding: 20px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.map-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  opacity: 0.86;
+}
+
+/* Footer */
+.site-footer {
+  background-color: #0a2239;
+  color: #ffffff;
+  padding-top: 32px;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1.2fr);
+  gap: 24px;
+}
+
+.footer-column h3,
+.footer-column h4 {
+  margin-top: 0;
+}
+
+.footer-column p {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: #d7e0eb;
+}
+
+.footer-column a {
+  color: #f6d47c;
+  text-decoration: none;
+}
+
+.footer-column a:hover {
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 24px 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-size: 0.8rem;
+  color: #a8bed8;
+}
+
+/* Shared animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .sermon-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .visit-section {
+    grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.2fr);
+  }
+
+  .footer-inner {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .welcome-section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mission-section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mission-image {
+    order: -1;
+    margin-bottom: 16px;
+  }
+
+  .sermon-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .visit-section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .footer-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 24px 16px 60px;
+  }
+
+  .welcome-text h2,
+  .mission-text h2,
+  .section-header h2,
+  .visit-text h2 {
+    font-size: 1.6rem;
+  }
+
+  .visit-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
