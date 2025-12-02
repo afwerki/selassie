@@ -1,0 +1,527 @@
+/* =========================================
+   GLOBAL
+========================================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+section {
+  width: 100%;
+  position: relative;
+}
+
+body {
+  background: #eef1f7;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+/* Simple load animation used on sections */
+.animate-fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.7s ease-out forwards;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   CLERGY CAROUSEL
+========================================= */
+
+.clergy-strip {
+  position: relative;
+  background: linear-gradient(180deg, #ffffff, #f4f7fb);
+  padding: 18px 0 36px;
+  overflow: hidden;
+}
+
+/* fade edges */
+.fade-left,
+.fade-right {
+  position: absolute;
+  top: 0;
+  width: 120px;
+  height: 100%;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.fade-left {
+  left: 0;
+  background: linear-gradient(to right, #f4f7fb, transparent);
+}
+
+.fade-right {
+  right: 0;
+  background: linear-gradient(to left, #f4f7fb, transparent);
+}
+
+.clergy-strip-scroller {
+  width: 100%;
+  overflow: hidden;
+  padding: 0 7%;
+}
+
+/* auto-loop row */
+.clergy-strip-inner {
+  display: flex;
+  gap: 18px;
+  animation: slideLoop 22s linear infinite;
+  will-change: transform;
+}
+
+.clergy-strip-inner:hover {
+  animation-duration: 36s; /* slows when hovered */
+}
+
+@media (hover: none) {
+  .clergy-strip-inner:active {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes slideLoop {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* card shell */
+.clergy-card {
+  flex: 0 0 210px;
+  height: 270px;
+  perspective: 1000px;
+  cursor: pointer;
+  position: relative;
+
+  transition: transform 0.3s ease, filter 0.3s ease;
+  transform-style: preserve-3d;
+
+  filter: brightness(0.86);
+}
+
+.clergy-card:hover {
+  transform: translateY(-10px) scale(1.06) rotateX(4deg);
+  filter: brightness(1);
+  z-index: 10;
+}
+
+/* leader emphasis */
+.clergy-card--leader {
+  transform: scale(1.1);
+  filter: brightness(1);
+}
+.clergy-card--leader:hover {
+  transform: translateY(-14px) scale(1.14) rotateX(4deg);
+}
+
+/* inner flip */
+.clergy-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.clergy-card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+/* faces */
+.clergy-face {
+  position: absolute;
+  inset: 0;
+  padding: 14px;
+  border-radius: 20px;
+  backface-visibility: hidden;
+  border: 1px solid rgba(220, 200, 170, 0.75);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+/* front */
+.clergy-face--front {
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* avatar – a bit bigger & perfectly centred */
+.clergy-avatar {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #f2b544;
+  background: #fff7da;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease;
+}
+
+.clergy-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.clergy-face--front:hover .clergy-avatar {
+  transform: scale(1.1);
+}
+
+/* text */
+.clergy-text {
+  text-align: center;
+}
+.clergy-text h3 {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #142645;
+}
+.clergy-title {
+  font-size: 0.72rem;
+  color: #f2b544;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.clergy-role-tag {
+  font-size: 0.76rem;
+  color: #555b6e;
+}
+
+/* verse hover */
+.clergy-verse-preview {
+  position: absolute;
+  left: 50%;
+  width: 92%;
+  bottom: 8px;
+  transform: translate(-50%, 135%);
+  background: #1c2e50;
+  padding: 8px;
+  border-radius: 11px;
+  color: #fffef1;
+  opacity: 0;
+  transition: 0.3s ease;
+  font-size: 0.7rem;
+}
+.clergy-face--front:hover .clergy-verse-preview {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+/* back */
+.clergy-face--back {
+  background: #142645;
+  color: #f6f2e3;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+}
+
+.clergy-back-label {
+  font-size: 0.7rem;
+  color: #f2b544;
+  margin-bottom: 4px;
+}
+.clergy-back-verse {
+  font-size: 0.8rem;
+  font-style: italic;
+  line-height: 1.45;
+}
+.clergy-back-ref {
+  font-size: 0.75rem;
+  color: #f2e1aa;
+}
+.clergy-back-name {
+  margin-top: auto;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+.clergy-back-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* small screens for carousel */
+@media (max-width: 640px) {
+  .clergy-strip-scroller {
+    padding: 0 4%;
+  }
+  .clergy-card {
+    flex: 0 0 190px;
+    height: 250px;
+  }
+}
+
+/* =========================================
+   WELCOME + SERVICE TIMES
+========================================= */
+
+.welcome-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 32px 10% 72px;
+  gap: 56px;
+  margin-top: -4px; /* close to clergy cards */
+}
+
+.welcome-text {
+  flex: 1;
+}
+.welcome-text h2 {
+  font-size: 2.1rem;
+  color: #142645;
+  margin-bottom: 8px;
+}
+.welcome-text p {
+  font-size: 1.02rem;
+  color: #47506a;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+/* service card */
+.service-times {
+  flex: 1;
+  max-width: 380px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(14px);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.service-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.service-header h3 {
+  margin: 0;
+  color: #142645;
+}
+.service-header p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #6b7280;
+}
+
+.service-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: #ffffff;
+}
+
+.service-card {
+  margin-top: 4px;
+}
+
+.service-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+.service-row:last-child {
+  border-bottom: none;
+}
+
+.service-label {
+  font-weight: 600;
+  color: #142645;
+}
+.service-sub {
+  font-size: 0.82rem;
+  color: #737373;
+}
+.service-time {
+  font-weight: 700;
+  color: #f2b544;
+}
+
+/* responsive welcome */
+@media (max-width: 900px) {
+  .welcome-section {
+    flex-direction: column;
+    padding: 32px 6% 64px;
+    gap: 32px;
+  }
+  .service-times {
+    max-width: 100%;
+  }
+}
+
+/* =========================================
+   MISSION SECTION
+========================================= */
+
+.mission-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32px 10% 96px;
+  gap: 60px;
+}
+
+.mission-image {
+  flex: 1;
+  max-width: 300px;
+}
+.mission-image img {
+  width: 100%;
+  border-radius: 22px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  transition: transform 0.35s ease;
+}
+.mission-image img:hover {
+  transform: translateY(-6px) scale(1.01);
+}
+
+.mission-text {
+  flex: 1;
+  position: relative;
+}
+.mission-text h2 {
+  font-size: 2.1rem;
+  color: #142645;
+  margin-bottom: 10px;
+}
+
+/* collapsible body */
+.mission-text-body {
+  font-size: 1.02rem;
+  color: #47506a;
+  line-height: 1.6;
+  position: relative;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding-bottom 0.4s ease;
+}
+
+.mission-text-body p {
+  margin-bottom: 10px;
+}
+
+/* collapsed state */
+.mission-text-body.is-collapsed {
+  max-height: 120px;
+  padding-bottom: 16px;
+}
+
+/* gradient fade at bottom when collapsed */
+.mission-text-body.is-collapsed::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 40px;
+  background: linear-gradient(
+    to bottom,
+    rgba(238, 241, 247, 0) 0%,
+    #eef1f7 90%
+  );
+}
+
+/* expanded state */
+.mission-text-body.is-expanded {
+  max-height: 400px;
+  padding-bottom: 8px;
+}
+
+/* read more button */
+.mission-read-more {
+  margin-top: 4px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #f2b544, #f97316);
+  color: #111827;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.mission-read-more:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+}
+.mission-read-more:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* mobile: image becomes background */
+@media (max-width: 900px) {
+  .mission-section {
+    padding: 32px 6% 80px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mission-image {
+    position: absolute;
+    inset: 0;
+    max-width: none;
+    z-index: 0;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  .mission-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .mission-text {
+    position: relative;
+    z-index: 1;
+    padding: 26px 18px;
+    border-radius: 20px;
+    background: rgba(15, 23, 42, 0.78);
+    color: #e5e7eb;
+    box-shadow: 0 22px 40px rgba(0, 0, 0, 0.25);
+  }
+
+  .mission-text h2 {
+    color: #f9fafb;
+  }
+
+  .mission-text-body {
+    color: #e5e7eb;
+  }
+
+  .mission-text-body.is-collapsed::after {
+    background: linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.1) 0%,
+      rgba(15, 23, 42, 0.95) 90%
+    );
+  }
+}

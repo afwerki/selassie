@@ -1,0 +1,444 @@
+/* ============================
+   LAYOUT
+============================ */
+.about-wrapper {
+  display: grid;
+  grid-template-columns: minmax(360px, 520px) minmax(0, 1fr);
+  gap: 48px;
+  margin-top: 40px;
+}
+
+@media (max-width: 960px) {
+  .about-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================
+   DECISION TREE COLUMN
+============================ */
+.about-tree {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: stretch;
+  padding-right: 12px;
+}
+
+/* animated vertical spine */
+@keyframes spineFlow {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+.about-tree::before {
+  content: "";
+  position: absolute;
+  top: 40px;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    rgba(242, 181, 68, 0.1),
+    rgba(242, 181, 68, 0.95),
+    rgba(47, 104, 181, 0.9),
+    rgba(242, 181, 68, 0.95),
+    rgba(242, 181, 68, 0.1)
+  );
+  background-size: 100% 300%;
+  animation: spineFlow 7s linear infinite;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.tree-level {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.tree-connector {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.tree-connector--down::before {
+  content: "";
+  width: 3px;
+  height: 34px;
+  background: rgba(242, 181, 68, 0.9);
+  border-radius: 999px;
+}
+
+/* glow where branches split */
+.tree-connector--into-branches::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 234, 187, 0.98),
+    rgba(242, 181, 68, 0.35),
+    transparent
+  );
+}
+
+/* ============================
+   PRIEST BRANCHES
+============================ */
+.priest-level {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  position: relative;
+  padding-top: 32px;
+}
+
+/* horizontal line */
+.priest-level::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 6%;
+  right: 6%;
+  border-top: 3px solid rgba(242, 181, 68, 0.9);
+}
+
+/* vertical branch into each card */
+.priest-card {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 130px;
+}
+
+.priest-card::before {
+  content: "";
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 32px;
+  border-left: 3px solid rgba(242, 181, 68, 0.9);
+}
+
+/* ============================
+   CARDS
+============================ */
+.leader-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 22px;
+  background: radial-gradient(circle at top left, #fffaf2, #f7efe2);
+  border-radius: 20px;
+  border: 1px solid rgba(225, 208, 179, 0.9);
+  box-shadow: 0 14px 36px rgba(11, 24, 52, 0.18);
+  cursor: default;
+  overflow: visible; /* allow tooltip to escape */
+  backdrop-filter: blur(8px);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    border 0.25s ease,
+    filter 0.25s ease;
+}
+
+.leader-card::after {
+  /* diagonal highlight streak */
+  content: "";
+  position: absolute;
+  top: -70%;
+  left: -30%;
+  width: 70%;
+  height: 230%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.9),
+    transparent 60%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.leader-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 22px 48px rgba(8, 19, 43, 0.32);
+  background: radial-gradient(circle at top left, #fffdf9, #f6ebdc);
+  border-color: #f2b544;
+  filter: saturate(1.08);
+}
+
+.leader-card:hover::after {
+  opacity: 1;
+  transform: translateX(24px);
+}
+
+.priest-card {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* special highlight for Selassie node */
+.highlight-node {
+  border-color: #f2b544;
+  box-shadow: 0 20px 52px rgba(242, 181, 68, 0.45);
+  animation: selassieGlow 4.5s ease-in-out infinite;
+}
+
+@keyframes selassieGlow {
+  0% {
+    box-shadow: 0 16px 40px rgba(242, 181, 68, 0.2);
+  }
+  50% {
+    box-shadow: 0 20px 60px rgba(242, 181, 68, 0.55);
+  }
+  100% {
+    box-shadow: 0 16px 40px rgba(242, 181, 68, 0.2);
+  }
+}
+
+/* ============================
+   AVATAR / IMAGE
+============================ */
+.leader-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 3px solid #f2b544;
+  flex-shrink: 0;
+  background: radial-gradient(circle, #f6ead7, #e2c79a);
+  box-shadow: 0 6px 18px rgba(15, 10, 4, 0.3);
+  transform-origin: center;
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.priest-card .leader-avatar {
+  width: 112px;
+  height: 112px;
+}
+
+.leader-card:hover .leader-avatar {
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: 0 10px 26px rgba(15, 10, 4, 0.4);
+}
+
+.leader-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ============================
+   TEXT INSIDE CARDS
+============================ */
+.leader-text h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #142645;
+  letter-spacing: 0.01em;
+}
+
+.leader-title {
+  margin: 4px 0 0 0;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #f2b544;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+}
+
+.leader-tagline {
+  margin: 8px 0 0 0;
+  font-size: 0.86rem;
+  color: #3a4155;
+}
+
+/* priest text slightly larger for readability */
+.priest-card .leader-text h4 {
+  font-size: 1rem;
+}
+
+.priest-card .leader-title {
+  font-size: 0.8rem;
+}
+
+.priest-card .leader-tagline {
+  font-size: 0.84rem;
+}
+
+/* ============================
+   TOOLTIP – LIGHT THEME
+============================ */
+/* ============================
+   TOOLTIP – LIGHT THEME (ABOVE CARD)
+============================ */
+.leader-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;                /* ⬅ show ABOVE the card */
+  top: auto;
+  transform: translate(-50%, -12px);
+  min-width: 230px;
+  max-width: 280px;
+  padding: 12px 14px;
+  background: #fffdf7;
+  color: #1a2338;
+  font-size: 0.8rem;
+  border-radius: 12px;
+  border: 1px solid #e5d4b4;
+  box-shadow: 0 14px 30px rgba(9, 14, 30, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 60;                 /* high so it sits on top of everything */
+}
+
+.leader-tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;                /* arrow now at the BOTTOM of tooltip */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px 8px 0 8px;
+  border-style: solid;
+  border-color: #fffdf7 transparent transparent transparent;
+}
+
+.leader-card:hover .leader-tooltip {
+  opacity: 1;
+  transform: translate(-50%, -4px);  /* gentle float */
+}
+
+
+/* ============================
+   ENTRANCE ANIMATIONS
+============================ */
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.tree-node {
+  opacity: 0;
+  animation: floatIn 0.7s ease-out forwards;
+}
+
+.tree-node-1 {
+  animation-delay: 0.05s;
+}
+.tree-node-2 {
+  animation-delay: 0.18s;
+}
+.tree-node-3 {
+  animation-delay: 0.33s;
+}
+.tree-node-4 {
+  animation-delay: 0.48s;
+}
+.tree-node-5 {
+  animation-delay: 0.58s;
+}
+.tree-node-6 {
+  animation-delay: 0.68s;
+}
+.tree-node-7 {
+  animation-delay: 0.78s;
+}
+.tree-node-8 {
+  animation-delay: 0.88s;
+}
+
+/* ============================
+   RIGHT CONTENT COLUMN
+============================ */
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.about-block h3 {
+  margin-bottom: 8px;
+  font-size: 1.2rem;
+  color: #142645;
+}
+
+.about-block p {
+  margin-bottom: 10px;
+  line-height: 1.7;
+}
+
+/* Read more button */
+.about-readmore-btn {
+  margin-top: 10px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid #f2b544;
+  background: linear-gradient(135deg, #fef3da, #f7dfaa);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #142645;
+  cursor: pointer;
+  transition:
+    background 0.16s ease,
+    transform 0.12s ease,
+    box-shadow 0.16s ease,
+    border 0.16s ease;
+}
+
+.about-readmore-btn:hover {
+  background: linear-gradient(135deg, #ffe9b5, #f6cf77);
+  border-color: #f2b544;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+/* ============================
+   MOBILE TWEAKS
+============================ */
+@media (max-width: 600px) {
+  .about-wrapper {
+    gap: 32px;
+  }
+
+  .about-tree::before {
+    left: 50%;
+    top: 30px;
+    bottom: 180px;
+  }
+
+  .priest-level {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .priest-level::before {
+    left: 15%;
+    right: 15%;
+  }
+}

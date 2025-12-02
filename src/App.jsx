@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
 import MembershipForm from "./components/MembershipForm";
-
+import ContributionButton from "./components/ContributionButton"; // ⬅️ NEW
 
 import Home from "./pages/Home";
 import Sermons from "./pages/Sermons";
@@ -28,10 +28,12 @@ function App() {
       {/* floating membership button + modal */}
       <MembershipForm />
 
+      {/* floating contribution button with payment link */}
+      <ContributionButton />
+
       <Footer />
     </>
   );
 }
-
 
 export default App;

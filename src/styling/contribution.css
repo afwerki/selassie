@@ -1,0 +1,32 @@
+.floating-contribution-btn {
+  position: fixed;
+  bottom: 88px;          /* ⬅ was 24px – move it up so it clears Register */
+  right: 24px;
+  background: linear-gradient(135deg, #f2b544, #f59f3c);
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 14px 22px;
+  border-radius: 999px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  z-index: 9999;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.floating-contribution-btn:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
+}
+
+.floating-contribution-btn:active {
+  transform: scale(0.98);
+}
+
+/* Optional: a bit closer on small screens */
+@media (max-width: 600px) {
+  .floating-contribution-btn {
+    bottom: 80px;
+    right: 16px;
+  }
+}

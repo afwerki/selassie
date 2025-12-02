@@ -1,18 +1,55 @@
 import { useState } from "react";
 import "./MembershipForm.css";
 
+const SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbw11kXjsTOcpAI3HmTh9rLgZ53K_CLPu4658hmI6R4qlBanXC1VdUpyxJbd_Dp4fukp/exec";
+
 function MembershipForm() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState(null);
 
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Placeholder – later we can send this to an API or email.
-    alert("Membership form submitted (placeholder).");
-    closeModal();
+  const openModal = () => {
+    setMessage(null);
+    setIsOpen(true);
   };
+
+  const closeModal = () => {
+    if (!isSubmitting) setIsOpen(false);
+  };
+
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setMessage(null);
+
+  const form = e.target;
+  const formData = new FormData(form);
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: formData,
+      mode: "no-cors", // just send it, we don't read the response
+    });
+
+    setMessage("Thank you! Your membership request has been received.");
+    form.reset();
+
+    setTimeout(() => {
+      setIsOpen(false);
+      setMessage(null);
+    }, 2000);
+  } catch (err) {
+    console.error(err);
+    setMessage(
+      "Sorry, we could not submit your form. Please try again in a moment."
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   return (
     <>
@@ -30,7 +67,7 @@ function MembershipForm() {
         <div className="member-modal-backdrop" onClick={closeModal}>
           <div
             className="member-modal"
-            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="member-modal-header">
               <h2>Membership Registration</h2>
@@ -39,6 +76,7 @@ function MembershipForm() {
                 className="member-close-btn"
                 onClick={closeModal}
                 aria-label="Close membership form"
+                disabled={isSubmitting}
               >
                 ×
               </button>
@@ -86,10 +124,10 @@ function MembershipForm() {
                 <label>
                   Preferred Language
                   <select name="language">
-                    <option value="english">English</option>
-                    <option value="amharic">Amharic</option>
-                    <option value="tigrinya">Tigrinya</option>
-                    <option value="other">Other</option>
+                    <option value="English">English</option>
+                    <option value="Amharic">Amharic</option>
+                    <option value="Tigrinya">Tigrinya</option>
+                    <option value="Other">Other</option>
                   </select>
                 </label>
                 <label>
@@ -108,16 +146,16 @@ function MembershipForm() {
                   Baptised in the Orthodox Church?
                   <select name="baptised">
                     <option value="">Select</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                    <option value="not-sure">Not sure</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="Not sure">Not sure</option>
                   </select>
                 </label>
                 <label>
-                  Would you like to receive newsletters?
+                  Receive newsletters?
                   <select name="newsletter">
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
                   </select>
                 </label>
               </div>
@@ -145,13 +183,18 @@ function MembershipForm() {
               </div>
 
               <div className="member-footer">
-                <button type="submit" className="card-btn">
-                  Submit Registration
+                <button
+                  type="submit"
+                  className="card-btn"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "Submit Registration"}
                 </button>
-                <span className="member-note">
-                  This is a template form – details will be confirmed by the
-                  church office.
-                </span>
+                {message && (
+                  <span className="member-note member-note-status">
+                    {message}
+                  </span>
+                )}
               </div>
             </form>
           </div>

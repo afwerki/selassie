@@ -6,6 +6,7 @@ function Contact() {
         <p>
           Get in touch with the church office or send us a message. We are
           always happy to hear from you.
+          we need map in here showing the location
         </p>
       </section>
 
