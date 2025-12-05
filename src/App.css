@@ -1,3 +1,7 @@
+/* =========================================
+   GLOBAL
+========================================= */
+
 .page {
   max-width: 1200px;
   margin: 0 auto;
@@ -29,7 +33,6 @@
   margin-bottom: 10px;
 }
 
-/* Buttons used inside cards */
 .card-btn {
   margin-top: 10px;
   padding: 8px 16px;
@@ -55,18 +58,7 @@
   box-shadow: none;
 }
 
-/* Tag pill */
-.tag-pill {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background-color: #f1f5ff;
-  color: #2b3d7b;
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-/* Section header utility */
+/* Section header */
 .section-header {
   max-width: 760px;
 }
@@ -82,7 +74,10 @@
   color: var(--text-muted);
 }
 
-/* Welcome + Service Times layout */
+/* =========================================
+   Welcome + Service Times Layout
+========================================= */
+
 .welcome-section {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1.6fr);
@@ -104,7 +99,7 @@
   color: var(--text-muted);
 }
 
-/* Service times card */
+/* Service Times Card */
 .service-times {
   background-color: #e8f1f6;
   border-radius: 16px;
@@ -170,7 +165,10 @@
   font-weight: 600;
 }
 
-/* Mission section */
+/* =========================================
+   Mission Section
+========================================= */
+
 .mission-section {
   margin-top: 60px;
   display: grid;
@@ -221,21 +219,41 @@
   color: var(--text-muted);
 }
 
-/* --- Sermons section & tabs --- */
+/* =========================================
+   Sermons, Q&A, Events, Visit
+========================================= */
 
 .sermons-section {
   margin-top: 60px;
   animation: fadeInUp 0.8s ease-out 0.4s both;
 }
 
-/* Tabs header */
+/* Video grid */
+/* =========================================
+   SERMONS / TEACHINGS & Q&A
+========================================= */
+
+.sermons-section {
+  margin-top: 60px;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+/* make sure the header doesn’t run super-wide */
+.sermons-section .section-header {
+  max-width: 720px;
+}
+
+/* --- Tabs header --- */
+
 .sermons-tabs {
-  margin-top: 24px;
+  margin-top: 20px;
   display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
   padding: 4px;
   border-radius: 999px;
   background: #dbe4f3;
-  gap: 4px;
 }
 
 .sermons-tab {
@@ -247,8 +265,13 @@
   font-weight: 500;
   color: #32425c;
   cursor: pointer;
+  white-space: nowrap;
   transition: background-color 0.2s ease, color 0.2s ease,
-    transform 0.12s ease;
+    transform 0.12s ease, box-shadow 0.2s ease;
+}
+
+.sermons-tab:hover {
+  transform: translateY(-1px);
 }
 
 .sermons-tab.active {
@@ -258,41 +281,47 @@
   transform: translateY(-1px);
 }
 
-/* Tab panel base */
+/* content under the tabs */
+
 .tab-panel {
   margin-top: 24px;
   animation: fadeInUp 0.4s ease-out both;
 }
 
-/* 2 x 2 grid of video cards */
+/* --- Sermon video cards --- */
+
 .video-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
+  gap: 20px;
   align-items: stretch;
 }
 
-/* Each video card: video on left, text on right */
+/* Each card: thumbnail on the left, content on the right */
 .video-card {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.5fr);
   gap: 16px;
   align-items: stretch;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(10, 34, 57, 0.14);
 }
 
+/* Video thumbnail frame */
 .video-frame {
   width: 100%;
 }
 
-/* Responsive 16:9 iframe */
 .video-responsive {
   position: relative;
   width: 100%;
-  padding-top: 56.25%;
-  border-radius: 16px;
+  padding-top: 56.25%; /* 16:9 */
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
   background: #000;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
 }
 
 .video-responsive iframe {
@@ -303,28 +332,26 @@
   border: 0;
 }
 
+/* Right side text */
 .video-info h3 {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
+  font-size: 1rem;
+}
+
+.video-info .card-meta {
+  margin-bottom: 6px;
 }
 
 .video-info p {
-  margin-top: 0;
-  margin-bottom: 8px;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text-muted);
 }
 
-/* Written teachings grid */
-.teaching-grid {
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
+/* --- Written teachings & Q&A cards --- */
 
-.teaching-card h3 {
-  margin: 8px 0 6px;
-}
-
-/* Q&A grid */
+.teaching-grid,
 .qa-grid {
   margin-top: 12px;
   display: grid;
@@ -332,9 +359,182 @@
   gap: 20px;
 }
 
+.teaching-card,
+.qa-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 10px 26px rgba(10, 34, 57, 0.1);
+}
+
+.teaching-card h3,
 .qa-card h3 {
-  margin-top: 0;
-  margin-bottom: 8px;
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.teaching-card p,
+.qa-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+/* =========================================
+   SERMONS RESPONSIVE
+========================================= */
+
+@media (max-width: 1000px) {
+  .video-card {
+    grid-template-columns: minmax(0, 1fr); /* stack video + text */
+  }
+}
+
+@media (max-width: 900px) {
+  .video-grid {
+    grid-template-columns: minmax(0, 1fr); /* 1 card per row */
+  }
+
+  .teaching-grid,
+  .qa-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .sermons-tabs {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  .sermons-tab {
+    padding-inline: 14px;
+  }
+
+  .teaching-grid,
+  .qa-grid {
+    grid-template-columns: minmax(0, 1fr); /* single column on small phones */
+  }
+}
+.quiz-header {
+  margin-bottom: 16px;
+}
+
+.quiz-header h3 {
+  margin: 0 0 4px;
+}
+
+.quiz-header p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.quiz-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quiz-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.quiz-difficulty {
+  font-size: 0.8rem;
+  color: #6b7280;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+}
+
+.quiz-question {
+  margin: 4px 0 4px;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.16s ease, border-color 0.16s ease,
+    box-shadow 0.16s ease, transform 0.1s ease;
+}
+
+.quiz-option-bullet {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid #cbd5f5;
+  background: #f9fafb;
+  flex-shrink: 0;
+}
+
+.quiz-option-label {
+  flex: 1;
+}
+
+.quiz-option:hover:not(:disabled) {
+  background: #f9fafb;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+}
+
+.quiz-option--selected {
+  border-color: #6366f1;
+  background: #eef2ff;
+}
+
+.quiz-option--selected .quiz-option-bullet {
+  border-color: #4f46e5;
+  background: #4f46e5;
+}
+
+.quiz-option--correct {
+  border-color: #16a34a;
+  background: #ecfdf3;
+}
+
+.quiz-option--incorrect {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+.quiz-explanation {
+  margin-top: 6px;
+  font-size: 0.86rem;
+  color: #4b5563;
+}
+
+.quiz-footer {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.quiz-score {
+  font-size: 0.95rem;
+  color: #111827;
 }
 
 /* Events */
@@ -367,20 +567,6 @@
   padding: 8px 0;
 }
 
-.event-day {
-  font-size: 1.4rem;
-  font-weight: 700;
-}
-
-.event-month {
-  font-size: 0.8rem;
-  letter-spacing: 0.12em;
-}
-
-.event-content h3 {
-  margin: 0 0 4px;
-}
-
 /* Visit */
 .visit-section {
   margin-top: 60px;
@@ -391,47 +577,9 @@
   animation: fadeInUp 0.8s ease-out 0.6s both;
 }
 
-.visit-text h2 {
-  font-family: "Merriweather", serif;
-  font-size: 1.9rem;
-  margin-bottom: 10px;
-}
-
-.visit-text p {
-  margin-top: 0;
-  color: var(--text-muted);
-}
-
-.visit-grid {
-  margin-top: 18px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.visit-grid h3 {
-  margin: 0 0 6px;
-}
-
-.visit-map-placeholder {
-  border-radius: 18px;
-  background: radial-gradient(circle at 10% 0, #f6e2b3, #475b8b);
-  color: #ffffff;
-  padding: 20px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-
-.map-label {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  opacity: 0.86;
-}
-
-/* About / Contact layouts */
+/* =========================================
+   About / Contact Layouts (IMPORTANT)
+========================================= */
 
 .about-layout {
   margin-top: 24px;
@@ -440,6 +588,7 @@
   gap: 24px;
 }
 
+/* 🟡 FIXED: Contact grid now responsive */
 .contact-grid {
   margin-top: 24px;
   display: grid;
@@ -447,38 +596,17 @@
   gap: 24px;
 }
 
-.contact-form {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 18px 20px;
-  box-shadow: 0 12px 30px rgba(10, 34, 57, 0.08);
+/* 👉 On MOBILE, switch to 1 column */
+@media (max-width: 768px) {
+  .contact-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
-.contact-form label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  display: block;
-}
+/* =========================================
+   Footer
+========================================= */
 
-.contact-form input,
-.contact-form textarea {
-  width: 100%;
-  margin-top: 4px;
-  margin-bottom: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #c4cfdd;
-  font: inherit;
-}
-
-.contact-form input:focus,
-.contact-form textarea:focus {
-  outline: none;
-  border-color: #275b9f;
-  box-shadow: 0 0 0 2px rgba(39, 91, 159, 0.15);
-}
-
-/* Footer */
 .site-footer {
   background-color: #0a2239;
   color: #ffffff;
@@ -494,36 +622,10 @@
   gap: 24px;
 }
 
-.footer-column h3,
-.footer-column h4 {
-  margin-top: 0;
-}
+/* =========================================
+   Animations & Responsive
+========================================= */
 
-.footer-column p {
-  margin-top: 4px;
-  font-size: 0.9rem;
-  color: #d7e0eb;
-}
-
-.footer-column a {
-  color: #f6d47c;
-  text-decoration: none;
-}
-
-.footer-column a:hover {
-  text-decoration: underline;
-}
-
-.footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 10px 24px 16px;
-  max-width: 1200px;
-  margin: 0 auto;
-  font-size: 0.8rem;
-  color: #a8bed8;
-}
-
-/* Shared animation */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -535,54 +637,21 @@
   }
 }
 
-/* Responsive */
 @media (max-width: 1100px) {
   .visit-section {
     grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.2fr);
   }
-
-  .footer-inner {
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
-  }
-
-  .teaching-grid,
-  .qa-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 1000px) {
-  .video-card {
-    grid-template-columns: minmax(0, 1fr); /* stack video + text */
-  }
 }
 
 @media (max-width: 900px) {
-  .welcome-section {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .mission-section {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .mission-image {
-    order: -1;
-    margin-bottom: 16px;
-  }
-
-  .visit-section {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
+  .welcome-section,
+  .mission-section,
+  .visit-section,
   .footer-inner {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .video-grid {
-    grid-template-columns: minmax(0, 1fr); /* 1 card per row */
-  }
-
+  .video-grid,
   .teaching-grid,
   .qa-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -600,9 +669,4 @@
   .visit-text h2 {
     font-size: 1.6rem;
   }
-
-  .visit-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  
 }

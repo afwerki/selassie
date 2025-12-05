@@ -4,6 +4,8 @@ import "./MembershipForm.css";
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbw11kXjsTOcpAI3HmTh9rLgZ53K_CLPu4658hmI6R4qlBanXC1VdUpyxJbd_Dp4fukp/exec";
 
+const ukPostcodeRegex = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
+
 function MembershipForm() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,64 +20,64 @@ function MembershipForm() {
     if (!isSubmitting) setIsOpen(false);
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setMessage(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setMessage(null);
 
-  const form = e.target;
-  const formData = new FormData(form);
+    const form = e.target;
+    const formData = new FormData(form);
 
-  try {
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: formData,
-      mode: "no-cors", // just send it, we don't read the response
-    });
+    // ---- UK VALIDATION ----
+    const address = form.address.value.trim();
+    const postcodeMatch = address.match(/[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}/i);
 
-    setMessage("Thank you! Your membership request has been received.");
-    form.reset();
+    if (!postcodeMatch || !ukPostcodeRegex.test(postcodeMatch[0])) {
+      setMessage("This registration is only for UK residents. Please enter a valid UK postcode.");
+      setIsSubmitting(false);
+      return;
+    }
+    // ------------------------
 
-    setTimeout(() => {
-      setIsOpen(false);
-      setMessage(null);
-    }, 2000);
-  } catch (err) {
-    console.error(err);
-    setMessage(
-      "Sorry, we could not submit your form. Please try again in a moment."
-    );
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors",
+      });
 
+      setMessage("Thank you! Your membership request has been received.");
+      form.reset();
+
+      setTimeout(() => {
+        setIsOpen(false);
+        setMessage(null);
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      setMessage("Sorry, something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
       {/* Floating Button */}
-      <button
-        type="button"
-        className="floating-member-btn"
-        onClick={openModal}
-      >
+      <button type="button" className="floating-member-btn" onClick={openModal}>
         Register as a Member
       </button>
 
       {/* Modal */}
       {isOpen && (
         <div className="member-modal-backdrop" onClick={closeModal}>
-          <div
-            className="member-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="member-modal" onClick={(e) => e.stopPropagation()}>
             <div className="member-modal-header">
               <h2>Membership Registration</h2>
               <button
                 type="button"
                 className="member-close-btn"
                 onClick={closeModal}
-                aria-label="Close membership form"
                 disabled={isSubmitting}
               >
                 ×
@@ -112,11 +114,7 @@ function MembershipForm() {
                 </label>
                 <label>
                   Phone
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder="+44 ..."
-                  />
+                  <input type="tel" name="phone" placeholder="+44 ..." />
                 </label>
               </div>
 
@@ -132,12 +130,7 @@ function MembershipForm() {
                 </label>
                 <label>
                   Family Members
-                  <input
-                    type="number"
-                    name="familySize"
-                    min="1"
-                    placeholder="e.g. 4"
-                  />
+                  <input type="number" name="familySize" min="1" placeholder="e.g. 4" />
                 </label>
               </div>
 
@@ -162,11 +155,12 @@ function MembershipForm() {
 
               <div className="member-row">
                 <label>
-                  Address (optional)
+                  Address (UK only)
                   <input
                     type="text"
                     name="address"
-                    placeholder="House number, street, city, postcode"
+                    required
+                    placeholder="House number, street, city, UK postcode"
                   />
                 </label>
               </div>
@@ -178,23 +172,16 @@ function MembershipForm() {
                     name="support"
                     rows="3"
                     placeholder="Prayer requests, pastoral support, areas of interest..."
-                  />
+                  ></textarea>
                 </label>
               </div>
 
               <div className="member-footer">
-                <button
-                  type="submit"
-                  className="card-btn"
-                  disabled={isSubmitting}
-                >
+                <button type="submit" className="card-btn" disabled={isSubmitting}>
                   {isSubmitting ? "Submitting..." : "Submit Registration"}
                 </button>
-                {message && (
-                  <span className="member-note member-note-status">
-                    {message}
-                  </span>
-                )}
+
+                {message && <span className="member-note member-note-status">{message}</span>}
               </div>
             </form>
           </div>

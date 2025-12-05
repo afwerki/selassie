@@ -12,6 +12,10 @@ function Navbar() {
   const closeMenu = () => setIsOpen(false);
   const toggleMenu = () => setIsOpen((prev) => !prev);
 
+  // Fallback labels so Projects always shows even if not in texts
+  const projectLabel =
+    t.nav.projects || (lang === "am" ? "ፕሮጀክቶች" : "Projects");
+
   return (
     <header className="navbar">
       <nav className="navbar-inner">
@@ -31,26 +35,37 @@ function Navbar() {
               {t.nav.home}
             </a>
           </li>
+
           <li>
             <a href="#about" onClick={closeMenu}>
               {t.nav.about}
             </a>
           </li>
+
+          <li>
+            <a href="#projects" onClick={closeMenu}>
+              {projectLabel}
+            </a>
+          </li>
+
           <li>
             <a href="#sermons" onClick={closeMenu}>
               {t.nav.sermons}
             </a>
           </li>
+
           <li>
             <a href="#events" onClick={closeMenu}>
               {t.nav.events}
             </a>
           </li>
+
           <li>
             <a href="#contact" onClick={closeMenu}>
               {t.nav.contact}
             </a>
           </li>
+
           <li>
             <button
               className={`language-btn ${

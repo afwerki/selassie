@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styling/home.css";
 
 import PriestImage from "../assets/images/prist.jpeg";
 import MissionImage from "../assets/images/eotc.jpg";
+import { client } from "../sanityClient";
 
 const clergyMembers = [
   {
@@ -54,9 +55,104 @@ const clergyMembers = [
   },
 ];
 
+// static fallback if CMS is empty
+const defaultServiceItems = [
+  {
+    id: "default-1",
+    label: "Sunday Liturgy",
+    subLabel: "Main service",
+    time: "8:00 AM",
+    description: "Our main weekly Divine Liturgy, starting with Matins.",
+    location: "Church building",
+    notes: "",
+  },
+  {
+    id: "default-2",
+    label: "Vespers",
+    subLabel: "Saturday evening",
+    time: "6:00 PM",
+    description:
+      "Evening prayer service in preparation for Sunday Liturgy.",
+    location: "Church building",
+    notes: "",
+  },
+  {
+    id: "default-3",
+    label: "Feast Days",
+    subLabel: "Times announced before each feast",
+    time: "",
+    description:
+      "Special services on feast days. Please check announcements for exact times.",
+    location: "Church building",
+    notes: "",
+  },
+];
+
 function Home() {
   const [flippedId, setFlippedId] = useState(null);
   const [missionExpanded, setMissionExpanded] = useState(false);
+
+  const [serviceBox, setServiceBox] = useState({
+    title: "Service Times",
+    subtitle: "Join us for worship",
+  });
+  const [serviceItems, setServiceItems] = useState(defaultServiceItems);
+  const [openServiceId, setOpenServiceId] = useState(null); // which row is expanded
+
+  // ======== FETCH SERVICE TIMES FROM SANITY ========
+ useEffect(() => {
+  client
+    .fetch(
+      `*[_type == "homepage"][0]{
+        serviceBoxTitle,
+        serviceBoxSubtitle,
+        serviceItems[]{
+          _key,
+          label,
+          subLabel,
+          time,
+          description,
+          address,
+          mapLink,
+          location,
+          notes,
+          isActive
+        }
+      }`
+    )
+    .then((data) => {
+      if (!data) return;
+
+      setServiceBox({
+        title: data.serviceBoxTitle || "Service Times",
+        subtitle: data.serviceBoxSubtitle || "Join us for worship",
+      });
+
+      if (Array.isArray(data.serviceItems) && data.serviceItems.length > 0) {
+        const mapped = data.serviceItems
+          .filter((item) => item?.isActive !== false)
+          .map((item, index) => ({
+            id: item._key || `srv-${index}`,
+            label: item.label || "Unnamed service",
+            subLabel: item.subLabel || "",
+            time: item.time || "",
+            description: item.description || "",
+            // ✅ new: carry through address + mapLink
+            address: item.address || item.location || "",
+            mapLink: item.mapLink || "",
+            // keep location as fallback if you ever need it
+            location: item.location || "",
+            notes: item.notes || "",
+          }));
+
+        setServiceItems(mapped);
+      }
+    })
+    .catch((err) => {
+      console.error("Sanity service times error:", err);
+    });
+}, []);
+
 
   const handleCardClick = (id) => {
     setFlippedId((current) => (current === id ? null : id));
@@ -64,6 +160,10 @@ function Home() {
 
   const toggleMission = () => {
     setMissionExpanded((prev) => !prev);
+  };
+
+  const handleServiceClick = (id) => {
+    setOpenServiceId((current) => (current === id ? null : id));
   };
 
   return (
@@ -123,7 +223,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ==================== WELCOME ==================== */}
+      {/* ==================== WELCOME (STATIC) ==================== */}
       <section className="welcome-section animate-fade-up" id="Service">
         <div className="welcome-text">
           <h2>Welcome</h2>
@@ -140,45 +240,101 @@ function Home() {
           </p>
         </div>
 
-        <aside className="service-times">
-          <div className="service-header">
-            <span className="service-icon">✝️</span>
+        {/* ==================== SERVICE TIMES (DYNAMIC) ==================== */}
+       <aside className="service-times">
+  <div className="service-header">
+    <span className="service-icon">✝️</span>
+    <div>
+      <h3>{serviceBox.title}</h3>
+      <p>{serviceBox.subtitle}</p>
+    </div>
+  </div>
+
+  <div className="service-card">
+    {serviceItems.map((service) => {
+      const isOpen = openServiceId === service.id;
+
+      // Fallbacks so old data still works
+      const address = service.address || service.location;
+      const mapLink = service.mapLink || service.mapUrl;
+
+      return (
+        <div
+          key={service.id}
+          className={`service-row-wrapper ${
+            isOpen ? "service-row-wrapper--open" : ""
+          }`}
+        >
+          <button
+            type="button"
+            className="service-row"
+            onClick={() => handleServiceClick(service.id)}
+          >
             <div>
-              <h3>Service Times</h3>
-              <p>Join us for worship</p>
+              <span className="service-label">{service.label}</span>
+              {service.subLabel && (
+                <span className="service-sub">{service.subLabel}</span>
+              )}
             </div>
-          </div>
+            <div className="service-time-and-toggle">
+              {service.time && (
+                <span className="service-time">{service.time}</span>
+              )}
+              <span className="service-toggle">
+                {isOpen ? "▴" : "▾"}
+              </span>
+            </div>
+          </button>
 
-          <div className="service-card">
-            <div className="service-row">
-              <div>
-                <span className="service-label">Sunday Liturgy</span>
-                <span className="service-sub">Main service</span>
-              </div>
-              <span className="service-time">8:00 AM</span>
-            </div>
+          {isOpen && (
+            <div className="service-details">
+              {service.description && (
+                <p className="service-details-text">
+                  {service.description}
+                </p>
+              )}
 
-            <div className="service-row">
-              <div>
-                <span className="service-label">Vespers</span>
-                <span className="service-sub">Saturday evening</span>
-              </div>
-              <span className="service-time">6:00 PM</span>
-            </div>
+              {address && (
+                <div className="service-details-meta">
+                  <strong>Location:</strong>
+                  <div className="service-details-address">
+                    {address.split("\n").map((line, idx) => (
+                      <span key={idx}>
+                        {line}
+                        <br />
+                      </span>
+                    ))}
+                  </div>
 
-            <div className="service-row">
-              <div>
-                <span className="service-label">Feast Days</span>
-                <span className="service-sub">
-                  Times announced before each feast
-                </span>
-              </div>
+                  {mapLink && (
+                    <a
+                      href={mapLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="service-location-link"
+                    >
+                      View on Google Maps
+                    </a>
+                  )}
+                </div>
+              )}
+
+              {service.notes && (
+                <p className="service-details-meta">
+                  <strong>Notes:</strong> {service.notes}
+                </p>
+              )}
             </div>
-          </div>
-        </aside>
+          )}
+        </div>
+      );
+    })}
+  </div>
+</aside>
+
       </section>
 
-      {/* ==================== MISSION ==================== */}
+      {/* ==================== MISSION (STATIC) ==================== */}
       <section
         className={`mission-section animate-fade-up ${
           missionExpanded ? "mission-section--expanded" : ""
@@ -200,6 +356,7 @@ function Home() {
               Our mission is to uphold and share the teachings of the Ethiopian
               Orthodox Church, to support the spiritual growth of our members,
               and to serve our community with compassion and humility.
+              
               Our mission is to uphold and share the teachings of the Ethiopian
               Orthodox Church, to support the spiritual growth of our members,
               and to serve our community with compassion and humility.

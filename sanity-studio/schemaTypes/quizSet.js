@@ -1,0 +1,68 @@
+// /schemas/quizSet.js
+import { defineType, defineField } from "sanity";
+
+export const quizSet = defineType({
+  name: "quizSet",
+  title: "Quiz Set",
+  type: "document",
+  fields: [
+    defineField({
+      name: "title",
+      title: "Quiz title",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: {
+        source: "title",
+        maxLength: 80,
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "heroImage",
+      title: "Hero image",
+      type: "image",
+      options: { hotspot: true },
+      description: "Shown at the top of this quiz set on the website.",
+    }),
+    defineField({
+      name: "description",
+      title: "Short description",
+      type: "text",
+      rows: 2,
+      description:
+        "Short intro for this quiz set (e.g. ‘Basics of the Holy Trinity’).",
+    }),
+    defineField({
+      name: "createdAt",
+      title: "Created / Published at",
+      type: "datetime",
+      initialValue: () => new Date().toISOString(),
+      description: "Used to order quiz sets (newest first).",
+    }),
+    defineField({
+      name: "questions",
+      title: "Questions",
+      type: "array",
+      of: [{ type: "quizQuestion" }], // the object schema we created earlier
+      validation: (Rule) => Rule.min(1),
+    }),
+    defineField({
+      name: "isActive",
+      title: "Active?",
+      type: "boolean",
+      initialValue: true,
+    }),
+  ],
+  preview: {
+    select: {
+      title: "title",
+      media: "heroImage",
+      subtitle: "description",
+    },
+  },
+});
