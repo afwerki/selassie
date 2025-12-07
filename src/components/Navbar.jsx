@@ -7,14 +7,17 @@ import { texts } from "../i18n/texts";
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { lang, toggleLanguage } = useLanguage();
-  const t = texts[lang];
+  const t = texts[lang] || texts.en;
 
   const closeMenu = () => setIsOpen(false);
   const toggleMenu = () => setIsOpen((prev) => !prev);
 
-  // Fallback labels so Projects always shows even if not in texts
+  // Fallback labels so items always show even if not in texts
   const projectLabel =
     t.nav.projects || (lang === "am" ? "ፕሮጀክቶች" : "Projects");
+
+  const newsLabel =
+    (t.nav && t.nav.news) || (lang === "am" ? "ዜና" : "News");
 
   return (
     <header className="navbar">
@@ -57,6 +60,13 @@ function Navbar() {
           <li>
             <a href="#events" onClick={closeMenu}>
               {t.nav.events}
+            </a>
+          </li>
+
+          {/* NEW: News tab */}
+          <li>
+            <a href="#news" onClick={closeMenu}>
+              {newsLabel}
             </a>
           </li>
 

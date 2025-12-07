@@ -3,14 +3,15 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
 import MembershipForm from "./components/MembershipForm";
-import ContributionButton from "./components/ContributionButton";
+import ContributionButton from "./components/ContributionButton"; // ⬅️ NEW
 
 import Home from "./pages/Home";
 import Sermons from "./pages/Sermons";
 import Events from "./pages/Events";
+import News from "./pages/News";
+
 import Contact from "./pages/Contact";
 import About from "./pages/About";
-import Projects from "./pages/Projects"; // ⬅️ NEW
 
 function App() {
   return (
@@ -20,9 +21,9 @@ function App() {
 
       <main className="page">
         <Home />
-         <Projects />  {/* ⬅️ NEW projects section/page */}
         <Sermons />
         <Events />
+        <News/>
         <About />
         <Contact />
       </main>

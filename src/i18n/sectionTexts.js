@@ -131,6 +131,16 @@ export const sectionTexts = {
         ],
       },
     },
+     news: {
+      sectionBadge: "Church News",
+      sectionTitle: "Latest News & Announcements",
+      sectionIntro:
+        "Stay up to date with parish announcements, feast day messages, and community updates from Selassie Church.",
+
+      readMoreLabel: "Read more",
+      readLessLabel: "Hide details",
+      noArticles: "There are no news articles published yet. Please check back soon.",
+    },
 
     events: {
       sectionTitle: "Church Calendar & Events",
@@ -297,6 +307,16 @@ export const sectionTexts = {
           },
         ],
       },
+    },
+     news: {
+      sectionBadge: "የቤተክርስቲያን ዜናዎች",
+      sectionTitle: "የቅርብ ጊዜ ዜናና መግለጫዎች",
+      sectionIntro:
+        "ከሥላሴ ቤተክርስቲያን የሚመጡ የማኅበር መግለጫዎች፣ የበዓል መልእክቶችና ሌሎች አዳዲስ መረጃዎችን እዚህ ላይ ታገኛላችሁ።",
+
+      readMoreLabel: "ተጨማሪ ያንብቡ",
+      readLessLabel: "ዝርዝሩን ደብቅ",
+      noArticles: "እስካሁን የታተመ የዜና ጽሑፍ የለም። እባክዎን በኋላ ደግሞ ይመለሱ።",
     },
 
     events: {

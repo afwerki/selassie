@@ -1,0 +1,355 @@
+/* ==============================
+   NEWS PAGE LAYOUT
+============================== */
+
+.news-page {
+  padding: 40px 8% 80px;
+  background: radial-gradient(
+    circle at top,
+    #f4f7fb 0,
+    #e6ecf7 50%,
+    #dde4f3 100%
+  );
+}
+
+/* Basic fade-up reused from other sections */
+.animate-fade-up {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: newsFadeUp 0.6s ease-out forwards;
+}
+
+@keyframes newsFadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==============================
+   HEADER
+============================== */
+
+.news-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.news-header-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 16px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  margin-bottom: 8px;
+}
+
+.news-header-title {
+  font-size: 2rem;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.news-header-intro {
+  font-size: 0.98rem;
+  color: #4b5563;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ==============================
+   GRID (2 CARDS PER ROW)
+============================== */
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 18px;
+  margin-top: 14px;
+}
+
+.news-info-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #6b7280;
+  padding: 18px 0;
+}
+
+/* Card stagger animation */
+.animate-news-card {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: newsCardIn 0.5s ease-out forwards;
+}
+
+@keyframes newsCardIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==============================
+   CARD SHELL
+============================== */
+
+.news-card {
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(209, 213, 219, 0.7);
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.news-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.2);
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+.news-card--expanded {
+  border-color: rgba(37, 99, 235, 0.7);
+  box-shadow: 0 24px 52px rgba(15, 23, 42, 0.25);
+}
+
+.news-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+/* ==============================
+   THUMBNAIL (LEFT SIDE)
+============================== */
+
+.news-thumb {
+  position: relative;
+  flex: 0 0 34%;
+  min-width: 150px;
+  max-width: 230px;
+  min-height: 170px;
+  overflow: hidden;
+}
+
+.news-thumb img,
+.news-thumb-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.news-thumb-placeholder {
+  background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+}
+
+/* Date pill over thumbnail */
+
+.news-pill-date {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f97316, #eab308);
+  box-shadow: 0 10px 20px rgba(248, 148, 36, 0.5);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.news-pill-day {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.news-pill-month {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #111827;
+}
+
+/* ==============================
+   BODY (RIGHT SIDE)
+============================== */
+
+.news-body {
+  flex: 1;
+  padding: 12px 18px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Meta row: category & datetime */
+
+.news-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 3px;
+}
+
+.news-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.news-meta-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.76rem;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+.news-meta-dot {
+  font-size: 1rem;
+  line-height: 0;
+  color: #d1d5db;
+}
+
+.news-tag {
+  padding: 2px 9px;
+  font-size: 0.73rem;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.08);
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+/* Title */
+
+.news-title {
+  font-size: 1.02rem;
+  line-height: 1.35;
+  margin-bottom: 2px;
+  color: #111827;
+}
+
+/* Body text with internal expand/scroll */
+
+.news-body-text {
+  font-size: 0.9rem;
+  color: #4b5563;
+  line-height: 1.6;
+  margin-top: 2px;
+  max-height: 5.3em; /* about 3–4 lines */
+  overflow: hidden;
+  position: relative;
+  white-space: pre-line; /* respect line breaks from Sanity */
+}
+
+/* soft gradient fade when collapsed */
+.news-body-text::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.7em;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #ffffff 80%
+  );
+}
+
+/* Expanded: more height + scroll; fade removed */
+
+.news-body-text--expanded {
+  max-height: 14em;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.news-body-text--expanded::after {
+  opacity: 0;
+}
+
+/* Scrollbar subtle for WebKit */
+.news-body-text--expanded::-webkit-scrollbar {
+  width: 4px;
+}
+.news-body-text--expanded::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+
+/* Read more / Show less button */
+
+.news-toggle-btn {
+  margin-top: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #2563eb;
+  cursor: pointer;
+  align-self: flex-start;
+  position: relative;
+}
+
+.news-toggle-btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 0;
+  background: linear-gradient(90deg, #2563eb, #f97316);
+  transition: width 0.2s ease;
+}
+
+.news-toggle-btn:hover::after {
+  width: 100%;
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width: 900px) {
+  .news-page {
+    padding: 30px 5% 64px;
+  }
+
+  .news-header-title {
+    font-size: 1.7rem;
+  }
+
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .news-inner {
+    flex-direction: column;
+  }
+
+  .news-thumb {
+    flex-basis: auto;
+    width: 100%;
+    max-width: 100%;
+    min-height: 190px;
+  }
+
+  .news-body {
+    padding: 12px 14px 14px;
+  }
+}
