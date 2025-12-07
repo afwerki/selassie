@@ -1,24 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "../styling/sermons.css";
 import { client } from "../sanityClient";
+import { useLanguage } from "../contexts/LanguageContext";
+import { sectionTexts } from "../i18n/sectionTexts";
 
-const YOUTUBE_SRC = "https://www.youtube.com/embed/xxxxxxxx"; // TODO: replace
-
-// Static fallback questions if CMS fails
-const fallbackQuizQuestions = [
-  {
-    id: "q1",
-    question: "What do we confess about the Holy Trinity?",
-    difficulty: "Beginner",
-    explanation:
-      "In Orthodox teaching, we confess one God in three co-equal, co-eternal Persons: the Father, the Son, and the Holy Spirit.",
-    options: [
-      { id: "q1a", label: "Three gods who work together closely", isCorrect: false },
-      { id: "q1b", label: "One God in three co-equal, co-eternal Persons", isCorrect: true },
-      { id: "q1c", label: "One God who changes form over time", isCorrect: false },
-    ],
-  },
-];
+const YOUTUBE_SRC = "https://youtu.be/V9Y3an-KAm0?list=RDV9Y3an-KAm0"; // TODO: replace
 
 // Simple GA4 helper – safe if gtag not present yet
 const trackEvent = (action, params = {}) => {
@@ -27,38 +13,12 @@ const trackEvent = (action, params = {}) => {
   }
 };
 
-const videoItems = [
-  {
-    id: "v1",
-    title: "The Mystery of the Holy Trinity",
-    meta: "Feast of Selassie · Teaching 1",
-    description:
-      "A teaching on the Holy Trinity and how this mystery is celebrated in the liturgy and life of the Church.",
-  },
-  {
-    id: "v2",
-    title: "Faith in Times of Trial",
-    meta: "Sunday Liturgy · Teaching 2",
-    description:
-      "Reflecting on the lives of the saints and how they held fast to Christ through suffering and hardship.",
-  },
-  {
-    id: "v3",
-    title: "The Gift of Repentance",
-    meta: "Lenten Series · Teaching 3",
-    description:
-      "Exploring the meaning of repentance in the Orthodox tradition and how confession heals the soul.",
-  },
-  {
-    id: "v4",
-    title: "Living the Gospel Daily",
-    meta: "Teaching Series · Lesson 4",
-    description:
-      "Practical reflections on how we can live out the Gospel in our families, work, and community life.",
-  },
-];
-
 function Sermons() {
+  // ===== LANGUAGE / TRANSLATIONS =====
+  const { lang } = useLanguage();
+  const tRoot = sectionTexts[lang] || sectionTexts.en;
+  const t = tRoot.sermons;
+
   const [activeTab, setActiveTab] = useState("videos");
 
   // ===== QUIZ SETS STATE =====
@@ -66,25 +26,22 @@ function Sermons() {
   const [loadingQuizSets, setLoadingQuizSets] = useState(true);
   const [activeSetId, setActiveSetId] = useState(null); // which set is currently open
   const [quizTitle, setQuizTitle] = useState("");
-  const [quizQuestions, setQuizQuestions] = useState(fallbackQuizQuestions);
+  const [quizQuestions, setQuizQuestions] = useState(
+    t.quiz.fallbackQuestions
+  );
   const [showAllSets, setShowAllSets] = useState(false);
 
   // User progress: { [setId]: { completed: bool, bestScore, totalQuestions, lastCompletedAt } }
- // User progress: { [setId]: { completed: bool, bestScore, totalQuestions, lastCompletedAt } }
-// Initialise from localStorage once (lazy initializer)
-// User progress: { [setId]: { completed: bool, bestScore, totalQuestions, lastCompletedAt } }
-// Initialise from localStorage once (lazy initializer)
-const [quizProgress, setQuizProgress] = useState(() => {
-  try {
-    if (typeof window === "undefined") return {};
-    const stored = window.localStorage.getItem("selassieQuizProgress");
-    return stored ? JSON.parse(stored) : {};
-  } catch (err) {
-    console.warn("Could not read quiz progress from localStorage:", err);
-    return {};
-  }
-});
-
+  const [quizProgress, setQuizProgress] = useState(() => {
+    try {
+      if (typeof window === "undefined") return {};
+      const stored = window.localStorage.getItem("selassieQuizProgress");
+      return stored ? JSON.parse(stored) : {};
+    } catch (err) {
+      console.warn("Could not read quiz progress from localStorage:", err);
+      return {};
+    }
+  });
 
   // ===== PER-QUIZ STATE =====
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -104,9 +61,6 @@ const [quizProgress, setQuizProgress] = useState(() => {
     : currentIndex + (hasAnswered ? 1 : 0);
   const progressPercent =
     totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
-
-  // ===== Load per-user progress from localStorage =====
-
 
   const saveProgress = (updated) => {
     setQuizProgress(updated);
@@ -148,8 +102,8 @@ const [quizProgress, setQuizProgress] = useState(() => {
         if (!Array.isArray(data) || data.length === 0) {
           console.warn("No active quizSets found in Sanity – using fallback.");
           setQuizSets([]);
-          setQuizTitle("Faith basics quiz");
-          setQuizQuestions(fallbackQuizQuestions);
+          setQuizTitle(t.quiz.fallbackTitle);
+          setQuizQuestions(t.quiz.fallbackQuestions);
           return;
         }
 
@@ -178,8 +132,6 @@ const [quizProgress, setQuizProgress] = useState(() => {
         }));
 
         setQuizSets(mappedSets);
-
-        // If we don't have an active set yet, just default to first one (but only after user clicks)
       })
       .catch((err) => {
         console.error("Error fetching quiz sets from Sanity:", err);
@@ -187,7 +139,7 @@ const [quizProgress, setQuizProgress] = useState(() => {
       .finally(() => {
         setLoadingQuizSets(false);
       });
-  }, []);
+  }, [t.quiz.fallbackQuestions, t.quiz.fallbackTitle]);
 
   // ===== Quiz logic =====
   const enterQuizSet = (setId) => {
@@ -196,7 +148,9 @@ const [quizProgress, setQuizProgress] = useState(() => {
 
     setActiveSetId(setId);
     setQuizTitle(set.title);
-    setQuizQuestions(set.questions.length > 0 ? set.questions : fallbackQuizQuestions);
+    setQuizQuestions(
+      set.questions.length > 0 ? set.questions : t.quiz.fallbackQuestions
+    );
     setCurrentIndex(0);
     setSelectedOptionId(null);
     setHasAnswered(false);
@@ -303,14 +257,15 @@ const [quizProgress, setQuizProgress] = useState(() => {
     }
   };
 
+  // ===== DERIVED STATIC CONTENT FROM TRANSLATIONS =====
+  const videoItems = t.videos.items;
+  const teachingCards = t.teachings.cards;
+
   return (
     <section className="sermons-section" id="sermons">
       <div className="section-header">
-        <h2>Teachings &amp; Sermons</h2>
-        <p>
-          Grow deeper in faith through sermons, written teachings, and
-          reflections from Selassie Ethiopian Orthodox Church.
-        </p>
+        <h2>{t.sectionTitle}</h2>
+        <p>{t.sectionIntro}</p>
       </div>
 
       {/* Tabs */}
@@ -320,7 +275,7 @@ const [quizProgress, setQuizProgress] = useState(() => {
           className={`sermons-tab ${activeTab === "videos" ? "active" : ""}`}
           onClick={() => setActiveTab("videos")}
         >
-          Videos
+          {t.tabs.videos}
         </button>
         <button
           type="button"
@@ -329,14 +284,14 @@ const [quizProgress, setQuizProgress] = useState(() => {
           }`}
           onClick={() => setActiveTab("teachings")}
         >
-          Written Teachings
+          {t.tabs.teachings}
         </button>
         <button
           type="button"
           className={`sermons-tab ${activeTab === "qa" ? "active" : ""}`}
           onClick={() => setActiveTab("qa")}
         >
-          Q &amp; A Quiz
+          {t.tabs.quiz}
         </button>
       </div>
 
@@ -371,35 +326,14 @@ const [quizProgress, setQuizProgress] = useState(() => {
       {activeTab === "teachings" && (
         <div className="tab-panel active">
           <div className="teaching-grid">
-            <article className="teaching-card">
-              <span className="tag-pill">Doctrine</span>
-              <h3>The Incarnation of Christ</h3>
-              <p className="card-meta">Study Note · 8 min read</p>
-              <p>
-                How the Word of God became flesh for our salvation, and why the
-                Incarnation is at the heart of our faith and worship.
-              </p>
-            </article>
-
-            <article className="teaching-card">
-              <span className="tag-pill">Liturgy</span>
-              <h3>Understanding the Divine Liturgy</h3>
-              <p className="card-meta">Guided Walkthrough · 10 min read</p>
-              <p>
-                A step-by-step guide through the Divine Liturgy of the Ethiopian
-                Orthodox Church with short explanations.
-              </p>
-            </article>
-
-            <article className="teaching-card">
-              <span className="tag-pill">Spiritual Life</span>
-              <h3>Prayer in the Orthodox Tradition</h3>
-              <p className="card-meta">Reflection · 6 min read</p>
-              <p>
-                Simple practices to deepen our daily prayer life, rooted in the
-                Psalms and the prayers of the saints.
-              </p>
-            </article>
+            {teachingCards.map((card) => (
+              <article key={card.id} className="teaching-card">
+                <span className="tag-pill">{card.tag}</span>
+                <h3>{card.title}</h3>
+                <p className="card-meta">{card.meta}</p>
+                <p>{card.body}</p>
+              </article>
+            ))}
           </div>
         </div>
       )}
@@ -411,23 +345,16 @@ const [quizProgress, setQuizProgress] = useState(() => {
           {!activeSetId && (
             <>
               <div className="quiz-sets-header">
-                <h3>Quiz sets</h3>
-                <p>
-                  Choose a quiz set to begin. Newest quizzes appear first. On
-                  mobile, you&apos;ll see two at a time with &quot;Show more&quot;.
-                </p>
+                <h3>{t.quiz.setsTitle}</h3>
+                <p>{t.quiz.setsIntro}</p>
               </div>
 
               {loadingQuizSets && (
-                <p className="quiz-loading">
-                  Loading quiz sets from the church CMS…
-                </p>
+                <p className="quiz-loading">{t.quiz.loadingLabel}</p>
               )}
 
               {!loadingQuizSets && quizSets.length === 0 && (
-                <p className="quiz-loading">
-                  No quiz sets have been published yet. Please check back soon.
-                </p>
+                <p className="quiz-loading">{t.quiz.emptyLabel}</p>
               )}
 
               {!loadingQuizSets && quizSets.length > 0 && (
@@ -436,6 +363,7 @@ const [quizProgress, setQuizProgress] = useState(() => {
                     {visibleSets.map((set) => {
                       const progress = quizProgress[set.id];
                       const completed = progress?.completed;
+                      // These two can also be moved into sectionTexts if you want
                       const badgeLabel = completed
                         ? `Completed (${progress.bestScore}/${progress.totalQuestions})`
                         : "Not answered yet";
@@ -488,7 +416,7 @@ const [quizProgress, setQuizProgress] = useState(() => {
                           className="quiz-sets-show-more"
                           onClick={() => setShowAllSets(true)}
                         >
-                          Show more quiz sets
+                          {t.quiz.showMoreLabel}
                         </button>
                       )}
                     </div>
@@ -506,7 +434,7 @@ const [quizProgress, setQuizProgress] = useState(() => {
                 className="quiz-back-link"
                 onClick={handleBackToSets}
               >
-                ← Back to quiz sets
+                {t.quiz.backToSetsLabel}
               </button>
 
               <div className="quiz-header">
@@ -516,10 +444,7 @@ const [quizProgress, setQuizProgress] = useState(() => {
                     {answeredCount} / {totalQuestions}
                   </span>
                 </div>
-                <p>
-                  Take your time. Choose an answer, see the explanation, then
-                  move on when you&apos;re ready.
-                </p>
+                <p>{t.quiz.headerIntro}</p>
                 <div className="quiz-progress">
                   <div
                     className="quiz-progress-bar"
@@ -578,22 +503,24 @@ const [quizProgress, setQuizProgress] = useState(() => {
                     );
                   })}
                 </div>
-{hasAnswered && (
-  <p
-    className={`quiz-reaction ${
-      isCorrect ? "quiz-reaction--correct" : "quiz-reaction--incorrect"
-    }`}
-  >
-    {isCorrect
-      ? "Correct! Beautiful answer."
-      : "Not quite this time — keep going, you’re learning."}
-  </p>
-)}
 
+                {hasAnswered && (
+                  <p
+                    className={`quiz-reaction ${
+                      isCorrect
+                        ? "quiz-reaction--correct"
+                        : "quiz-reaction--incorrect"
+                    }`}
+                  >
+                    {isCorrect
+                      ? t.quiz.reactionCorrect
+                      : t.quiz.reactionIncorrect}
+                  </p>
+                )}
 
                 {hasAnswered && (
                   <p className="quiz-explanation">
-                    <strong>Explanation:</strong>{" "}
+                    <strong>{t.quiz.explanationLabel}</strong>{" "}
                     {currentQuestion.explanation}
                   </p>
                 )}
@@ -607,8 +534,8 @@ const [quizProgress, setQuizProgress] = useState(() => {
                   disabled={!hasAnswered}
                 >
                   {currentIndex + 1 === totalQuestions
-                    ? "See my results"
-                    : "Next question"}
+                    ? t.quiz.seeResultsLabel
+                    : t.quiz.nextQuestionLabel}
                 </button>
               </div>
             </>
@@ -621,25 +548,22 @@ const [quizProgress, setQuizProgress] = useState(() => {
                 className="quiz-back-link quiz-back-link--top"
                 onClick={handleBackToSets}
               >
-                ← Back to quiz sets
+                {t.quiz.backToSetsLabel}
               </button>
-              <h3>Well done!</h3>
+              <h3>{t.quiz.resultTitle}</h3>
               <p className="quiz-score">
-                You scored{" "}
+                {t.quiz.resultScorePrefix}{" "}
                 <strong>
                   {score} / {totalQuestions}
                 </strong>
               </p>
-              <p>
-                Keep exploring the teachings and feel free to try the quiz again
-                or watch the sermons above.
-              </p>
+              <p>{t.quiz.resultBody}</p>
               <button
                 type="button"
                 className="card-btn quiz-reset-btn"
                 onClick={handleQuizRestart}
               >
-                Restart this quiz
+                {t.quiz.restartLabel}
               </button>
             </div>
           )}

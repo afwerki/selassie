@@ -1,0 +1,413 @@
+/* =========================================================
+   BASIC FADE-UP ANIMATION (used on header + grid)
+========================================================= */
+
+.animate-fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   PAGE & HEADER
+========================================================= */
+
+.events-page {
+  background: #eef1f7;
+  padding: 32px 8% 72px;
+}
+
+.events-header {
+  max-width: 720px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+
+.events-header-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  margin-bottom: 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  background: rgba(242, 181, 68, 0.16);
+  color: #b45309;
+}
+
+.events-header h2 {
+  font-size: 2.1rem;
+  color: #142645;
+  margin-bottom: 8px;
+}
+
+.events-header p {
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   GRID + STAGGER ANIMATION
+========================================================= */
+
+.event-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.event-loading,
+.event-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+  padding: 16px 12px;
+}
+
+@keyframes eventFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.event-card {
+  opacity: 0;
+  animation: eventFadeInUp 0.55s ease-out forwards;
+}
+
+/* =========================================================
+   CARD SHELL
+========================================================= */
+
+.event-card--compact {
+  border-radius: 24px;
+  background: radial-gradient(circle at top left, #fef3c7, #ffffff 42%);
+  border: 1px solid rgba(248, 180, 72, 0.55);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease,
+    border-color 0.22s ease, background 0.22s ease;
+}
+
+.event-card--compact:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.26);
+  border-color: #f59e0b;
+}
+
+/* === BIG FIX: grid layout so image grows with details === */
+
+.event-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 40%) minmax(0, 1fr);
+  align-items: stretch; /* make both columns same height */
+}
+
+/* =========================================================
+   IMAGE COLUMN + DATE PILL
+========================================================= */
+
+.event-thumb {
+  position: relative;
+  width: 100%;
+  height: 100%;            /* <-- fill full card height */
+  min-height: 150px;       /* keep a decent size when closed */
+  overflow: hidden;
+}
+
+.event-thumb img,
+.event-thumb-placeholder {
+  width: 100%;
+  height: 100%;            /* <-- stretch with card height */
+  object-fit: cover;
+  display: block;
+}
+
+.event-thumb-placeholder {
+  background: radial-gradient(circle at top left, #facc15, #f97316);
+}
+
+/* colourful rounded date pill on the image */
+
+.event-mini-date {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f97316, #facc15);
+  color: #111827;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 0.78rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+
+.event-mini-day {
+  font-weight: 800;
+  font-size: 0.98rem;
+}
+
+.event-mini-month {
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   RIGHT SIDE CONTENT
+========================================================= */
+
+.event-body {
+  padding: 12px 18px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.event-main-click {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0;
+  cursor: pointer;
+}
+
+.event-main-click:focus-visible {
+  outline: 2px solid #fbbf24;
+  border-radius: 12px;
+  outline-offset: 3px;
+}
+
+/* gradient text for title */
+
+.event-title {
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+  background: linear-gradient(120deg, #111827, #0f766e, #f97316);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: titleGradientShift 6s ease-in-out infinite;
+}
+
+@keyframes titleGradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* time & location line, slightly colourful */
+
+.event-meta {
+  font-size: 0.82rem;
+  color: #4b5563;
+  margin-bottom: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-meta .time {
+  position: relative;
+  padding-bottom: 1px;
+  color: #f97316;
+  font-weight: 600;
+}
+
+.event-meta .time::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 999px;
+  background: radial-gradient(circle, #fed7aa, transparent);
+  opacity: 0.7;
+  transition: box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.event-card--compact:hover .event-meta .time::after {
+  box-shadow: 0 0 8px #fdba74;
+  opacity: 1;
+}
+
+.event-meta .location {
+  color: #6b7280;
+}
+
+.event-summary {
+  font-size: 0.86rem;
+  color: #4b5563;
+  margin-bottom: 4px;
+}
+
+/* view / hide details label with animated underline */
+
+.event-toggle-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #f97316;
+  position: relative;
+}
+
+.event-toggle-hint::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 2px;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f97316, #facc15);
+  transition: width 0.22s ease;
+}
+
+.event-main-click:hover .event-toggle-hint::after {
+  width: 100%;
+}
+
+/* =========================================================
+   DETAILS PANEL
+========================================================= */
+
+.event-details-panel {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.32s ease, opacity 0.24s ease;
+  padding-top: 0;
+  font-size: 0.84rem;
+  color: #374151;
+}
+
+.event-details-panel--open {
+  max-height: 400px;          /* enough space for text */
+  opacity: 1;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(209, 213, 219, 0.9);
+  margin-top: 6px;
+}
+
+.event-details-row {
+  margin-bottom: 2px;
+}
+
+.event-details-row strong {
+  font-weight: 600;
+  color: #111827;
+}
+
+.event-details-address {
+  margin-top: 4px;
+}
+
+.event-map-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.84rem;
+}
+
+.event-map-link:hover {
+  text-decoration: underline;
+}
+
+.event-details-description {
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   SHOW MORE BUTTON
+========================================================= */
+
+.events-show-more-wrapper {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+}
+
+.events-show-more-btn {
+  padding: 10px 26px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  color: #111827;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.events-show-more-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.26);
+}
+
+.events-show-more-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+  .events-page {
+    padding: 24px 5% 56px;
+  }
+
+  .event-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .event-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .event-thumb {
+    min-height: 170px;
+  }
+
+  .event-body {
+    padding: 12px 14px 14px 14px;
+  }
+}

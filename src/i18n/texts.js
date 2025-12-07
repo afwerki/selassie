@@ -42,9 +42,16 @@ export const texts = {
     home: {
       welcomeTitle: "Welcome",
       welcomeP1:
-        "Welcome to Selassie Ethiopian Orthodox Church in London, a spiritual home for the Ethiopian Orthodox community.",
+        "Welcome to Selassie Ethiopian Orthodox Church in London, a spiritual home for the Ethiopian Orthodox community. We invite you to join us in worship, prayer, and fellowship as we grow together in the Orthodox faith.",
       welcomeP2:
-        "Whether you are a lifelong member of the Church or visiting for the first time, you are warmly welcomed.",
+        "Whether you are a lifelong member of the Church or visiting for the first time, you are warmly welcomed and we are glad you are here.",
+      missionTitle: "Our Mission",
+      missionP1:
+        "Our mission is to uphold and share the teachings of the Ethiopian Orthodox Tewahedo Church, to support the spiritual growth of our members, and to serve our community with compassion and humility in Christ.",
+      missionP2:
+        "Through worship, education, pastoral care, and charitable work, we seek to reflect the love of Christ in our parish and beyond, so that every person may find a home in the life of the Church.",
+      missionReadMore: "Read more",
+      missionReadLess: "Show less",
     },
 
     projects: {
@@ -139,9 +146,16 @@ export const texts = {
     home: {
       welcomeTitle: "እንኳን ደህና መጡ",
       welcomeP1:
-        "ወደ ሥላሴ የኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን በለንደን እንኳን ደህና መጡ። ይህ ለኢትዮጵያውያን ማኅበር መንፈሳዊ ቤት ነው።",
+        "ወደ ሥላሴ የኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን በለንደን እንኳን ደህና መጡ። ይህ ለኢትዮጵያውያን ማኅበር መንፈሳዊ ቤት ነው፣ በእምነት፣ በጸሎት እና በኅብረት እንድናድግ የምንሰባሰብበት።",
       welcomeP2:
-        "ረዘም ላለ ጊዜ አባል ቢሆኑ ወይም በመጀመሪያ ጊዜ ቢመጡ፣ በእኛ ዘንድ በደስታ ይቀበላሉ።",
+        "ረዘም ላለ ጊዜ አባል ቢሆኑ ወይም በመጀመሪያ ጊዜ ቢመጡ፣ በእኛ ዘንድ በደስታ ይቀበላሉ፣ መጣችሁ በጣም እናደሰናለን።",
+      missionTitle: "ተልዕኳችን",
+      missionP1:
+        "ተልዕኳችን የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያን ትምህርት መጠበቅና ማካፈል፣ የአባላትን መንፈሳዊ እድገት መደገፍ እና ማኅበራችንን በፍቅርና በትሕትና ማገልገል ነው።",
+      missionP2:
+        "በአገልግሎት፣ በትምህርት፣ በመንፈሳዊ እንከባከብ እና በበጎ ሥራ በኩል የክርስቶስን ፍቅር በቤተክርስቲያናችን ውስጥና ከዚያም ውጪ እንዲታይ እንሞክራለን፣ ሰው ሁሉ በቤተክርስቲያን ሕይወት ውስጥ ቤት እንዲያገኝ።",
+      missionReadMore: "ተጨማሪ ያንብቡ",
+      missionReadLess: "ዝርዝሩን አቁሙ",
     },
 
     projects: {

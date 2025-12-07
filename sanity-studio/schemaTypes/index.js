@@ -1,11 +1,16 @@
+// /sanity/schemaTypes/index.js
+
 import { homepage } from "./homepage";
 import { quizQuestion } from "./quizQuestion";
 import { quizSet } from "./quizSet";
-// ...other imports
+import { event } from "./event";   // ✅ NEW
+
+// ... import any other schemas you have
 
 export const schemaTypes = [
   homepage,
   quizQuestion,
   quizSet,
-  // ...other types
+  event,        // ✅ REGISTER EVENT SCHEMA HERE
+  // ...other schemas (if any)
 ];

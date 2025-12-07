@@ -2,7 +2,7 @@ import { defineType, defineField } from 'sanity'
 
 export const homepage = defineType({
   name: 'homepage',
-  title: 'Homepage',
+  title: 'መረሃግብሮች ማስታዎቂያ',
   type: 'document',
   fields: [
     // SERVICE BOX HEADER
