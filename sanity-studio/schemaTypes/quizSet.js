@@ -57,6 +57,28 @@ export const quizSet = defineType({
       type: "boolean",
       initialValue: true,
     }),
+
+    // 🔔 Web Push Notification Controls
+    defineField({
+      name: "sendPush",
+      title: "Send Web Push Notification",
+      type: "boolean",
+      description: "Notify users when this quiz set is published",
+      initialValue: false,
+    }),
+    defineField({
+      name: "pushTitle",
+      title: "Push Title (optional)",
+      type: "string",
+      description: "Overrides the notification title",
+    }),
+    defineField({
+      name: "pushBody",
+      title: "Push Message (optional)",
+      type: "text",
+      rows: 2,
+      description: "Overrides the notification message",
+    }),
   ],
   preview: {
     select: {

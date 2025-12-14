@@ -62,21 +62,31 @@ export const texts = {
       items: [
         {
           id: "p1",
-          title: "Church Renovation & Modernisation",
+          title: "Restoration Appeal",
           shortDescription:
-            "A full upgrade of the church interior, including flooring, lighting, icons, and accessibility improvements.",
+            "Debre Genet Holy Trinity Church is a parish of the Ethiopian Orthodox Tewahedo Church—one of the world’s most ancient Christian traditions, with roots extending to early Judaic practice and the earliest centuries of Christianity. Established in London in 2006, the Church has since been dedicated to proclaiming the message of Christ through worship, pastoral care, education, and service to the wider community.The Church provides regular liturgical services, counselling and guidance to families and vulnerable young adults, and pastoral visits to the sick, housebound, and elderly. It also plays an active role in youth development and community outreach, ensuring faith is lived through compassion, responsibility, and service.",
           longDescription:
-            "This renovation project focuses on restoring the sacred space of worship while improving comfort and accessibility. It includes new flooring, modern heating systems, upgraded electrical wiring, improved lighting, icon refurbishment, and creating a more welcoming space for families and visitors.",
+            `Scope of the Restoration Project
+1) Roof Restoration
+Restoration of the main and subsidiary roofs, including replacement of flat roof and built-up felt coverings, renewal of roof decks, installation of insulation, chemical treatment of exposed timbers, and repair or replacement of rainwater goods.
+2) Stonework Conservation
+Assessment and repair of structural cracks in walls, piers, and arches; restoration of eroded stonework; repair of defective mortar joints; and overhaul of chimneys.
+3) Structural and Architectural Repairs
+Repair of front elevation window mullions and the baptistery arch, enabling the safe removal of long-standing temporary steel support frames, alongside necessary underpinning works to the front and rear elevations.`,
           status: "in_progress",
           startDate: "2024-01-20",
         },
         {
           id: "p2",
-          title: "Youth Education & Spiritual Centre",
+          title: "Youth & Education",
           shortDescription:
-            "A dedicated space for youth Bible study, language classes, choir training, and mentorship.",
+            "Education is central to the mission of the Ethiopian Orthodox Tewahedo Church. We provide structured learning through Sunday School, Bible study, and youth programmes that support spiritual growth and personal development.",
           longDescription:
-            "This project invests in the next generation by providing a multipurpose learning space. Here, young people can attend Bible studies, Amharic and Tigrinya classes, choir rehearsals, and small group discussions that strengthen their faith and identity.",
+            `Young people are guided to develop strong moral foundations, resilience, and responsibility. Through mentorship, faith-based teaching, and positive activities, we work to prevent social isolation, substance misuse, and antisocial behaviour.
+
+Youth are actively encouraged to serve their community and develop leadership skills.
+
+Pictures to add: Sunday School, Begena, Kirrar, and Mezmure.`,
           status: "planned",
           startDate: "2024-05-10",
         },

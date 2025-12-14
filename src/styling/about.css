@@ -1,444 +1,361 @@
-/* ============================
-   LAYOUT
-============================ */
-.about-wrapper {
-  display: grid;
-  grid-template-columns: minmax(360px, 520px) minmax(0, 1fr);
-  gap: 48px;
-  margin-top: 40px;
-}
+/* =========================================================
+   ABOUT — SCOPED BACKGROUND (ONLY ABOUT PAGE)
+   Put in: src/styling/about.css
+========================================================= */
 
-@media (max-width: 960px) {
-  .about-wrapper {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ============================
-   DECISION TREE COLUMN
-============================ */
-.about-tree {
+/* Make About a containing block so the bg cannot escape */
+.about-page.about-glassRoot {
   position: relative;
+  overflow: hidden;            /* key: clip bg to About only */
+  background: transparent;
+  isolation: isolate;
+}
+
+/* Background photo ONLY inside the About page */
+.about-page.about-glassRoot .about-bgPhoto {
+  position: absolute;          /* NOT fixed */
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.05);
+  filter: saturate(1.08) contrast(1.06);
+}
+
+/* Overlay ONLY inside About page */
+.about-page.about-glassRoot .about-bgOverlay {
+  position: absolute;          /* NOT fixed */
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(242, 181, 68, 0.22), transparent 55%),
+    radial-gradient(circle at 82% 18%, rgba(47, 104, 181, 0.20), transparent 60%),
+    linear-gradient(180deg, rgba(245, 247, 251, 0.85), rgba(245, 247, 251, 0.96));
+}
+
+/* All About content must be above the overlay */
+.about-page.about-glassRoot > *:not(.about-bgPhoto):not(.about-bgOverlay) {
+  position: relative;
+  z-index: 2;
+}
+
+/* =========================================================
+   GLASS UTILITY (use on cards: about-glassPanel)
+========================================================= */
+.about-glassPanel {
+  background: rgba(255, 255, 255, 0.62) !important;
+  border: 1px solid rgba(255, 255, 255, 0.42) !important;
+  box-shadow:
+    0 20px 60px rgba(8, 14, 32, 0.16),
+    inset 0 0 0 1px rgba(255,255,255,0.18);
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+}
+
+/* =========================================================
+   FIX: Spark SVG out of place
+========================================================= */
+.about-heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(10px);
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  font-size: 0.92rem;
+}
+
+.about-heroBadgeIcon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.about-heroBadgeIcon svg {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  fill: var(--gold);
+}
+
+/* =========================================================
+   ABOUT STAGE (your clean rebuild stays)
+========================================================= */
+.about-stage {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 16px 18px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.about-stageScroll {
+  overflow: visible;
+  padding-right: 0;
+}
+
+/* spacing */
+.about-contentStack {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  align-items: stretch;
-  padding-right: 12px;
+  gap: 18px;
+  margin-top: 18px;
 }
 
-/* animated vertical spine */
-@keyframes spineFlow {
-  0% {
-    background-position: 0% 0%;
-  }
-  100% {
-    background-position: 0% 100%;
-  }
+/* =========================================================
+   TREE CARD
+========================================================= */
+.about-treeCard {
+  border-radius: var(--radius);
+  border: 1px solid var(--stroke);
+  padding: 14px 14px 12px;
 }
 
-.about-tree::before {
-  content: "";
-  position: absolute;
-  top: 40px;
-  bottom: 140px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 3px;
-  background: linear-gradient(
-    180deg,
-    rgba(242, 181, 68, 0.1),
-    rgba(242, 181, 68, 0.95),
-    rgba(47, 104, 181, 0.9),
-    rgba(242, 181, 68, 0.95),
-    rgba(242, 181, 68, 0.1)
-  );
-  background-size: 100% 300%;
-  animation: spineFlow 7s linear infinite;
-  border-radius: 999px;
-  pointer-events: none;
-  opacity: 0.9;
-}
-
-.tree-level {
-  position: relative;
-  display: flex;
-  justify-content: center;
-}
-
-.tree-connector {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  position: relative;
-}
-
-.tree-connector--down::before {
-  content: "";
-  width: 3px;
-  height: 34px;
-  background: rgba(242, 181, 68, 0.9);
-  border-radius: 999px;
-}
-
-/* glow where branches split */
-.tree-connector--into-branches::after {
-  content: "";
-  position: absolute;
-  bottom: -5px;
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 234, 187, 0.98),
-    rgba(242, 181, 68, 0.35),
-    transparent
-  );
-}
-
-/* ============================
-   PRIEST BRANCHES
-============================ */
-.priest-level {
+.about-treeHeader {
   display: flex;
   justify-content: space-between;
-  gap: 14px;
-  position: relative;
-  padding-top: 32px;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
-/* horizontal line */
-.priest-level::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 6%;
-  right: 6%;
-  border-top: 3px solid rgba(242, 181, 68, 0.9);
+.about-treeTitle {
+  font-weight: 1000;
+  color: #142645;
+  font-size: 1.06rem;
+  letter-spacing: -0.01em;
 }
 
-/* vertical branch into each card */
-.priest-card {
-  position: relative;
-  flex: 1 1 0;
-  min-width: 130px;
+.about-treeSub {
+  margin-top: 2px;
+  font-weight: 850;
+  font-size: 0.84rem;
+  color: rgba(14,26,51,0.72);
 }
 
-.priest-card::before {
-  content: "";
-  position: absolute;
-  top: -32px;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 32px;
-  border-left: 3px solid rgba(242, 181, 68, 0.9);
+.about-treeActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
-/* ============================
-   CARDS
-============================ */
-.leader-card {
-  position: relative;
+.about-miniBtn {
+  border: 1px solid rgba(14,26,51,0.12);
+  background: rgba(255,255,255,0.70);
+  color: #142645;
+  font-weight: 950;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.about-miniBtn:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(8,14,32,0.10); }
+.about-miniBtn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+.about-miniBtnPrimary {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  border-color: rgba(242,181,68,0.35);
+}
+
+/* =========================================================
+   NODE
+========================================================= */
+.about-nodeBtn {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  border: 1px solid rgba(14,26,51,0.10);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(242,181,68,0.10), transparent 55%),
+    radial-gradient(circle at 85% 20%, rgba(47,104,181,0.08), transparent 60%),
+    rgba(255,255,255,0.75);
+  border-radius: 20px;
+  padding: 14px;
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 20px 22px;
-  background: radial-gradient(circle at top left, #fffaf2, #f7efe2);
-  border-radius: 20px;
-  border: 1px solid rgba(225, 208, 179, 0.9);
-  box-shadow: 0 14px 36px rgba(11, 24, 52, 0.18);
-  cursor: default;
-  overflow: visible; /* allow tooltip to escape */
-  backdrop-filter: blur(8px);
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease,
-    border 0.25s ease,
-    filter 0.25s ease;
+  gap: 14px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 16px 38px rgba(8,14,32,0.10);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  backdrop-filter: blur(14px) saturate(1.12);
+  -webkit-backdrop-filter: blur(14px) saturate(1.12);
 }
 
-.leader-card::after {
-  /* diagonal highlight streak */
-  content: "";
-  position: absolute;
-  top: -70%;
-  left: -30%;
-  width: 70%;
-  height: 230%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.9),
-    transparent 60%
-  );
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
+.about-nodeBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 55px rgba(8,14,32,0.14);
+  border-color: rgba(242,181,68,0.40);
 }
 
-.leader-card:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 22px 48px rgba(8, 19, 43, 0.32);
-  background: radial-gradient(circle at top left, #fffdf9, #f6ebdc);
-  border-color: #f2b544;
-  filter: saturate(1.08);
+.about-nodeBtn:focus-visible {
+  outline: 2px solid rgba(255,196,75,0.85);
+  outline-offset: 4px;
 }
 
-.leader-card:hover::after {
-  opacity: 1;
-  transform: translateX(24px);
-}
-
-.priest-card {
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-/* special highlight for Selassie node */
-.highlight-node {
-  border-color: #f2b544;
-  box-shadow: 0 20px 52px rgba(242, 181, 68, 0.45);
-  animation: selassieGlow 4.5s ease-in-out infinite;
-}
-
-@keyframes selassieGlow {
-  0% {
-    box-shadow: 0 16px 40px rgba(242, 181, 68, 0.2);
-  }
-  50% {
-    box-shadow: 0 20px 60px rgba(242, 181, 68, 0.55);
-  }
-  100% {
-    box-shadow: 0 16px 40px rgba(242, 181, 68, 0.2);
-  }
-}
-
-/* ============================
-   AVATAR / IMAGE
-============================ */
-.leader-avatar {
-  width: 100px;
-  height: 100px;
+.about-nodeAvatar {
+  width: 78px;
+  height: 78px;
   border-radius: 999px;
   overflow: hidden;
-  border: 3px solid #f2b544;
-  flex-shrink: 0;
-  background: radial-gradient(circle, #f6ead7, #e2c79a);
-  box-shadow: 0 6px 18px rgba(15, 10, 4, 0.3);
-  transform-origin: center;
-  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  border: 3px solid rgba(242,181,68,0.95);
+  flex: 0 0 auto;
+  box-shadow: 0 10px 22px rgba(8,14,32,0.18);
+  background: rgba(242,181,68,0.10);
 }
 
-.priest-card .leader-avatar {
-  width: 112px;
-  height: 112px;
-}
-
-.leader-card:hover .leader-avatar {
-  transform: scale(1.06) translateY(-2px);
-  box-shadow: 0 10px 26px rgba(15, 10, 4, 0.4);
-}
-
-.leader-avatar img {
+.about-nodeAvatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* ============================
-   TEXT INSIDE CARDS
-============================ */
-.leader-text h4 {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #142645;
-  letter-spacing: 0.01em;
+.about-nodeText { min-width: 0; }
+.about-nodeName {
+  font-weight: 1000;
+  color: #0f1b33;
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
 }
-
-.leader-title {
-  margin: 4px 0 0 0;
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: #f2b544;
+.about-nodeRole {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 1000;
+  color: rgba(242,181,68,0.95);
   text-transform: uppercase;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.14em;
+}
+.about-nodeDesc {
+  margin-top: 8px;
+  font-size: 0.90rem;
+  color: rgba(14,26,51,0.78);
+  line-height: 1.45;
 }
 
-.leader-tagline {
-  margin: 8px 0 0 0;
-  font-size: 0.86rem;
-  color: #3a4155;
+.about-nodeHighlight {
+  border-color: rgba(242,181,68,0.65);
+  box-shadow: 0 22px 58px rgba(242,181,68,0.22);
 }
 
-/* priest text slightly larger for readability */
-.priest-card .leader-text h4 {
-  font-size: 1rem;
+/* chevron */
+.about-nodeBtn .about-chev {
+  margin-left: auto;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: #142645;
+  stroke-width: 2.5;
+  transition: transform 0.2s ease;
 }
+.about-chev.open { transform: rotate(180deg); }
 
-.priest-card .leader-title {
-  font-size: 0.8rem;
+/* =========================================================
+   REVEAL (grid rows trick)
+========================================================= */
+.about-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-
-.priest-card .leader-tagline {
-  font-size: 0.84rem;
+.about-revealInner {
+  overflow: hidden;
+  min-height: 0;
+  padding-top: 10px;
 }
+.about-reveal.open { grid-template-rows: 1fr; }
 
-/* ============================
-   TOOLTIP – LIGHT THEME
-============================ */
-/* ============================
-   TOOLTIP – LIGHT THEME (ABOVE CARD)
-============================ */
-.leader-tooltip {
-  position: absolute;
-  left: 50%;
-  bottom: 100%;                /* ⬅ show ABOVE the card */
-  top: auto;
-  transform: translate(-50%, -12px);
-  min-width: 230px;
-  max-width: 280px;
-  padding: 12px 14px;
-  background: #fffdf7;
-  color: #1a2338;
-  font-size: 0.8rem;
-  border-radius: 12px;
-  border: 1px solid #e5d4b4;
-  box-shadow: 0 14px 30px rgba(9, 14, 30, 0.35);
+/* connector line */
+.about-linkLine {
+  height: 0;
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 60;                 /* high so it sits on top of everything */
-}
-
-.leader-tooltip::after {
-  content: "";
-  position: absolute;
-  bottom: -8px;                /* arrow now at the BOTTOM of tooltip */
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 8px 8px 0 8px;
-  border-style: solid;
-  border-color: #fffdf7 transparent transparent transparent;
-}
-
-.leader-card:hover .leader-tooltip {
-  opacity: 1;
-  transform: translate(-50%, -4px);  /* gentle float */
-}
-
-
-/* ============================
-   ENTRANCE ANIMATIONS
-============================ */
-@keyframes floatIn {
-  from {
-    opacity: 0;
-    transform: translateY(26px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.tree-node {
-  opacity: 0;
-  animation: floatIn 0.7s ease-out forwards;
-}
-
-.tree-node-1 {
-  animation-delay: 0.05s;
-}
-.tree-node-2 {
-  animation-delay: 0.18s;
-}
-.tree-node-3 {
-  animation-delay: 0.33s;
-}
-.tree-node-4 {
-  animation-delay: 0.48s;
-}
-.tree-node-5 {
-  animation-delay: 0.58s;
-}
-.tree-node-6 {
-  animation-delay: 0.68s;
-}
-.tree-node-7 {
-  animation-delay: 0.78s;
-}
-.tree-node-8 {
-  animation-delay: 0.88s;
-}
-
-/* ============================
-   RIGHT CONTENT COLUMN
-============================ */
-.about-content {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-
-.about-block h3 {
-  margin-bottom: 8px;
-  font-size: 1.2rem;
-  color: #142645;
-}
-
-.about-block p {
-  margin-bottom: 10px;
-  line-height: 1.7;
-}
-
-/* Read more button */
-.about-readmore-btn {
-  margin-top: 10px;
-  padding: 7px 16px;
+  width: 3px;
+  margin: 8px auto;
   border-radius: 999px;
-  border: 1px solid #f2b544;
-  background: linear-gradient(135deg, #fef3da, #f7dfaa);
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: #142645;
-  cursor: pointer;
-  transition:
-    background 0.16s ease,
-    transform 0.12s ease,
-    box-shadow 0.16s ease,
-    border 0.16s ease;
+  background: rgba(242,181,68,0.92);
+  transition: height 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
+  filter: drop-shadow(0 6px 10px rgba(242,181,68,0.18));
+}
+.about-linkLine.show { height: 26px; opacity: 1; }
+
+.about-linkLineBlue {
+  background: rgba(47,104,181,0.92);
+  filter: drop-shadow(0 8px 12px rgba(47,104,181,0.16));
 }
 
-.about-readmore-btn:hover {
-  background: linear-gradient(135deg, #ffe9b5, #f6cf77);
-  border-color: #f2b544;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-  transform: translateY(-1px);
+/* =========================================================
+   PRIESTS GRID
+========================================================= */
+.about-priestGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding-top: 6px;
+}
+.about-priestCard {
+  border-radius: 18px;
+  border: 1px solid rgba(14,26,51,0.10);
+  background: rgba(255,255,255,0.72);
+  box-shadow: 0 14px 30px rgba(8,14,32,0.10);
+  padding: 14px;
+  text-align: center;
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.about-priestCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(8,14,32,0.14);
+}
+.about-priestAvatar {
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 3px solid rgba(242,181,68,0.95);
+  margin: 0 auto 8px;
+  box-shadow: 0 10px 22px rgba(8,14,32,0.18);
+}
+.about-priestAvatar img { width: 100%; height: 100%; object-fit: cover; }
+.about-priestName { font-weight: 1000; color: #0f1b33; }
+.about-priestRole {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 1000;
+  color: rgba(242,181,68,0.95);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+.about-priestDesc { margin-top: 8px; font-size: 0.88rem; color: rgba(14,26,51,0.78); }
+
+@media (max-width: 980px) {
+  .about-priestGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .about-priestGrid { grid-template-columns: 1fr; }
 }
 
-/* ============================
-   MOBILE TWEAKS
-============================ */
-@media (max-width: 600px) {
-  .about-wrapper {
-    gap: 32px;
-  }
+/* =========================================================
+   TEXT READABILITY
+========================================================= */
+.about-prose {
+  max-width: 74ch;
+  font-size: 1.04rem;
+  line-height: 1.9;
+  color: rgba(14, 26, 51, 0.95);
+}
+.about-prose p { margin: 0 0 14px; }
 
-  .about-tree::before {
-    left: 50%;
-    top: 30px;
-    bottom: 180px;
-  }
-
-  .priest-level {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .priest-level::before {
-    left: 15%;
-    right: 15%;
+/* reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .about-reveal, .about-linkLine, .about-miniBtn, .about-nodeBtn {
+    transition: none !important;
   }
 }

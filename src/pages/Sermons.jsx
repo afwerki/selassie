@@ -4,7 +4,9 @@ import { client } from "../sanityClient";
 import { useLanguage } from "../contexts/LanguageContext";
 import { sectionTexts } from "../i18n/sectionTexts";
 
-const YOUTUBE_SRC = "https://youtu.be/V9Y3an-KAm0?list=RDV9Y3an-KAm0"; // TODO: replace
+const YOUTUBE_SRC =
+  "https://www.youtube.com/embed/V9Y3an-KAm0?list=RDV9Y3an-KAm0";
+
 
 // Simple GA4 helper – safe if gtag not present yet
 const trackEvent = (action, params = {}) => {

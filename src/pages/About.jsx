@@ -1,266 +1,350 @@
-import React, { useState } from "react";
+// src/pages/About.jsx
+import { useMemo, useState, useEffect } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
+import { texts } from "../i18n/aboutText";
 import "../styling/about.css";
-import Abune_Matthias from '../assets/images/Abune_Matthias.jpg'
-import eotc from '../assets/images/eotc.jpg'
-import selasssie from '../assets/images/selassie.png'
-import prist from '../assets/images/prist.jpeg'
 
-function About() {
-  const [showMore, setShowMore] = useState(false);
+// Real images
+import Abune_Matthias from "../assets/images/Abune_Matthias.jpg";
+import eotc from "../assets/images/eotc.jpg";
+import selasssie from "../assets/images/selassie.png";
+import prist from "../assets/images/prist.jpeg";
+
+// Icons
+const IconChevron = ({ open }) => (
+  <svg
+    className={`about-chev ${open ? "open" : ""}`}
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
+    <path d="M7 10l5 5 5-5" />
+  </svg>
+);
+
+// Spark icon — FIXED by CSS sizing + display:block in .about-heroBadgeIcon svg
+const IconSpark = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 2l1.6 6.1L20 10l-6.4 1.9L12 18l-1.6-6.1L4 10l6.4-1.9L12 2zm8 8l.7 2.7L23 13l-2.3.3L20 16l-.7-2.7L17 13l2.3-.3L20 10z" />
+  </svg>
+);
+
+const UNSPLASH = {
+  hero:
+    "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=2400&q=80",
+  candle:
+    "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80",
+  stone:
+    "https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?auto=format&fit=crop&w=1600&q=80",
+  churchBg:
+    "https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?auto=format&fit=crop&w=2400&q=80",
+};
+
+function Card({ title, children, className = "" }) {
+  return (
+    <div className={`about-card ${className}`}>
+      <div className="about-cardTop">
+        <h3 className="about-cardTitle">{title}</h3>
+      </div>
+      <div className="about-cardBody">{children}</div>
+    </div>
+  );
+}
+
+export default function About() {
+  const { lang } = useLanguage();
+  const t = useMemo(() => texts[lang]?.about || texts.en.about, [lang]);
+
+  const [depth, setDepth] = useState(0);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const isMobile = window.matchMedia("(max-width: 900px)").matches;
+    setDepth(isMobile ? 0 : 1);
+  }, []);
+
+  const toggleTo = (level) => setDepth((d) => (d >= level ? level - 1 : level));
 
   return (
-    <main className="page" id="about">
-      <section className="section-header">
-        <h2>About Selassie Church</h2>
-        <p>
-          Learn more about our parish, our history, and the Ethiopian Orthodox
-          Tewahedo tradition.
-        </p>
+    <main className="page about-page about-glassRoot" id="about">
+      {/* Background layers */}
+      <div
+        className="about-bgPhoto"
+        style={{ backgroundImage: `url(${UNSPLASH.churchBg})` }}
+        aria-hidden="true"
+      />
+      <div className="about-bgOverlay" aria-hidden="true" />
+
+      {/* HERO */}
+      <section className="about-hero">
+        <div
+          className="about-heroBg"
+          style={{ backgroundImage: `url(${UNSPLASH.hero})` }}
+        />
+        <div className="about-heroOverlay" />
+
+        <div className="about-heroInner">
+          <div className="about-heroBadge">
+            <span className="about-heroBadgeIcon" aria-hidden="true">
+              <IconSpark />
+            </span>
+            <span className="about-heroBadgeText">{t.hero.badge}</span>
+          </div>
+
+          <h1 className="about-heroTitle">{t.hero.heading}</h1>
+          <p className="about-heroLead">{t.hero.lead}</p>
+
+          <div className="about-heroChips">
+            <div
+              className="about-chipImg"
+              style={{ backgroundImage: `url(${UNSPLASH.candle})` }}
+              aria-hidden="true"
+            />
+            <div
+              className="about-chipImg"
+              style={{ backgroundImage: `url(${UNSPLASH.stone})` }}
+              aria-hidden="true"
+            />
+            <div className="about-chipText">
+              Ancient rites • Living worship • Community care
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="about-wrapper">
-        {/* LEFT: DECISION TREE HIERARCHY */}
-        <aside className="about-tree">
-          {/* Mother Church */}
-          <div className="tree-level">
-            <div className="leader-card tree-node tree-node-1">
-              <div className="leader-avatar">
-                <img
-                  src={eotc}
-                  alt="Ethiopian Orthodox Tewahedo Church"
-                />
-              </div>
-              <div className="leader-text">
-                <h4>Ethiopian Orthodox Tewahedo Church</h4>
-                <p className="leader-title">Mother Church</p>
-                <p className="leader-tagline">
-                  Rooted in the apostolic faith of the early Church.
-                </p>
-              </div>
-              <div className="leader-tooltip">
-                The Ethiopian Orthodox Tewahedo Church keeps the ancient
-                liturgy, fasting, and sacramental life that has formed
-                generations of believers for centuries.
-              </div>
-            </div>
-          </div>
+      {/* HEADER */}
+      <section className="section-header about-header">
+        <h2>{t.header.title}</h2>
+        <p>{t.header.subtitle}</p>
+      </section>
 
-          <div className="tree-connector tree-connector--down" />
+      {/* CONTENT */}
+      <section className="about-stage">
+        <div className="about-stageScroll">
+          {/* TOP TREE */}
+          <div className="about-treeCard about-glassPanel">
+            <div className="about-treeHeader">
+              <div>
+                <div className="about-treeTitle">Church Hierarchy</div>
+                <div className="about-treeSub">
+                  Tap each level to expand — clean and simple.
+                </div>
+              </div>
 
-          {/* Patriarch */}
-          <div className="tree-level">
-            <div className="leader-card tree-node tree-node-2">
-              <div className="leader-avatar">
-                <img
-                  src={Abune_Matthias}
-                  alt="Patriarch of the Ethiopian Orthodox Church"
-                />
-              </div>
-              <div className="leader-text">
-                <h4>Patriarch of the EOTC</h4>
-                <p className="leader-title">Spiritual Head</p>
-                <p className="leader-tagline">
-                  Shepherding the Church throughout the world.
-                </p>
-              </div>
-              <div className="leader-tooltip">
-                The Patriarch oversees the spiritual life of the Church,
-                preserving doctrine and blessing the ministry of bishops and
-                priests across the globe.
-              </div>
-            </div>
-          </div>
-
-          <div className="tree-connector tree-connector--down" />
-
-          {/* Selassie Church */}
-          <div className="tree-level">
-            <div className="leader-card tree-node tree-node-3 highlight-node">
-              <div className="leader-avatar">
-                <img
-                  src={selasssie}
-                  alt="Selassie Ethiopian Orthodox Church in London"
-                />
-              </div>
-              <div className="leader-text">
-                <h4>Selassie Ethiopian Orthodox Church</h4>
-                <p className="leader-title">London Parish</p>
-                <p className="leader-tagline">
-                  A home for worship, prayer, and community in the heart of
-                  London.
-                </p>
-              </div>
-              <div className="leader-tooltip">
-                Our parish gathers people of many backgrounds to pray together,
-                celebrate the Divine Liturgy, and support one another in daily
-                life.
-              </div>
-            </div>
-          </div>
-
-          <div className="tree-connector tree-connector--down tree-connector--into-branches" />
-
-          {/* Priests level – 5 branches */}
-          <div className="tree-level priest-level">
-            <div className="leader-card priest-card tree-node tree-node-4">
-              <div className="leader-avatar">
-                <img
-                  src={prist}
-                  alt="Priest 1"
-                />
-              </div>
-              <div className="leader-text">
-                <h4>Fr. Placeholder 1</h4>
-                <p className="leader-title">Parish Priest</p>
-                <p className="leader-tagline">
-                  “Serving with joyful humility.”
-                </p>
-              </div>
-              <div className="leader-tooltip">
-                Fr. Placeholder 1 cares for the liturgical life of the parish,
-                guiding the community through prayer, confession, and pastoral
-                support.
+              <div className="about-treeActions">
+                <button
+                  type="button"
+                  className="about-miniBtn"
+                  onClick={() => setDepth(0)}
+                  disabled={depth === 0}
+                >
+                  Collapse
+                </button>
+                <button
+                  type="button"
+                  className="about-miniBtn about-miniBtnPrimary"
+                  onClick={() => setDepth(3)}
+                >
+                  Expand all
+                </button>
               </div>
             </div>
 
-            <div className="leader-card priest-card tree-node tree-node-5">
-              <div className="leader-avatar">
-                <img
-                  src={prist}
-                  alt="Priest 2"
-                />
-              </div>
-              <div className="leader-text">
-                <h4>Fr. Placeholder 2</h4>
-                <p className="leader-title">Assistant Priest</p>
-                <p className="leader-tagline">
-                  “Faith in action, every day.”
-                </p>
-              </div>
-              <div className="leader-tooltip">
-                Fr. Placeholder 2 serves in youth ministry and teaching, helping
-                the next generation grow in the Orthodox faith.
-              </div>
-            </div>
-
-            <div className="leader-card priest-card tree-node tree-node-6">
-              <div className="leader-avatar">
-                <img
-                  src={prist}
-                  alt="Priest 3"
-                />
-              </div>
-              <div className="leader-text">
-                <h4>Fr. Placeholder 3</h4>
-                <p className="leader-title">Senior Priest</p>
-                <p className="leader-tagline">“Rooted in tradition.”</p>
-              </div>
-              <div className="leader-tooltip">
-                Fr. Placeholder 3 keeps the parish grounded in the spiritual
-                wisdom of the Fathers, especially through teaching and
-                confession.
-              </div>
-            </div>
-
-            <div className="leader-card priest-card tree-node tree-node-7">
-              <div className="leader-avatar">
-                <img
-                  src={prist}
-                  alt="Priest 4"
-                />
-              </div>
-              <div className="leader-text">
-                <h4>Fr. Placeholder 4</h4>
-                <p className="leader-title">Visiting Priest</p>
-                <p className="leader-tagline">
-                  “Bringing comfort and encouragement.”
-                </p>
-              </div>
-              <div className="leader-tooltip">
-                Fr. Placeholder 4 offers pastoral visits, retreats, and spiritual
-                talks for the community throughout the year.
-              </div>
-            </div>
-
-            <div className="leader-card priest-card tree-node tree-node-8">
-              <div className="leader-avatar">
-                <img
-                  src={prist}
-                  alt="Priest 5"
-                />
-              </div>
-              <div className="leader-text">
-                <h4>Fr. Placeholder 5</h4>
-                <p className="leader-title">Deacon / Assistant</p>
-                <p className="leader-tagline">“Serving at the altar.”</p>
-              </div>
-              <div className="leader-tooltip">
-                Fr. Placeholder 5 supports the liturgy through chanting, reading
-                Scripture, and assisting at the Holy Altar.
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        {/* RIGHT: STORY + BELIEF TEXT */}
-        <section className="about-content">
-          <div className="about-block">
-            <h3>Our Story</h3>
-            <p>
-              Selassie Ethiopian Orthodox Church in London was founded to serve
-              the growing Ethiopian community and all who wish to worship in the
-              ancient Orthodox tradition. Over the years, the parish has become
-              a spiritual home for families, students, and visitors from many
-              backgrounds.
-            </p>
-            <p>
-              Our services follow the Ethiopian Orthodox rite, with hymns,
-              icons, incense, and the rich liturgical life of the Church.
-            </p>
-
-            {showMore && (
-              <>
-                <p>
-                  From our earliest days, worship has been celebrated in Ge’ez,
-                  Amharic, and English, allowing people to pray together across
-                  generations and languages.
-                </p>
-                <p>
-                  Alongside the Divine Liturgy, we gather for teaching,
-                  spiritual counselling, children’s catechism, and community
-                  meals. Many have found in this parish not only a church, but a
-                  family far from home.
-                </p>
-              </>
-            )}
-
+            {/* Level 0 */}
             <button
               type="button"
-              className="about-readmore-btn"
-              onClick={() => setShowMore((prev) => !prev)}
+              className="about-node about-nodeBtn"
+              onClick={() => toggleTo(1)}
+              aria-expanded={depth >= 1}
             >
-              {showMore ? "Read less ▲" : "Read more ▼"}
+              <div className="about-nodeAvatar">
+                <img src={eotc} alt="Ethiopian Orthodox Tewahedo Church" />
+              </div>
+              <div className="about-nodeText">
+                <div className="about-nodeName">
+                  Ethiopian Orthodox Tewahedo Church
+                </div>
+                <div className="about-nodeRole">Mother Church</div>
+                <div className="about-nodeDesc">
+                  Rooted in the apostolic faith of the early Church.
+                </div>
+              </div>
+              <IconChevron open={depth >= 1} />
             </button>
+
+            <div className={`about-linkLine ${depth >= 1 ? "show" : ""}`} />
+
+            {/* Level 1 */}
+            <div className={`about-reveal ${depth >= 1 ? "open" : ""}`}>
+              <div className="about-revealInner">
+                <button
+                  type="button"
+                  className="about-node about-nodeBtn"
+                  onClick={() => toggleTo(2)}
+                  aria-expanded={depth >= 2}
+                >
+                  <div className="about-nodeAvatar">
+                    <img src={Abune_Matthias} alt="Patriarch of the EOTC" />
+                  </div>
+                  <div className="about-nodeText">
+                    <div className="about-nodeName">Patriarch of the EOTC</div>
+                    <div className="about-nodeRole">Spiritual Head</div>
+                    <div className="about-nodeDesc">
+                      Shepherding the Church throughout the world.
+                    </div>
+                  </div>
+                  <IconChevron open={depth >= 2} />
+                </button>
+
+                <div className={`about-linkLine ${depth >= 2 ? "show" : ""}`} />
+
+                {/* Level 2 */}
+                <div className={`about-reveal ${depth >= 2 ? "open" : ""}`}>
+                  <div className="about-revealInner">
+                    <button
+                      type="button"
+                      className="about-node about-nodeBtn about-nodeHighlight"
+                      onClick={() => toggleTo(3)}
+                      aria-expanded={depth >= 3}
+                    >
+                      <div className="about-nodeAvatar">
+                        <img src={selasssie} alt="Debre Genet Holy Trinity Church" />
+                      </div>
+                      <div className="about-nodeText">
+                        <div className="about-nodeName">
+                          Debre Genet Holy Trinity Church
+                        </div>
+                        <div className="about-nodeRole">London Parish</div>
+                        <div className="about-nodeDesc">
+                          Worship, prayer, and community life in London.
+                        </div>
+                      </div>
+                      <IconChevron open={depth >= 3} />
+                    </button>
+
+                    <div
+                      className={`about-linkLine about-linkLineBlue ${
+                        depth >= 3 ? "show" : ""
+                      }`}
+                    />
+
+                    {/* Level 3 */}
+                    <div className={`about-reveal ${depth >= 3 ? "open" : ""}`}>
+                      <div className="about-revealInner">
+                        <div className="about-priestGrid">
+                          {(t.leadership?.clergy || []).map((p) => (
+                            <div key={p.name} className="about-priestCard">
+                              <div className="about-priestAvatar">
+                                <img src={prist} alt={p.name} />
+                              </div>
+                              <div className="about-priestName">{p.name}</div>
+                              <div className="about-priestRole">{p.role}</div>
+                              <div className="about-priestDesc">
+                                Serving the London parish.
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    {/* end level 3 */}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* end tree */}
           </div>
 
-          <div className="about-block">
-            <h3>What We Believe</h3>
-            <p>
-              We uphold the faith of the one holy, universal, and apostolic
-              Church as handed down through the Apostles and the Fathers. Our
-              worship is centred on the Divine Liturgy, the sacraments, and
-              daily prayer.
-            </p>
-            <p>
-              We strive to live out the Gospel through love, hospitality, and
-              service to those in need. Together we pray, we learn, and we walk
-              towards Christ, trusting in the mercy of the Holy Trinity.
-            </p>
+          {/* CONTENT BELOW */}
+          <div className="about-contentStack">
+            <Card title={t.aboutUs.title} className="about-readingCard about-glassPanel">
+              <div className="about-prose">
+                <p>{t.aboutUs.p1}</p>
+                <p>{t.aboutUs.p2}</p>
+                <p>{t.aboutUs.p3}</p>
+                <p>{t.aboutUs.p4}</p>
+              </div>
+
+              <div className="about-note">
+                <div className="about-noteTitle">{t.aboutUs.notesTitle}</div>
+                <ul>
+                  {t.aboutUs.notes.map((x, i) => (
+                    <li key={i}>{x}</li>
+                  ))}
+                </ul>
+              </div>
+            </Card>
+
+            <div className="about-twoCards">
+              <Card title={t.youth.title} className="about-glassPanel">
+                <div className="about-prose">
+                  <p>{t.youth.p1}</p>
+                  <p>{t.youth.p2}</p>
+                  <p>{t.youth.p3}</p>
+                </div>
+                <div className="about-callout">{t.youth.extras}</div>
+              </Card>
+
+              <Card title={t.safeguarding.title} className="about-glassPanel">
+                <div className="about-prose">
+                  <p>{t.safeguarding.p1}</p>
+                  <p>{t.safeguarding.p2}</p>
+                </div>
+                <div className="about-callout">{t.safeguarding.note}</div>
+              </Card>
+            </div>
+
+            <section className="about-restoration about-glassPanel" id="restoration">
+              <div className="about-restorationHeader">
+                <h3>{t.restoration.title}</h3>
+                <p className="about-muted">{t.restoration.subtitle}</p>
+              </div>
+
+              <div className="about-accordion">
+                <details open>
+                  <summary>Overview</summary>
+                  {t.restoration.body.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </details>
+
+                <details>
+                  <summary>{t.restoration.scopeTitle}</summary>
+                  <div className="about-scopeGrid">
+                    {t.restoration.scope.map((item, i) => (
+                      <div key={i} className="about-scopeCard">
+                        <div className="about-scopeTitle">{item.title}</div>
+                        <div className="about-scopeText">{item.text}</div>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+
+                <details>
+                  <summary>{t.restoration.supportTitle}</summary>
+                  <ul className="about-list">
+                    {t.restoration.supportBullets.map((x, i) => (
+                      <li key={i}>{x}</li>
+                    ))}
+                  </ul>
+
+                  <div className="about-donate">
+                    <div className="about-donateTitle">{t.restoration.donateTitle}</div>
+                    <a
+                      className="about-btn about-btnPrimary"
+                      href={t.restoration.donateLink}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Donate Now
+                    </a>
+                    <div className="about-muted about-donateNote">{t.restoration.closing}</div>
+                  </div>
+                </details>
+              </div>
+            </section>
           </div>
-        </section>
+        </div>
       </section>
     </main>
   );
 }
-
-export default About;

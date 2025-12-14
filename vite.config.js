@@ -5,7 +5,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true,   // allow access from other devices on the network
-    port: 5173,   // optional: fixes the port
+    host: true,        // allow LAN & ngrok
+    port: 5173,
+    allowedHosts: true, // ✅ FIX: allow ngrok domains
+    hmr: {
+      clientPort: 443, // ✅ FIX: websocket works over ngrok
+    },
   },
 })

@@ -102,6 +102,28 @@ export const event = defineType({
       },
       description: "This image will appear on the event card.",
     }),
+
+    // 🔔 Web Push Notification Controls
+    defineField({
+      name: "sendPush",
+      title: "Send Web Push Notification",
+      type: "boolean",
+      description: "Notify users when this event is published",
+      initialValue: false,
+    }),
+    defineField({
+      name: "pushTitle",
+      title: "Push Title (optional)",
+      type: "string",
+      description: "Overrides the notification title",
+    }),
+    defineField({
+      name: "pushBody",
+      title: "Push Message (optional)",
+      type: "text",
+      rows: 2,
+      description: "Overrides the notification message",
+    }),
   ],
 
   preview: {
