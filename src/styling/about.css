@@ -1,361 +1,319 @@
-/* =========================================================
-   ABOUT — SCOPED BACKGROUND (ONLY ABOUT PAGE)
-   Put in: src/styling/about.css
-========================================================= */
+:root {
+  --about-max: 1100px;
+  --about-card: 980px;
 
-/* Make About a containing block so the bg cannot escape */
-.about-page.about-glassRoot {
-  position: relative;
-  overflow: hidden;            /* key: clip bg to About only */
-  background: transparent;
-  isolation: isolate;
+  --radius: 26px;
+  --stroke: rgba(255, 255, 255, 0.26);
+
+  --gold: rgba(242, 181, 68, 0.95);
+  --gold2: rgba(255, 203, 108, 0.95);
+
+  --ink: #0f1b33;
+
+  --shadow: 0 22px 80px rgba(8, 14, 32, 0.22);
+  --shadow2: 0 14px 40px rgba(8, 14, 32, 0.14);
 }
 
-/* Background photo ONLY inside the About page */
-.about-page.about-glassRoot .about-bgPhoto {
-  position: absolute;          /* NOT fixed */
+/* Icons */
+.about-ic {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* PAGE */
+.about-page {
+  background: linear-gradient(180deg, rgba(245, 247, 251, 1), rgba(245, 247, 251, 0.92));
+  overflow: hidden;
+}
+
+/* HERO WITH VIDEO */
+.about-hero {
+  position: relative;
+  min-height: 54vh;
+  display: grid;
+  place-items: center;
+  border-bottom: 1px solid rgba(14, 26, 51, 0.08);
+}
+
+.about-videoWrap {
+  position: absolute;
   inset: 0;
   z-index: 0;
-  background-size: cover;
-  background-position: center;
-  transform: scale(1.05);
-  filter: saturate(1.08) contrast(1.06);
+  overflow: hidden;
 }
 
-/* Overlay ONLY inside About page */
-.about-page.about-glassRoot .about-bgOverlay {
-  position: absolute;          /* NOT fixed */
+.about-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  filter: saturate(1.06) contrast(1.04);
+}
+
+.about-videoOverlay {
+  position: absolute;
   inset: 0;
-  z-index: 1;
   background:
-    radial-gradient(circle at 18% 12%, rgba(242, 181, 68, 0.22), transparent 55%),
-    radial-gradient(circle at 82% 18%, rgba(47, 104, 181, 0.20), transparent 60%),
-    linear-gradient(180deg, rgba(245, 247, 251, 0.85), rgba(245, 247, 251, 0.96));
+    radial-gradient(circle at 20% 20%, rgba(242, 181, 68, 0.22), transparent 60%),
+    radial-gradient(circle at 85% 15%, rgba(47, 104, 181, 0.18), transparent 60%),
+    linear-gradient(180deg, rgba(8, 14, 32, 0.72), rgba(8, 14, 32, 0.32), rgba(245, 247, 251, 0.88));
 }
 
-/* All About content must be above the overlay */
-.about-page.about-glassRoot > *:not(.about-bgPhoto):not(.about-bgOverlay) {
+.about-videoNoise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.14;
+  mix-blend-mode: overlay;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.04),
+      rgba(255,255,255,0.04) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+}
+
+.about-heroInner {
   position: relative;
   z-index: 2;
+  max-width: var(--about-max);
+  width: 100%;
+  padding: 36px 16px 34px;
 }
 
-/* =========================================================
-   GLASS UTILITY (use on cards: about-glassPanel)
-========================================================= */
-.about-glassPanel {
-  background: rgba(255, 255, 255, 0.62) !important;
-  border: 1px solid rgba(255, 255, 255, 0.42) !important;
-  box-shadow:
-    0 20px 60px rgba(8, 14, 32, 0.16),
-    inset 0 0 0 1px rgba(255,255,255,0.18);
-  backdrop-filter: blur(16px) saturate(1.15);
-  -webkit-backdrop-filter: blur(16px) saturate(1.15);
-}
-
-/* =========================================================
-   FIX: Spark SVG out of place
-========================================================= */
 .about-heroBadge {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 13px;
+  padding: 10px 14px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.22);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   font-weight: 950;
   letter-spacing: 0.02em;
   font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.92);
 }
 
-.about-heroBadgeIcon {
-  width: 22px;
-  height: 22px;
-  flex: 0 0 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
 .about-heroBadgeIcon svg {
-  width: 18px !important;
-  height: 18px !important;
-  display: block !important;
+  width: 18px;
+  height: 18px;
+  display: block;
   fill: var(--gold);
 }
 
-/* =========================================================
-   ABOUT STAGE (your clean rebuild stays)
-========================================================= */
+.about-heroTitle {
+  margin: 14px 0 10px;
+  font-weight: 1100;
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+}
+
+.about-heroLead {
+  margin: 0;
+  max-width: 85ch;
+  line-height: 1.75;
+  font-size: 1.06rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 800;
+}
+
+/* STAGE */
 .about-stage {
-  max-width: 1120px;
+  max-width: var(--about-max);
+  margin: -46px auto 0;
+  padding: 0 16px 36px;
+  position: relative;
+  z-index: 3;
+}
+
+/* GLASS CARD */
+.about-glassCard {
+  max-width: var(--about-card);
   margin: 0 auto;
-  padding: 0 16px 18px;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.about-stageScroll {
-  overflow: visible;
-  padding-right: 0;
-}
-
-/* spacing */
-.about-contentStack {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  margin-top: 18px;
-}
-
-/* =========================================================
-   TREE CARD
-========================================================= */
-.about-treeCard {
   border-radius: var(--radius);
   border: 1px solid var(--stroke);
-  padding: 14px 14px 12px;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  overflow: hidden;
+  position: relative;
 }
 
-.about-treeHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 12px;
+.about-glassCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(242, 181, 68, 0.14), transparent 55%),
+    radial-gradient(circle at 82% 18%, rgba(47, 104, 181, 0.10), transparent 60%);
+  opacity: 0.95;
 }
 
-.about-treeTitle {
-  font-weight: 1000;
-  color: #142645;
-  font-size: 1.06rem;
-  letter-spacing: -0.01em;
+.about-glassTop {
+  position: relative;
+  padding: 18px 18px 10px;
+  border-bottom: 1px solid rgba(14, 26, 51, 0.08);
 }
 
-.about-treeSub {
-  margin-top: 2px;
-  font-weight: 850;
-  font-size: 0.84rem;
-  color: rgba(14,26,51,0.72);
-}
-
-.about-treeActions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.about-miniBtn {
-  border: 1px solid rgba(14,26,51,0.12);
-  background: rgba(255,255,255,0.70);
-  color: #142645;
-  font-weight: 950;
+.about-glassKicker {
+  display: inline-flex;
+  align-items: center;
   padding: 8px 12px;
   border-radius: 999px;
-  cursor: pointer;
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
-}
-.about-miniBtn:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(8,14,32,0.10); }
-.about-miniBtn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
-.about-miniBtnPrimary {
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  border-color: rgba(242,181,68,0.35);
+  border: 1px solid rgba(242, 181, 68, 0.28);
+  background: rgba(242, 181, 68, 0.10);
+  color: rgba(14, 26, 51, 0.78);
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  font-size: 0.88rem;
 }
 
-/* =========================================================
-   NODE
-========================================================= */
-.about-nodeBtn {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 100%;
-  border: 1px solid rgba(14,26,51,0.10);
-  background:
-    radial-gradient(circle at 15% 15%, rgba(242,181,68,0.10), transparent 55%),
-    radial-gradient(circle at 85% 20%, rgba(47,104,181,0.08), transparent 60%),
-    rgba(255,255,255,0.75);
-  border-radius: 20px;
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  cursor: pointer;
-  text-align: left;
-  box-shadow: 0 16px 38px rgba(8,14,32,0.10);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-  backdrop-filter: blur(14px) saturate(1.12);
-  -webkit-backdrop-filter: blur(14px) saturate(1.12);
+.about-glassTitle {
+  margin: 10px 0 4px;
+  font-weight: 1100;
+  letter-spacing: -0.02em;
+  color: #142645;
+  font-size: 1.6rem;
 }
 
-.about-nodeBtn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 22px 55px rgba(8,14,32,0.14);
-  border-color: rgba(242,181,68,0.40);
+.about-glassSub {
+  margin: 0;
+  color: rgba(14, 26, 51, 0.72);
+  font-weight: 850;
+  line-height: 1.6;
 }
 
-.about-nodeBtn:focus-visible {
-  outline: 2px solid rgba(255,196,75,0.85);
-  outline-offset: 4px;
+/* ✅ SCROLLABLE TEXT AREA */
+.about-scrollShell {
+  position: relative;
+  padding: 0;
 }
 
-.about-nodeAvatar {
-  width: 78px;
-  height: 78px;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 3px solid rgba(242,181,68,0.95);
-  flex: 0 0 auto;
-  box-shadow: 0 10px 22px rgba(8,14,32,0.18);
-  background: rgba(242,181,68,0.10);
+/* The actual scrolling container */
+.about-scrollArea {
+  /* Desktop: nice fixed height; Mobile: more compact */
+  max-height: 44vh;
+  overflow: auto;
+  padding: 14px 18px 18px;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+
+  /* nicer iOS scrolling */
+  -webkit-overflow-scrolling: touch;
+
+  /* subtle inset */
+  background: rgba(255, 255, 255, 0.20);
 }
 
-.about-nodeAvatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.about-nodeText { min-width: 0; }
-.about-nodeName {
-  font-weight: 1000;
-  color: #0f1b33;
-  font-size: 1.02rem;
-  letter-spacing: -0.01em;
-}
-.about-nodeRole {
-  margin-top: 4px;
-  font-size: 0.78rem;
-  font-weight: 1000;
-  color: rgba(242,181,68,0.95);
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-}
-.about-nodeDesc {
-  margin-top: 8px;
-  font-size: 0.90rem;
-  color: rgba(14,26,51,0.78);
-  line-height: 1.45;
-}
-
-.about-nodeHighlight {
-  border-color: rgba(242,181,68,0.65);
-  box-shadow: 0 22px 58px rgba(242,181,68,0.22);
-}
-
-/* chevron */
-.about-nodeBtn .about-chev {
-  margin-left: auto;
-  flex: 0 0 auto;
-  width: 22px;
-  height: 22px;
-  fill: none;
-  stroke: #142645;
-  stroke-width: 2.5;
-  transition: transform 0.2s ease;
-}
-.about-chev.open { transform: rotate(180deg); }
-
-/* =========================================================
-   REVEAL (grid rows trick)
-========================================================= */
-.about-reveal {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 420ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-.about-revealInner {
-  overflow: hidden;
-  min-height: 0;
-  padding-top: 10px;
-}
-.about-reveal.open { grid-template-rows: 1fr; }
-
-/* connector line */
-.about-linkLine {
-  height: 0;
-  opacity: 0;
-  width: 3px;
-  margin: 8px auto;
-  border-radius: 999px;
-  background: rgba(242,181,68,0.92);
-  transition: height 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
-  filter: drop-shadow(0 6px 10px rgba(242,181,68,0.18));
-}
-.about-linkLine.show { height: 26px; opacity: 1; }
-
-.about-linkLineBlue {
-  background: rgba(47,104,181,0.92);
-  filter: drop-shadow(0 8px 12px rgba(47,104,181,0.16));
-}
-
-/* =========================================================
-   PRIESTS GRID
-========================================================= */
-.about-priestGrid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  padding-top: 6px;
-}
-.about-priestCard {
-  border-radius: 18px;
-  border: 1px solid rgba(14,26,51,0.10);
-  background: rgba(255,255,255,0.72);
-  box-shadow: 0 14px 30px rgba(8,14,32,0.10);
-  padding: 14px;
-  text-align: center;
-  backdrop-filter: blur(14px) saturate(1.1);
-  -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
-}
-.about-priestCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 40px rgba(8,14,32,0.14);
-}
-.about-priestAvatar {
-  width: 92px;
-  height: 92px;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 3px solid rgba(242,181,68,0.95);
-  margin: 0 auto 8px;
-  box-shadow: 0 10px 22px rgba(8,14,32,0.18);
-}
-.about-priestAvatar img { width: 100%; height: 100%; object-fit: cover; }
-.about-priestName { font-weight: 1000; color: #0f1b33; }
-.about-priestRole {
-  margin-top: 4px;
-  font-size: 0.78rem;
-  font-weight: 1000;
-  color: rgba(242,181,68,0.95);
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-}
-.about-priestDesc { margin-top: 8px; font-size: 0.88rem; color: rgba(14,26,51,0.78); }
-
-@media (max-width: 980px) {
-  .about-priestGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 520px) {
-  .about-priestGrid { grid-template-columns: 1fr; }
-}
-
-/* =========================================================
-   TEXT READABILITY
-========================================================= */
+/* Prose */
 .about-prose {
-  max-width: 74ch;
-  font-size: 1.04rem;
-  line-height: 1.9;
-  color: rgba(14, 26, 51, 0.95);
+  position: relative;
+  max-width: 80ch;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  line-height: 1.95;
+  color: rgba(14, 26, 51, 0.94);
 }
-.about-prose p { margin: 0 0 14px; }
+.about-prose p {
+  margin: 0 0 16px;
+}
 
-/* reduce motion */
+/* ✅ Fade at top/bottom (looks premium) */
+.about-scrollShell::before,
+.about-scrollShell::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 36px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  z-index: 2;
+}
+
+/* top fade */
+.about-scrollShell::before {
+  top: 0;
+  background: linear-gradient(180deg, rgba(245, 247, 251, 0.95), rgba(245, 247, 251, 0));
+}
+
+/* bottom fade */
+.about-scrollShell::after {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(245, 247, 251, 0.95), rgba(245, 247, 251, 0));
+}
+
+/* toggled by React state */
+.about-scrollShell.fadeTop::before {
+  opacity: 1;
+}
+.about-scrollShell.fadeBottom::after {
+  opacity: 1;
+}
+
+/* nicer scrollbar (Chrome/Edge) */
+.about-scrollArea::-webkit-scrollbar {
+  width: 10px;
+}
+.about-scrollArea::-webkit-scrollbar-track {
+  background: rgba(14, 26, 51, 0.06);
+  border-radius: 999px;
+}
+.about-scrollArea::-webkit-scrollbar-thumb {
+  background: rgba(14, 26, 51, 0.18);
+  border-radius: 999px;
+}
+.about-scrollArea::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 26, 51, 0.28);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .about-hero {
+    min-height: 52vh;
+  }
+  .about-stage {
+    margin-top: -36px;
+  }
+  .about-glassTitle {
+    font-size: 1.42rem;
+  }
+  .about-prose {
+    font-size: 1.02rem;
+    line-height: 1.9;
+  }
+  /* ✅ Mobile: prevent endless page scroll */
+  .about-scrollArea {
+    max-height: 46vh;
+  }
+}
+
+@media (max-width: 520px) {
+  .about-heroInner {
+    padding: 30px 14px 30px;
+  }
+  .about-glassTop {
+    padding: 16px 14px 10px;
+  }
+  .about-scrollArea {
+    padding: 12px 14px 16px;
+    max-height: 52vh; /* makes it scroll inside, not the whole page */
+  }
+}
+
+/* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
-  .about-reveal, .about-linkLine, .about-miniBtn, .about-nodeBtn {
-    transition: none !important;
+  .about-scrollArea {
+    scroll-behavior: auto;
   }
 }
