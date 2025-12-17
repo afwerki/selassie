@@ -1,65 +1,79 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import "../styling/contact.css";
 
 const MAP_EMBED_SRC =
   "https://maps.google.com/maps?q=51.55854,-0.22529&z=16&output=embed";
 
-const GOOGLE_FORM_ACTION =
-  "https://docs.google.com/forms/d/e/1FAIpQLSdFG5siwQbBY8rQoKjwN4VJwypDU9upjkUwCAIglmXwcAcHPw/formResponse";
+// ✅ Web3Forms endpoint
+const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+
+// ✅ Put your Web3Forms access key here
+const WEB3FORMS_ACCESS_KEY = "60ec16b5-0196-4db9-92d5-0e515e02c393";
 
 function Contact() {
-  const formRef = useRef(null);
-
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
-  const [messageSentTo, setMessageSentTo] = useState("");
+  const [sentTo, setSentTo] = useState("");
+  const [values, setValues] = useState({ name: "", email: "", message: "" });
 
-  // These are for UI only (we still submit using entry.* names to Google)
-  const [ui, setUi] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-
-  const onUiChange = (e) => {
-    const { name, value } = e.target;
-    setUi((prev) => ({ ...prev, [name]: value }));
-  };
+  const isValidEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
 
   const validate = () => {
-    if (!ui.name.trim()) return "Please enter your name.";
-    if (!ui.email.trim()) return "Please enter your email.";
-    if (!/^\S+@\S+\.\S+$/.test(ui.email.trim())) return "Please enter a valid email.";
-    if (!ui.message.trim()) return "Please type a message.";
-    if (ui.message.trim().length < 8) return "Please add a little more detail.";
-    return null;
+    if (!values.name.trim()) return false;
+    if (!values.email.trim() || !isValidEmail(values.email.trim())) return false;
+    if (!values.message.trim() || values.message.trim().length < 3) return false;
+    if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY.includes("PASTE_"))
+      return false;
+    return true;
   };
 
-  const onSubmit = (e) => {
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setValues((p) => ({ ...p, [name]: value }));
+    if (status === "error") setStatus("idle");
+  };
+
+  const onSubmit = async (e) => {
     e.preventDefault();
 
-    const err = validate();
-    if (err) {
+    if (!validate()) {
       setStatus("error");
       return;
     }
 
     setStatus("sending");
-
-    // Keep email to show in thank-you message
-    const emailForThankYou = ui.email.trim();
-    setMessageSentTo(emailForThankYou);
+    setSentTo(values.email.trim());
 
     try {
-      // submit silently via iframe target
-      formRef.current?.submit();
+      const payload = {
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: "New message from Church Website",
+        from_name: "Debre-Genet Holy Trinity Website",
+        name: values.name,
+        email: values.email,
+        message: values.message,
 
-      // clear UI fields
-      setUi({ name: "", email: "", message: "" });
+        // Optional extras:
+        // replyto: values.email,
+        // redirect: "https://yourdomain.com/thank-you",
+      };
+
+      const res = await fetch(WEB3FORMS_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "Web3Forms submission failed");
+      }
+
       setStatus("success");
-
-      // allow a new submission after a short while
+      setValues({ name: "", email: "", message: "" });
       setTimeout(() => setStatus("idle"), 7000);
-    } catch (e2) {
+    } catch (err) {
+      console.error(err);
       setStatus("error");
     }
   };
@@ -75,7 +89,7 @@ function Contact() {
       </section>
 
       <section className="contact-grid">
-        {/* LEFT COLUMN – DETAILS / VISIT INFO */}
+        {/* LEFT */}
         <div className="contact-column contact-column--info">
           <div className="contact-card">
             <h3>Contact Details</h3>
@@ -106,24 +120,9 @@ function Contact() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN – FORM + MAP */}
+        {/* RIGHT */}
         <div className="contact-column contact-column--form-map">
-          {/* Hidden iframe target to prevent redirect/new tab */}
-          <iframe
-            name="google-form-target"
-            title="google-form-target"
-            className="hidden-iframe"
-          />
-
-          <form
-            ref={formRef}
-            className="contact-form"
-            action={GOOGLE_FORM_ACTION}
-            method="POST"
-            target="google-form-target"
-            onSubmit={onSubmit}
-            noValidate
-          >
+          <form className="contact-form" onSubmit={onSubmit} noValidate>
             <div className="form-header">
               <h3>Send Us a Message</h3>
               <p className="form-subtitle">
@@ -136,21 +135,23 @@ function Contact() {
                 <div className="form-alert__title">Thank you! 🙏</div>
                 <div className="form-alert__text">
                   We’ve received your message. We’ll get back to you at{" "}
-                  <strong>{messageSentTo || "your email"}</strong>.
+                  <strong>{sentTo}</strong>.
                 </div>
               </div>
             )}
 
             {status === "error" && (
               <div className="form-alert form-alert--error" role="status">
-                <div className="form-alert__title">Almost there</div>
+                <div className="form-alert__title">Please check your details</div>
                 <div className="form-alert__text">
-                  Please check your details and try again.
+                  Make sure your name, email, and message are filled correctly
+                  (and that the Web3Forms access key is set). If it still fails,
+                  email us directly at{" "}
+                  <a href="mailto:office@dght.uk">office@dght.uk</a>.
                 </div>
               </div>
             )}
 
-            {/* Name */}
             <div className="form-row">
               <label htmlFor="contact-name">Name</label>
               <input
@@ -158,16 +159,13 @@ function Contact() {
                 type="text"
                 name="name"
                 placeholder="Your full name"
-                value={ui.name}
-                onChange={onUiChange}
+                value={values.name}
+                onChange={onChange}
                 disabled={status === "sending"}
                 autoComplete="name"
               />
-              {/* Hidden field to match Google entry */}
-              <input type="hidden" name="entry.197787725" value={ui.name} />
             </div>
 
-            {/* Email */}
             <div className="form-row">
               <label htmlFor="contact-email">Email</label>
               <input
@@ -175,15 +173,13 @@ function Contact() {
                 type="email"
                 name="email"
                 placeholder="you@example.com"
-                value={ui.email}
-                onChange={onUiChange}
+                value={values.email}
+                onChange={onChange}
                 disabled={status === "sending"}
                 autoComplete="email"
               />
-              <input type="hidden" name="entry.1675574637" value={ui.email} />
             </div>
 
-            {/* Message */}
             <div className="form-row">
               <label htmlFor="contact-message">Message</label>
               <textarea
@@ -191,14 +187,17 @@ function Contact() {
                 name="message"
                 rows="5"
                 placeholder="How can we help?"
-                value={ui.message}
-                onChange={onUiChange}
+                value={values.message}
+                onChange={onChange}
                 disabled={status === "sending"}
               />
-              <input type="hidden" name="entry.748419976" value={ui.message} />
             </div>
 
-            <button className="card-btn card-btn--primary" type="submit" disabled={status === "sending"}>
+            <button
+              className="card-btn card-btn--primary"
+              type="submit"
+              disabled={status === "sending"}
+            >
               {status === "sending" ? "Sending…" : "Send Message"}
             </button>
 
@@ -211,8 +210,8 @@ function Contact() {
           <div className="map-card">
             <h3>Map &amp; Directions</h3>
             <p className="map-text">
-              Find us on the map below. You can zoom and move around, or open the
-              location directly in Google Maps.
+              Find us on the map below. You can zoom and move around, or open
+              the location directly in Google Maps.
             </p>
 
             <div className="map-embed-wrapper">
