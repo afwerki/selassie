@@ -46,15 +46,12 @@ function Contact() {
     try {
       const payload = {
         access_key: WEB3FORMS_ACCESS_KEY,
-        subject: "New message from Church Website",
-        from_name: "Debre-Genet Holy Trinity Website",
+        subject: "ከደብረስላሴ Website የተላከ መልእክት",
+        from_name: "ከደብረስላሴ Website የተላከ መልእክት",
         name: values.name,
         email: values.email,
         message: values.message,
-
-        // Optional extras:
-        // replyto: values.email,
-        // redirect: "https://yourdomain.com/thank-you",
+        replyto: values.email, // ✅ makes replying easy (reply goes to sender)
       };
 
       const res = await fetch(WEB3FORMS_ENDPOINT, {
@@ -93,12 +90,24 @@ function Contact() {
         <div className="contact-column contact-column--info">
           <div className="contact-card">
             <h3>Contact Details</h3>
-            <p>
-              Email: <a href="mailto:office@dght.uk">office@dght.uk</a>
-              <br />
-              Phone: <a href="tel:+447341339751">07341 339 751</a>
-            </p>
-            <p>
+
+            <div className="contact-kv">
+              <div className="contact-kv__row">
+                <span className="contact-kv__label">Email</span>
+                <a className="contact-kv__value" href="mailto:office@dght.uk">
+                  office@dght.uk
+                </a>
+              </div>
+
+              <div className="contact-kv__row">
+                <span className="contact-kv__label">Phone</span>
+                <a className="contact-kv__value" href="tel:+447341339751">
+                  07341 339 751
+                </a>
+              </div>
+            </div>
+
+            <p className="contact-visit-text">
               Please contact us for baptisms, weddings, house blessings, or if
               you would like to meet with a priest.
             </p>
@@ -107,11 +116,11 @@ function Contact() {
           <div className="contact-card">
             <h3>Visit Us</h3>
             <p className="contact-address">
-              Debre-Genet Holy Trinity Church
-              <br />
-              St Michael&apos;s Road
-              <br />
-              London NW2 6XG
+              <span className="contact-address__title">
+                Debre-Genet Holy Trinity Church
+              </span>
+              <span className="contact-address__line">St Michael&apos;s Road</span>
+              <span className="contact-address__line">London NW2 6XG</span>
             </p>
             <p className="contact-visit-text">
               Sunday liturgy and main services are held at the address above.
@@ -144,40 +153,42 @@ function Contact() {
               <div className="form-alert form-alert--error" role="status">
                 <div className="form-alert__title">Please check your details</div>
                 <div className="form-alert__text">
-                  Make sure your name, email, and message are filled correctly
-                  (and that the Web3Forms access key is set). If it still fails,
-                  email us directly at{" "}
+                  Make sure your name, email, and message are filled correctly.
+                  If it still fails, email us directly at{" "}
                   <a href="mailto:office@dght.uk">office@dght.uk</a>.
                 </div>
               </div>
             )}
 
-            <div className="form-row">
-              <label htmlFor="contact-name">Name</label>
-              <input
-                id="contact-name"
-                type="text"
-                name="name"
-                placeholder="Your full name"
-                value={values.name}
-                onChange={onChange}
-                disabled={status === "sending"}
-                autoComplete="name"
-              />
-            </div>
+            {/* ✅ 2-column group on desktop */}
+            <div className="form-row-grid">
+              <div className="form-row">
+                <label htmlFor="contact-name">Name</label>
+                <input
+                  id="contact-name"
+                  type="text"
+                  name="name"
+                  placeholder="Your full name"
+                  value={values.name}
+                  onChange={onChange}
+                  disabled={status === "sending"}
+                  autoComplete="name"
+                />
+              </div>
 
-            <div className="form-row">
-              <label htmlFor="contact-email">Email</label>
-              <input
-                id="contact-email"
-                type="email"
-                name="email"
-                placeholder="you@example.com"
-                value={values.email}
-                onChange={onChange}
-                disabled={status === "sending"}
-                autoComplete="email"
-              />
+              <div className="form-row">
+                <label htmlFor="contact-email">Email</label>
+                <input
+                  id="contact-email"
+                  type="email"
+                  name="email"
+                  placeholder="you@example.com"
+                  value={values.email}
+                  onChange={onChange}
+                  disabled={status === "sending"}
+                  autoComplete="email"
+                />
+              </div>
             </div>
 
             <div className="form-row">
