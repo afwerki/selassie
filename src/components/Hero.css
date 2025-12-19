@@ -2,423 +2,412 @@
    HERO BASE
 ========================================================= */
 
-.hero-carousel {
+.hero {
   position: relative;
   width: 100%;
   height: 92vh;
+  min-height: 560px;
   overflow: hidden;
   background: #020617;
-  color: #ffffff;
-}
-
-/* Background slides */
-.hero-slide {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-  transform: scale(1.05);
-  transition: opacity 1.4s ease;
-  will-change: opacity, transform;
-}
-
-/* Active slide: visible + slow zoom in/out */
-.hero-slide.is-active {
-  opacity: 1;
-  animation: heroZoom 18s ease-in-out infinite;
-}
-
-/* Inactive slide: hidden, no animation */
-.hero-slide.is-inactive {
-  opacity: 0;
-  animation: none;
-  transform: scale(1.05);
-}
-
-/* Smooth zoom in + out loop */
-@keyframes heroZoom {
-  0% {
-    transform: scale(1.05);
-  }
-  50% {
-    transform: scale(1.12);
-  }
-  100% {
-    transform: scale(1.05);
-  }
-}
-
-/* Dark gradient overlay for readability */
-.hero-gradient-overlay {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-      circle at top left,
-      rgba(15, 23, 42, 0.8),
-      transparent 60%
-    ),
-    linear-gradient(120deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.2));
-  z-index: 1;
+  color: #fff;
+  outline: none;
 }
 
 /* =========================================================
-   FLOATING GEOMETRIC SHAPES
+   VIDEO (2-layer crossfade for mobile autoplay stability)
 ========================================================= */
 
-.hero-shape {
+.hero__videoWrap {
   position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  /* nicer look */
+  transform: scale(1.035);
+  filter: saturate(1.07) contrast(1.06) brightness(0.92);
+
+  opacity: 0;
+  transition: opacity 1000ms ease;
+  will-change: opacity;
+}
+
+.hero__video.is-on {
+  opacity: 1;
+}
+
+.hero__video.is-off {
+  opacity: 0;
+}
+
+/* =========================================================
+   SUBTLE PHOTO WASH (keeps brand mood without hiding video)
+========================================================= */
+
+.hero__photoWash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.10;              /* ✅ keep video visible */
+  mix-blend-mode: soft-light; /* ✅ premium wash */
+  filter: blur(0.2px);
+}
+
+/* =========================================================
+   OVERLAYS (readability without killing the video)
+========================================================= */
+
+.hero__overlay {
+  position: absolute;
+  inset: 0;
   z-index: 2;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(15, 23, 42, 0.52), transparent 56%),
+    radial-gradient(circle at 80% 25%, rgba(29, 78, 216, 0.10), transparent 55%),
+    radial-gradient(circle at 60% 72%, rgba(245, 158, 11, 0.10), transparent 55%),
+    linear-gradient(120deg, rgba(2, 6, 23, 0.62), rgba(2, 6, 23, 0.12));
+}
+
+.hero__noise {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.10;
+  mix-blend-mode: overlay;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.04) 0px,
+      rgba(255, 255, 255, 0.04) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+}
+
+/* =========================================================
+   FLOATING ACCENTS (simple, clean)
+========================================================= */
+
+.hero__shape {
+  position: absolute;
+  z-index: 4;
   pointer-events: none;
 }
 
-/* Cross shape */
-.hero-shape--cross {
-  width: 70px;
-  height: 70px;
+.hero__shape--cross {
+  width: 56px;
+  height: 56px;
+  right: 14%;
   top: 16%;
-  right: 18%;
-  background: linear-gradient(135deg, #f97316, #facc15);
+  background: linear-gradient(135deg, #f97316, #fbbf24);
+  opacity: 0.28;
   clip-path: polygon(
-    35% 0%,
-    65% 0%,
-    65% 35%,
-    100% 35%,
-    100% 65%,
-    65% 65%,
-    65% 100%,
-    35% 100%,
-    35% 65%,
-    0% 65%,
-    0% 35%,
-    35% 35%
+    35% 0%, 65% 0%, 65% 35%, 100% 35%,
+    100% 65%, 65% 65%, 65% 100%, 35% 100%,
+    35% 65%, 0% 65%, 0% 35%, 35% 35%
   );
-  opacity: 0.55;
-  filter: blur(0.3px);
-  animation: floatCross 11s ease-in-out infinite alternate;
+  filter: blur(0.35px);
+  animation: heroFloat 12s ease-in-out infinite alternate;
 }
 
-/* Triangle shard */
-.hero-shape--triangle {
-  width: 160px;
-  height: 160px;
-  bottom: 4%;
-  left: 6%;
-  background: linear-gradient(135deg, #38bdf8, #a855f7);
-  clip-path: polygon(0 100%, 100% 100%, 60% 0);
-  opacity: 0.35;
-  filter: blur(0.5px);
-  animation: floatTriangle 14s ease-in-out infinite alternate;
-}
-
-/* Soft orb */
-.hero-shape--orb {
+.hero__shape--orb {
   width: 260px;
   height: 260px;
+  left: 38%;
+  top: 6%;
   border-radius: 50%;
-  top: 10%;
-  left: 40%;
-  background: radial-gradient(circle, #fcd34d 0%, rgba(252, 211, 77, 0) 65%);
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.25) 0%, rgba(251, 191, 36, 0) 65%);
   opacity: 0.25;
-  animation: floatOrb 18s ease-in-out infinite alternate;
+  animation: heroOrb 18s ease-in-out infinite alternate;
 }
 
-@keyframes floatCross {
-  from {
-    transform: translateY(-12px) rotate(0deg);
-  }
-  to {
-    transform: translateY(10px) rotate(12deg);
-  }
+@keyframes heroFloat {
+  from { transform: translateY(-10px) rotate(0deg); }
+  to   { transform: translateY(12px) rotate(10deg); }
 }
-
-@keyframes floatTriangle {
-  from {
-    transform: translate(0, 10px) rotate(-4deg);
-  }
-  to {
-    transform: translate(12px, -6px) rotate(3deg);
-  }
-}
-
-@keyframes floatOrb {
-  from {
-    transform: translate(-16px, 8px) scale(1);
-  }
-  to {
-    transform: translate(12px, -14px) scale(1.08);
-  }
+@keyframes heroOrb {
+  from { transform: translate(-14px, 10px) scale(1); }
+  to   { transform: translate(14px, -10px) scale(1.08); }
 }
 
 /* =========================================================
-   GLASS PANEL & CONTENT
+   CONTENT LAYOUT
 ========================================================= */
 
-.hero-overlay {
+.hero__content {
   position: absolute;
   inset: 0;
+  z-index: 5;
   display: flex;
   align-items: center;
-  padding-left: 8%;
-  padding-right: 8%;
-  z-index: 3;
-}
 
-.hero-glass {
-  backdrop-filter: blur(18px);
-  background: radial-gradient(
-      circle at top left,
-      rgba(248, 250, 252, 0.25),
-      transparent 60%
-    ),
-    rgba(15, 23, 42, 0.52);
-  border-radius: 24px;
-  padding: 40px 48px 32px;
-  max-width: 640px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(248, 250, 252, 0.26);
-  position: relative;
-}
-
-/* Slide counter */
-.hero-counter {
-  position: absolute;
-  right: 24px;
-  bottom: 20px;
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
-  font-size: 0.8rem;
-  color: rgba(226, 232, 240, 0.9);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.hero-counter-separator {
-  opacity: 0.5;
+  /* ✅ keep it away from edges but not huge */
+  padding: 0 clamp(1.1rem, 5vw, 4rem);
 }
 
 /* =========================================================
-   TEXT + ANIMATIONS
+   GLASS CARD (smaller + video-visible)
 ========================================================= */
 
-.hero-text-container {
-  color: #e5e7eb;
+.heroCard {
+  width: min(520px, 92vw);
+  border-radius: 22px;
+  padding: 18px 18px 14px;
+  position: relative;
+
+  /* ✅ real glass */
+  background:
+    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.22), transparent 55%),
+    rgba(2, 6, 23, 0.24); /* ✅ lighter so video shows */
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow: 0 26px 76px rgba(0, 0, 0, 0.50);
 }
 
-/* text shadow for readability */
-.hero-title,
-.hero-subtitle {
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+/* inner hairline */
+.heroCard::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  pointer-events: none;
 }
 
-.hero-title {
-  font-size: 2.9rem;
-  font-weight: 800;
-  margin-bottom: 10px;
-  line-height: 1.15;
+/* top sheen */
+.heroCard::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 55%;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 65%);
+  opacity: 0.35;
+  pointer-events: none;
 }
 
-/* Slash reveal */
-.slash-reveal {
-  animation: slashReveal 0.9s ease forwards;
-  opacity: 0;
+/* =========================================================
+   TYPOGRAPHY
+========================================================= */
+
+.heroCard__title,
+.heroCard__subtitle {
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
 }
 
-@keyframes slashReveal {
-  0% {
-    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-    opacity: 0;
-  }
-  50% {
-    clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%);
-    opacity: 1;
-  }
-  100% {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    opacity: 1;
-  }
+.heroCard__title {
+  margin: 0 0 10px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  font-size: clamp(1.85rem, 3.2vw, 2.55rem);
 }
 
-.hero-subtitle {
-  font-size: 1.18rem;
-  margin-bottom: 22px;
-  max-width: 460px;
+.heroCard__subtitle {
+  margin: 0 0 14px;
+  color: rgba(226, 232, 240, 0.92);
+  max-width: 48ch;
+  line-height: 1.55;
+  font-size: clamp(1.02rem, 1.6vw, 1.12rem);
 }
 
-/* Triangle reveal */
-.triangle-reveal {
-  animation: triangleReveal 1.1s ease forwards;
-  opacity: 0;
-}
-
-@keyframes triangleReveal {
-  0% {
-    clip-path: polygon(50% 0, 50% 0, 50% 100%);
-  }
-  60% {
-    clip-path: polygon(0 0, 60% 0, 30% 100%);
-    opacity: 1;
-  }
-  100% {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    opacity: 1;
-  }
-}
-
-/* Amharic line-height tweak */
 .amharic-fix {
   line-height: 1.5;
+}
+
+/* =========================================================
+   ANIMATION (stronger, modern)
+========================================================= */
+
+.heroAnim {
+  opacity: 0;
+  transform: translateY(14px);
+  filter: blur(6px);
+  animation: heroReveal 780ms cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+}
+
+.heroAnim--1 { animation-delay: 0ms; }
+.heroAnim--2 { animation-delay: 110ms; }
+.heroAnim--3 { animation-delay: 200ms; }
+
+@keyframes heroReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
 }
 
 /* =========================================================
    BUTTONS
 ========================================================= */
 
-.hero-actions {
-  display: flex;
-  gap: 18px;
-  margin-top: 16px;
-}
-
-.hero-btn {
-  padding: 12px 26px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 1rem;
-  text-decoration: none;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease,
-    color 0.25s ease;
-}
-
-.hero-btn-primary {
-  background: linear-gradient(135deg, #fbbf24, #f97316);
-  color: #111827;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
-}
-
-.hero-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
-}
-
-.hero-btn-ghost {
-  border: 2px solid rgba(248, 250, 252, 0.8);
-  color: #e5e7eb;
-}
-
-.hero-btn-ghost:hover {
-  background: rgba(248, 250, 252, 0.16);
-}
-
-/* =========================================================
-   DOT NAVIGATION
-========================================================= */
-
-.hero-dots {
-  position: absolute;
-  bottom: 26px;
-  left: 50%;
-  transform: translateX(-50%);
+.heroCard__actions {
   display: flex;
   gap: 12px;
-  z-index: 4;
 }
 
-.hero-dot {
-  width: 11px;
-  height: 11px;
+.heroBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 16px;
   border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  background: rgba(148, 163, 184, 0.7);
-  transition: transform 0.25s ease, background 0.25s ease, width 0.25s ease;
+  text-decoration: none;
+  font-weight: 850;
+  font-size: 0.98rem;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, opacity 180ms ease;
 }
 
-.hero-dot.active {
-  width: 24px;
-  background: #fbbf24;
-  transform: translateY(-1px);
+.heroBtn--primary {
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  color: #111827;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+}
+
+.heroBtn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.42);
+}
+
+.heroBtn--ghost {
+  border: 2px solid rgba(248, 250, 252, 0.72);
+  background: rgba(2, 6, 23, 0.08);
+  color: rgba(226, 232, 240, 0.96);
+}
+
+.heroBtn--ghost:hover {
+  background: rgba(248, 250, 252, 0.14);
 }
 
 /* =========================================================
-   RESPONSIVE
+   COUNTER
 ========================================================= */
 
-@media (max-width: 1024px) {
-  .hero-overlay {
-    padding-left: 6%;
-    padding-right: 6%;
-  }
-
-  .hero-title {
-    font-size: 2.4rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1.08rem;
-  }
+.heroCard__counter {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  color: rgba(226, 232, 240, 0.82);
 }
 
+.heroCard__sep {
+  opacity: 0.45;
+}
+
+/* =========================================================
+   DOTS
+========================================================= */
+
+.heroDots {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  gap: 12px;
+}
+
+.heroDot {
+  width: 10px;
+  height: 10px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  background: rgba(148, 163, 184, 0.7);
+  transition: width 200ms ease, transform 200ms ease, background 200ms ease;
+}
+
+.heroDot.is-active {
+  width: 26px;
+  transform: translateY(-1px);
+  background: #fbbf24;
+}
+
+/* =========================================================
+   RESPONSIVE (mobile MUST show the video)
+========================================================= */
+
 @media (max-width: 768px) {
-  .hero-carousel {
+  .hero {
     height: 88vh;
+    min-height: 520px;
   }
 
-  .hero-overlay {
+  .hero__content {
     align-items: flex-end;
-    padding-bottom: 70px;
+    padding-bottom: 74px;
   }
 
-  .hero-glass {
-    max-width: 100%;
-    padding: 24px 22px 22px;
+  /* ✅ smaller + more transparent glass on mobile */
+  .heroCard {
+    width: min(460px, 94vw);
+    padding: 16px 14px 14px;
     border-radius: 18px;
-    background: rgba(15, 23, 42, 0.86);
-    backdrop-filter: blur(8px);
+    background:
+      radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.20), transparent 60%),
+      rgba(2, 6, 23, 0.18); /* ✅ lighter so video shows */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-subtitle {
-    max-width: none;
-  }
-
-  .hero-actions {
+  .heroCard__actions {
     flex-direction: column;
   }
 
-  .hero-btn {
+  .heroBtn {
     width: 100%;
-    text-align: center;
   }
 
-  .hero-shape--cross,
-  .hero-shape--triangle,
-  .hero-shape--orb {
-    opacity: 0.22;
+  .hero__photoWash {
+    opacity: 0.07;
   }
+
+  .hero__shape--cross { opacity: 0.18; }
+  .hero__shape--orb { opacity: 0.18; }
 }
 
 @media (max-width: 480px) {
-  .hero-carousel {
+  .hero {
     height: 82vh;
+    min-height: 500px;
   }
 
-  .hero-title {
-    font-size: 1.8rem;
+  .heroDots {
+    bottom: 16px;
   }
+}
 
-  .hero-glass {
-    padding: 20px 18px 18px;
-  }
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
 
-  .hero-dots {
-    bottom: 18px;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .hero__video { display: none; }
+  .hero__shape { animation: none !important; }
+  .heroAnim { animation: none !important; opacity: 1; transform: none; filter: none; }
 }

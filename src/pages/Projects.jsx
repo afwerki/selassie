@@ -14,8 +14,9 @@ function Projects() {
     pageText.pageIntro ||
     (lang === "am"
       ? "እዚህ የቤተ ክርስቲያኑ ፕሮጀክቶች እና ተከታታይ ሥራዎች ይታያሉ።"
-      : "Explore our current and planned projects, and learn how you can support them.");
+      : "Explore some of the key projects we are working on as a parish – from community outreach and youth initiatives to church renovation and digital ministry.");
 
+  // ✅ Always pull projects from projectTexts, fallback to en if missing
   const langProjects =
     projectTexts?.[lang] && Object.keys(projectTexts[lang]).length > 0
       ? projectTexts[lang]
@@ -38,6 +39,8 @@ function Projects() {
       supportTitle: p.supportTitle,
       supportItems: p.supportItems,
       mediaHints: p.mediaHints,
+      instagram: p.instagram,
+      carouselImages: p.carouselImages,
       _index: idx,
     }));
   }, [langProjects]);
@@ -79,7 +82,7 @@ function Projects() {
     const s = status || "planned";
     if (s === "completed") return lang === "am" ? "ተጠናቀቀ" : "Completed";
     if (s === "in_progress") return lang === "am" ? "በመካከለኛ ሂደት" : "In progress";
-    if (s === "ongoing") return lang === "am" ? "ቀጣይ" : "Ongoing";
+    if (s === "ongoing") return lang === "am" ? "በሂደት ላይ ያለ" : "Ongoing";
     return lang === "am" ? "የሚጀምር" : "Planned";
   };
 
@@ -92,20 +95,11 @@ function Projects() {
   };
 
   /* ============================================================
-     Lightweight Markdown-like renderer (no dependencies)
-     Supports:
-     - ## Heading / ### subheading
-     - --- divider
-     - - bullet lists
-     - 1. numbered lists
-     - **bold**
-     - URLs
+     Lightweight Markdown-like renderer (no deps)
   ============================================================ */
-
   const parseInline = (text) => {
     if (!text) return null;
 
-    // Split by URLs first so we can link them
     const urlRegex = /(https?:\/\/[^\s)]+)|(www\.[^\s)]+)/g;
     const parts = text.split(urlRegex).filter((p) => p !== undefined);
 
@@ -122,7 +116,6 @@ function Projects() {
         );
       }
 
-      // Bold **text**
       const boldRegex = /\*\*(.+?)\*\*/g;
       const segs = [];
       let lastIndex = 0;
@@ -156,11 +149,8 @@ function Projects() {
     };
 
     for (const line of lines) {
-      if (line.trim() === "") {
-        flush();
-      } else {
-        buf.push(line);
-      }
+      if (line.trim() === "") flush();
+      else buf.push(line);
     }
     flush();
 
@@ -170,13 +160,11 @@ function Projects() {
       const block = blocks[i];
       const first = block[0].trim();
 
-      // Divider ---
       if (/^---+$/.test(first)) {
         nodes.push(<hr key={`hr-${i}`} className="project-divider" />);
         continue;
       }
 
-      // Headings
       if (first.startsWith("### ")) {
         nodes.push(
           <h3 key={`h3-${i}`} className="project-h3">
@@ -194,7 +182,6 @@ function Projects() {
         continue;
       }
 
-      // Unordered list
       const isUl = block.every((l) => l.trim().startsWith("- "));
       if (isUl) {
         nodes.push(
@@ -207,7 +194,6 @@ function Projects() {
         continue;
       }
 
-      // Ordered list
       const isOl = block.every((l) => /^\d+\.\s+/.test(l.trim()));
       if (isOl) {
         nodes.push(
@@ -220,23 +206,6 @@ function Projects() {
         continue;
       }
 
-      // “Donate Now” block (nice callout)
-      const textJoined = block.join(" ").toLowerCase();
-      const looksLikeDonate = textJoined.includes("donate") && textJoined.includes("http");
-      if (looksLikeDonate) {
-        nodes.push(
-          <div key={`donate-${i}`} className="project-callout">
-            {block.map((l, idx) => (
-              <p key={`donp-${i}-${idx}`} className="project-p">
-                {parseInline(l)}
-              </p>
-            ))}
-          </div>
-        );
-        continue;
-      }
-
-      // Default paragraphs
       nodes.push(
         <div key={`p-${i}`}>
           {block.map((l, idx) => (
@@ -251,6 +220,61 @@ function Projects() {
     return nodes;
   };
 
+  // ✅ Instagram icon
+  const InstagramIcon = ({ className = "" }) => (
+    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M16.8 3H7.2A4.2 4.2 0 0 0 3 7.2v9.6A4.2 4.2 0 0 0 7.2 21h9.6a4.2 4.2 0 0 0 4.2-4.2V7.2A4.2 4.2 0 0 0 16.8 3Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M12 16.2A4.2 4.2 0 1 0 12 7.8a4.2 4.2 0 0 0 0 8.4Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <path d="M17.4 6.6h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+
+  // ✅ Premium infinite carousel
+  const MovingCarousel = ({ images = [], speed = 26, variant = "card" }) => {
+    const safe = (images || []).filter(Boolean);
+    if (safe.length === 0) return null;
+
+    const track = [...safe, ...safe];
+
+    return (
+      <div
+        className={`project-carousel project-carousel--${variant}`}
+        style={{ ["--duration"]: `${Math.max(10, speed)}s` }}
+        aria-label="Project photos carousel"
+      >
+        <div className="project-carousel__fade project-carousel__fade--left" aria-hidden="true" />
+        <div className="project-carousel__fade project-carousel__fade--right" aria-hidden="true" />
+
+        <div className="project-carousel__viewport">
+          <div className="project-carousel__track">
+            {track.map((src, idx) => (
+              <div className="project-carousel__item" key={`${src}-${idx}`}>
+                <img src={src} alt="" loading="lazy" draggable="false" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const isYouth = (p) => p?.id === "youth_education";
+  const youthInstaUrl = expandedProject?.instagram?.url;
+
+  // ✅ Remove top Instagram button in AMHARIC (you said it duplicates)
+  const showTopInstagramInExpanded = (p) => isYouth(p) && lang !== "am" && !!p?.instagram?.url;
+
+  // ✅ Decide hero display: if carouselImages exist, use carousel instead of big hero image
+  const hasCarousel = (p) => Array.isArray(p?.carouselImages) && p.carouselImages.length > 0;
+
   return (
     <main className="page" id="projects">
       <section className="section-header projects-page-header">
@@ -261,31 +285,23 @@ function Projects() {
       <section className="projects-section">
         {allProjects.length === 0 && (
           <p className="projects-empty">
-            {lang === "am"
-              ? "ፕሮጀክቶች ከCMS በመጨመር በኋላ በዚህ ይታያሉ።"
-              : "Projects will appear here once they are published."}
+            {lang === "am" ? "ፕሮጀክቶች በቅርቡ ይጨመራሉ።" : "Projects will appear here once they are published."}
           </p>
         )}
 
         {allProjects.length > 0 && (
           <>
-            {/* FULL-WIDTH EXPANDED PANEL */}
+            {/* EXPANDED PANEL */}
             {expandedProject && (
               <section className="project-expanded" ref={expandedRef} aria-label="Project details">
                 <div className="project-expanded__inner">
                   <div className="project-expanded__header">
                     <div className="project-expanded__meta">
-                      <span
-                        className={`project-status-pill project-status-pill--${
-                          expandedProject.status || "planned"
-                        }`}
-                      >
+                      <span className={`project-status-pill project-status-pill--${expandedProject.status || "planned"}`}>
                         {getStatusLabel(expandedProject.status)}
                       </span>
 
-                      {expandedProject.startDate && (
-                        <span className="project-date">{formatDate(expandedProject.startDate)}</span>
-                      )}
+                      {expandedProject.startDate && <span className="project-date">{formatDate(expandedProject.startDate)}</span>}
                     </div>
 
                     <button
@@ -299,23 +315,42 @@ function Projects() {
                   </div>
 
                   <div className="project-expanded__content">
-                    {/* LEFT: “hero summary” */}
+                    {/* LEFT */}
                     <aside className="project-expanded__left">
                       <div className="project-heroCard">
                         <h3 className="project-heroTitle">{expandedProject.title}</h3>
 
-                        {!!expandedProject.miniTitle && (
-                          <p className="project-heroMiniTitle">{expandedProject.miniTitle}</p>
+                        {!!expandedProject.miniTitle && <p className="project-heroMiniTitle">{expandedProject.miniTitle}</p>}
+
+                        {/* ✅ Only show this in EN (avoid duplication in AM) */}
+                        {showTopInstagramInExpanded(expandedProject) && (
+                          <div className="project-socialRow" aria-label="Social links">
+                            <button
+                              type="button"
+                              className="project-instagramBtn"
+                              onClick={() => onOpen(expandedProject.instagram.url)}
+                              aria-label={expandedProject.instagram.label || "Instagram"}
+                            >
+                              <span className="project-instagramGlow" aria-hidden="true" />
+                              <InstagramIcon className="project-instagramIcon" />
+                              <span className="project-instagramText">
+                                {expandedProject.instagram.label || (lang === "am" ? "በኢንስታግራም ይከተሉን" : "Follow us on Instagram")}
+                              </span>
+                            </button>
+                          </div>
                         )}
 
                         <p className="project-heroLead">
                           {expandedProject.shortDescription ||
-                            (lang === "am"
-                              ? "ስለዚህ ፕሮጀክት ዝርዝር መረጃ በቅርቡ ታከትታለች።"
-                              : "Details for this project will be added soon.")}
+                            (lang === "am" ? "ስለዚህ ፕሮጀክት ዝርዝር መረጃ በቅርቡ ይጨመራል።" : "Details for this project will be added soon.")}
                         </p>
 
-                        {expandedProject.heroImageUrl && (
+                        {/* ✅ Hero visual */}
+                        {hasCarousel(expandedProject) ? (
+                          <div className="project-heroMediaWrap">
+                            <MovingCarousel images={expandedProject.carouselImages} speed={24} variant="hero" />
+                          </div>
+                        ) : expandedProject.heroImageUrl ? (
                           <div className="project-heroImageWrap">
                             <img
                               src={expandedProject.heroImageUrl}
@@ -324,14 +359,12 @@ function Projects() {
                               loading="lazy"
                             />
                           </div>
-                        )}
+                        ) : null}
 
-                        {/* Support (nice mini section) */}
                         {(expandedProject.supportTitle || expandedProject.supportItems?.length) && (
                           <div className="project-supportBox">
                             <p className="project-supportBox__title">
-                              {expandedProject.supportTitle ||
-                                (lang === "am" ? "እንዴት ልትረዱ ትችላላችሁ?" : "How you can support")}
+                              {expandedProject.supportTitle || (lang === "am" ? "እንዴት ልትረዱ ትችላላችሁ?" : "How you can support")}
                             </p>
 
                             {expandedProject.supportItems?.length > 0 && (
@@ -343,51 +376,37 @@ function Projects() {
                             )}
                           </div>
                         )}
-
-                        {expandedProject.mediaHints?.length > 0 && (
-                          <div className="project-media-hints">
-                            <p className="project-media-hints__title">
-                              {lang === "am" ? "የምስል ሀሳቦች" : "Suggested photos"}
-                            </p>
-                            <ul className="project-media-hints__list">
-                              {expandedProject.mediaHints.map((hint) => (
-                                <li key={hint}>{hint}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
                       </div>
                     </aside>
 
-                    {/* RIGHT: ONE continuous scroll area */}
+                    {/* RIGHT */}
                     <div className="project-expanded__right">
-                      <div className="project-expanded__scroll project-doc">
+                      <div className="project-doc">
                         {expandedProject.longDescription ? (
                           renderFormattedText(null, expandedProject.longDescription)
                         ) : (
-                          <p className="project-expanded__fallback">
-                            {lang === "am"
-                              ? "ዝርዝር መረጃ በቅርቡ ይጨመራል።"
-                              : "More details will be added soon."}
-                          </p>
+                          <p className="project-expanded__fallback">{lang === "am" ? "ዝርዝር መረጃ በቅርቡ ይጨመራል።" : "More details will be added soon."}</p>
                         )}
                       </div>
 
+                      {/* ✅ ACTIONS: Youth uses Instagram CTA */}
                       <div className="project-expanded__actions">
-                        {expandedProject.cta?.url ? (
+                        {isYouth(expandedProject) && youthInstaUrl ? (
                           <button
                             type="button"
-                            className="project-expanded__button"
-                            onClick={() => onOpen(expandedProject.cta.url)}
+                            className="project-expanded__button project-expanded__button--instagram"
+                            onClick={() => onOpen(youthInstaUrl)}
+                            aria-label="Instagram"
                           >
+                            <InstagramIcon className="project-actionIcon" />
+                            <span>{lang === "am" ? "Instagram ይከተሉን" : "Follow on Instagram"}</span>
+                          </button>
+                        ) : expandedProject.cta?.url ? (
+                          <button type="button" className="project-expanded__button" onClick={() => onOpen(expandedProject.cta.url)}>
                             {expandedProject.cta.label || (lang === "am" ? "ይለግሱ" : "Donate Now")}
                           </button>
                         ) : (
-                          <button
-                            type="button"
-                            className="project-expanded__button"
-                            onClick={() => setExpandedKey(null)}
-                          >
+                          <button type="button" className="project-expanded__button" onClick={() => setExpandedKey(null)}>
                             {lang === "am" ? "ተመለስ" : "Back to projects"}
                           </button>
                         )}
@@ -402,38 +421,46 @@ function Projects() {
             <div className={`projects-grid ${showAllProjects ? "projects-grid--expanded" : ""}`}>
               {allProjects.map((project, index) => {
                 const isActive = expandedKey === project.__key;
+                const showInstaTop = isYouth(project) && !!project.instagram?.url; // top-right icon on card is fine for both
 
                 return (
-                  <article
-                    key={project.__key}
-                    className={`project-card ${isActive ? "project-card--active" : ""}`}
-                    data-index={index}
-                  >
-                    {project.heroImageUrl && (
+                  <article key={project.__key} className={`project-card ${isActive ? "project-card--active" : ""}`} data-index={index}>
+                    {/* ✅ Card media: carousel if present, else hero image */}
+                    {hasCarousel(project) ? (
                       <div className="project-image-wrapper">
-                        <img
-                          src={project.heroImageUrl}
-                          alt={project.heroImageAlt || project.title}
-                          className="project-image"
-                          loading="lazy"
-                        />
+                        <MovingCarousel images={project.carouselImages} speed={22} variant="card" />
                         <div className="project-image-overlay" />
                       </div>
-                    )}
+                    ) : project.heroImageUrl ? (
+                      <div className="project-image-wrapper">
+                        <img src={project.heroImageUrl} alt={project.heroImageAlt || project.title} className="project-image" loading="lazy" />
+                        <div className="project-image-overlay" />
+                      </div>
+                    ) : null}
 
                     <div className="project-body">
                       <div className="project-meta-top">
-                        <span
-                          className={`project-status-pill project-status-pill--${
-                            project.status || "planned"
-                          }`}
-                        >
+                        <span className={`project-status-pill project-status-pill--${project.status || "planned"}`}>
                           {getStatusLabel(project.status)}
                         </span>
 
-                        {project.startDate && (
-                          <span className="project-date">{formatDate(project.startDate)}</span>
-                        )}
+                        <div className="project-metaRight">
+                          {project.startDate && <span className="project-date">{formatDate(project.startDate)}</span>}
+
+                          {/* ✅ Insta icon at top-right of card */}
+                          {showInstaTop && (
+                            <button
+                              type="button"
+                              className="project-instaPill"
+                              onClick={() => onOpen(project.instagram.url)}
+                              aria-label={project.instagram.label || "Instagram"}
+                              title={project.instagram.label || "Instagram"}
+                            >
+                              <span className="project-instaPill__glow" aria-hidden="true" />
+                              <InstagramIcon />
+                            </button>
+                          )}
+                        </div>
                       </div>
 
                       <h3 className="project-title">{project.title}</h3>
@@ -442,25 +469,12 @@ function Projects() {
 
                       <p className="project-description">
                         {project.shortDescription ||
-                          (lang === "am"
-                            ? "ስለዚህ ፕሮጀክት ዝርዝር መረጃ በቅርቡ ታከትታለች።"
-                            : "Details for this project will be added soon.")}
+                          (lang === "am" ? "ስለዚህ ፕሮጀክት ዝርዝር መረጃ በቅርቡ ይጨመራል።" : "Details for this project will be added soon.")}
                       </p>
 
                       {project.longDescription && (
-                        <button
-                          type="button"
-                          className="project-read-more-btn"
-                          onClick={() => toggleProject(project.__key)}
-                          aria-expanded={isActive}
-                        >
-                          {isActive
-                            ? lang === "am"
-                              ? "ዝርዝር ዝጋ"
-                              : "Close"
-                            : lang === "am"
-                            ? "ተጨማሪ ያንብቡ"
-                            : "Read more"}
+                        <button type="button" className="project-read-more-btn" onClick={() => toggleProject(project.__key)} aria-expanded={isActive}>
+                          {isActive ? (lang === "am" ? "ዝርዝር ዝጋ" : "Close") : lang === "am" ? "ተጨማሪ ያንብቡ" : "Read more"}
                         </button>
                       )}
                     </div>
@@ -473,13 +487,7 @@ function Projects() {
             {allProjects.length > 2 && (
               <div className="projects-more-wrapper">
                 <button type="button" className="projects-more-btn" onClick={toggleShowAllProjects}>
-                  {showAllProjects
-                    ? lang === "am"
-                      ? "ያጣሩ"
-                      : "Show fewer projects"
-                    : lang === "am"
-                    ? "ተጨማሪ ፕሮጀክቶች ይመልከቱ"
-                    : "Show more projects"}
+                  {showAllProjects ? (lang === "am" ? "ያጣሩ" : "Show fewer projects") : lang === "am" ? "ተጨማሪ ፕሮጀክቶች ይመልከቱ" : "Show more projects"}
                 </button>
               </div>
             )}

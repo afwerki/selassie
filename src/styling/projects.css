@@ -1,12 +1,10 @@
 /* ============================================================
-   PROJECTS PAGE — Final “Glamorous” Styling
-   Works with your current App.css + index.css
-   ✅ Fixes mobile right-cut text
-   ✅ Beautiful premium cards + expanded panel
-   ✅ One continuous scroll area for long text
+   PROJECTS PAGE — Final “Glamorous” Styling (FINAL)
+   ✅ Premium cards + expanded panel
+   ✅ Fixes mobile right-cut
+   ✅ Premium infinite carousel (NO CONFLICTS)
 ============================================================ */
 
-/* Optional: smooth page scroll */
 html {
   scroll-behavior: smooth;
 }
@@ -41,7 +39,6 @@ html {
 
 /* ============================================================
    MOBILE OVERFLOW FIXES (CRITICAL)
-   Prevents “text cut on the right” (iOS + grid overflow)
 ============================================================ */
 
 .project-expanded__content,
@@ -52,18 +49,15 @@ html {
 .projects-grid,
 .project-card,
 .project-body {
-  min-width: 0; /* ✅ key fix for CSS grid overflow */
+  min-width: 0;
 }
 
-/* Force wrapping for long lines (URLs, long words) */
 .project-doc,
 .project-p,
 .project-h2,
 .project-h3,
 .project-ul,
 .project-ol,
-.project-media-hints,
-.project-media-hints__list,
 .project-miniTitle,
 .project-heroMiniTitle {
   overflow-wrap: anywhere;
@@ -77,7 +71,7 @@ html {
 }
 
 /* ============================================================
-   EXPANDED PANEL (FULL WIDTH + PREMIUM)
+   EXPANDED PANEL
 ============================================================ */
 
 .project-expanded {
@@ -86,17 +80,10 @@ html {
   border-radius: 24px;
   overflow: hidden;
   position: relative;
-
   border: 1px solid rgba(148, 163, 184, 0.35);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.95),
-    rgba(248, 250, 252, 0.92)
-  );
-
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.92));
   box-shadow: 0 26px 80px rgba(15, 23, 42, 0.18);
   backdrop-filter: blur(10px);
-
   animation: expandIn 240ms ease both;
 }
 
@@ -105,16 +92,8 @@ html {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(
-      900px 300px at 18% -10%,
-      rgba(249, 115, 22, 0.12),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 380px at 90% 0%,
-      rgba(59, 130, 246, 0.10),
-      transparent 58%
-    );
+  background: radial-gradient(900px 300px at 18% -10%, rgba(249, 115, 22, 0.12), transparent 60%),
+    radial-gradient(900px 380px at 90% 0%, rgba(59, 130, 246, 0.1), transparent 58%);
 }
 
 @keyframes expandIn {
@@ -149,7 +128,6 @@ html {
   gap: 10px;
 }
 
-/* Close button */
 .project-expanded__close {
   width: 44px;
   height: 44px;
@@ -160,8 +138,7 @@ html {
   font-size: 1.25rem;
   line-height: 1;
   color: #0b1220;
-
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.10);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
@@ -179,7 +156,7 @@ html {
 }
 
 /* ============================================================
-   EXPANDED LAYOUT (LEFT SUMMARY + RIGHT DOCUMENT)
+   EXPANDED LAYOUT
 ============================================================ */
 
 .project-expanded__content {
@@ -190,27 +167,20 @@ html {
   align-items: stretch;
 }
 
-/* allow internal scroll areas */
 .project-expanded__left,
 .project-expanded__right {
   min-height: 0;
 }
 
 /* ============================================================
-   LEFT HERO CARD (GLAM SUMMARY)
+   LEFT HERO CARD
 ============================================================ */
 
 .project-heroCard {
   border-radius: 18px;
   padding: 16px;
-
   border: 1px solid rgba(148, 163, 184, 0.28);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.96),
-    rgba(248, 250, 252, 0.92)
-  );
-
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.92));
   box-shadow: 0 18px 55px rgba(15, 23, 42, 0.12);
   position: sticky;
   top: 14px;
@@ -240,7 +210,7 @@ html {
   color: #334155;
 }
 
-/* Hero image */
+/* Hero image fallback */
 .project-heroImageWrap {
   margin-top: 12px;
   border-radius: 16px;
@@ -257,18 +227,19 @@ html {
   filter: saturate(1.06) contrast(1.06);
 }
 
-/* Support box (new from Projects.jsx) */
+/* Wrap for carousel in hero */
+.project-heroMediaWrap {
+  margin-top: 12px;
+}
+
+/* Support box */
 .project-supportBox {
   margin-top: 12px;
-  padding: 12px 12px;
+  padding: 12px;
   border-radius: 16px;
   border: 1px solid rgba(249, 115, 22, 0.22);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 251, 235, 0.92),
-    rgba(255, 255, 255, 0.92)
-  );
-  box-shadow: 0 14px 28px rgba(249, 115, 22, 0.10);
+  background: linear-gradient(180deg, rgba(255, 251, 235, 0.92), rgba(255, 255, 255, 0.92));
+  box-shadow: 0 14px 28px rgba(249, 115, 22, 0.1);
 }
 
 .project-supportBox__title {
@@ -285,56 +256,23 @@ html {
   line-height: 1.65;
 }
 
-.project-supportBox__list li {
-  margin-bottom: 6px;
-}
-
-/* Media hints */
-.project-media-hints {
-  margin-top: 12px;
-  padding: 12px 12px;
-  border-radius: 16px;
-  border: 1px solid rgba(148, 163, 184, 0.28);
-  background: rgba(255, 255, 255, 0.76);
-}
-
-.project-media-hints__title {
-  margin: 0 0 8px;
-  font-weight: 950;
-  color: #0b1220;
-  font-size: 0.92rem;
-}
-
-.project-media-hints__list {
-  margin: 0;
-  padding-left: 18px;
-  color: #334155;
-  line-height: 1.65;
-}
-
 /* ============================================================
-   RIGHT DOCUMENT PANEL (ONE CONTINUOUS SCROLL AREA)
+   RIGHT DOCUMENT PANEL
 ============================================================ */
 
 .project-doc {
   width: 100%;
   max-width: 100%;
-
   max-height: min(62vh, 520px);
   overflow: auto;
   overflow-x: hidden;
-
-  padding: 16px 16px;
+  padding: 16px;
   border-radius: 18px;
-
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(148, 163, 184, 0.32);
-
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 16px 44px rgba(15, 23, 42, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 16px 44px rgba(15, 23, 42, 0.1);
 }
 
-/* nice scrollbar */
 .project-doc::-webkit-scrollbar {
   width: 10px;
 }
@@ -351,33 +289,22 @@ html {
   scrollbar-color: rgba(15, 23, 42, 0.22) transparent;
 }
 
-/* ============================================================
-   DOCUMENT TYPOGRAPHY (your renderer classes)
-============================================================ */
-
+/* Typography */
 .project-p {
   margin: 0 0 12px;
   color: #0f172a;
   font-size: 0.98rem;
   line-height: 1.95;
 }
-
 .project-p strong {
   font-weight: 950;
-  color: #0b1220;
 }
-
 .project-p a {
   color: #1d4ed8;
   font-weight: 900;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-
-.project-p a:hover {
-  filter: brightness(0.95);
-}
-
 .project-h2 {
   margin: 18px 0 10px;
   font-size: 1.18rem;
@@ -386,20 +313,17 @@ html {
   padding-left: 10px;
   border-left: 4px solid rgba(249, 115, 22, 0.72);
 }
-
 .project-h3 {
   margin: 14px 0 8px;
   font-size: 1.04rem;
   color: #1e293b;
   font-weight: 950;
 }
-
 .project-divider {
   border: none;
   border-top: 1px solid rgba(148, 163, 184, 0.35);
   margin: 16px 0;
 }
-
 .project-ul,
 .project-ol {
   margin: 10px 0 14px 20px;
@@ -408,31 +332,9 @@ html {
   line-height: 1.9;
   font-size: 0.98rem;
 }
-
 .project-ul li,
 .project-ol li {
   margin-bottom: 8px;
-}
-
-.project-ol li::marker {
-  font-weight: 950;
-  color: #92400e;
-}
-
-/* Donate callout */
-.project-callout {
-  margin: 12px 0 14px;
-  padding: 14px 14px;
-  border-radius: 18px;
-
-  border: 1px solid rgba(249, 115, 22, 0.25);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 251, 235, 0.96),
-    rgba(255, 255, 255, 0.92)
-  );
-
-  box-shadow: 0 14px 30px rgba(249, 115, 22, 0.12);
 }
 
 /* ============================================================
@@ -449,14 +351,11 @@ html {
   border: none;
   border-radius: 999px;
   padding: 12px 16px;
-
   font-weight: 950;
   cursor: pointer;
   color: #0b1220;
-
   background: linear-gradient(135deg, #facc15, #f97316);
   box-shadow: 0 14px 28px rgba(249, 115, 22, 0.24);
-
   transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
 }
 
@@ -468,18 +367,20 @@ html {
   }
 }
 
-.project-expanded__button:active {
-  transform: translateY(0);
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.14);
+.project-expanded__button--instagram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-.project-expanded__button:focus-visible {
-  outline: 3px solid rgba(59, 130, 246, 0.35);
-  outline-offset: 3px;
+.project-actionIcon {
+  width: 18px;
+  height: 18px;
 }
 
 /* ============================================================
-   GRID (CARDS)
+   GRID
 ============================================================ */
 
 .projects-grid {
@@ -489,7 +390,6 @@ html {
   margin-top: 18px;
 }
 
-/* On small screens, only show first 2 unless expanded */
 @media (max-width: 600px) {
   .projects-grid:not(.projects-grid--expanded) .project-card:nth-child(n + 3) {
     display: none;
@@ -497,21 +397,18 @@ html {
 }
 
 /* ============================================================
-   PROJECT CARD (GLAMOROUS)
+   CARD
 ============================================================ */
 
 .project-card {
   border-radius: 22px;
   overflow: hidden;
-
   background: radial-gradient(circle at top left, #ffffff, #f3f4f6);
   border: 1px solid rgba(148, 163, 184, 0.22);
-
   box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14);
   display: flex;
   flex-direction: column;
-
-  transition: transform 0.22s ease, box-shadow 0.22s ease, outline-color 0.22s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
   animation: cardIn 420ms ease both;
 }
 
@@ -535,15 +432,15 @@ html {
 
 .project-card--active {
   outline: 2px solid rgba(59, 130, 246, 0.18);
-  box-shadow: 0 34px 86px rgba(15, 23, 42, 0.24);
 }
 
-/* Image */
+/* Card media */
 .project-image-wrapper {
   position: relative;
   overflow: hidden;
 }
 
+/* Only used when NOT carousel */
 .project-image {
   width: 100%;
   height: 190px;
@@ -560,19 +457,14 @@ html {
   }
 }
 
-/* Cinematic overlay */
 .project-image-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(10, 18, 32, 0.55),
-    rgba(10, 18, 32, 0.12),
-    transparent 60%
-  );
+  background: linear-gradient(to top, rgba(10, 18, 32, 0.55), rgba(10, 18, 32, 0.12), transparent 60%);
   pointer-events: none;
 }
 
+/* Card body */
 .project-body {
   padding: 14px 16px 16px;
 }
@@ -593,7 +485,6 @@ html {
   letter-spacing: -0.25px;
 }
 
-/* Mini title (from Projects.jsx) */
 .project-miniTitle {
   margin: 0 0 8px;
   font-size: 0.93rem;
@@ -602,23 +493,18 @@ html {
   line-height: 1.55;
 }
 
-/* Keep cards compact */
 .project-description {
   margin: 0;
   font-size: 0.93rem;
   color: #4b5563;
   line-height: 1.75;
-
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* ============================================================
-   STATUS PILL
-============================================================ */
-
+/* Status pill */
 .project-status-pill {
   font-size: 0.78rem;
   padding: 5px 10px;
@@ -626,26 +512,18 @@ html {
   font-weight: 950;
   letter-spacing: 0.2px;
 }
-
-/* planned */
 .project-status-pill--planned {
   background: #eff6ff;
   color: #1d4ed8;
 }
-
-/* in progress */
 .project-status-pill--in_progress {
   background: #fffbeb;
   color: #92400e;
 }
-
-/* completed */
 .project-status-pill--completed {
   background: #ecfdf3;
   color: #166534;
 }
-
-/* ongoing */
 .project-status-pill--ongoing {
   background: #eef2ff;
   color: #3730a3;
@@ -656,10 +534,7 @@ html {
   color: #94a3b8;
 }
 
-/* ============================================================
-   BUTTONS
-============================================================ */
-
+/* Buttons */
 .project-read-more-btn {
   margin-top: 12px;
   padding: 9px 12px;
@@ -668,10 +543,8 @@ html {
   font-size: 0.9rem;
   font-weight: 950;
   cursor: pointer;
-
   background: linear-gradient(135deg, #facc15, #f97316);
   color: #0b1220;
-
   box-shadow: 0 14px 28px rgba(249, 115, 22, 0.22);
   transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
 }
@@ -679,59 +552,28 @@ html {
 @media (hover: hover) {
   .project-read-more-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 18px 38px rgba(249, 115, 22, 0.30);
+    box-shadow: 0 18px 38px rgba(249, 115, 22, 0.3);
     filter: brightness(1.02);
   }
 }
 
-.project-read-more-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.14);
-}
-
-.project-read-more-btn:focus-visible {
-  outline: 3px solid rgba(59, 130, 246, 0.35);
-  outline-offset: 3px;
-}
-
-/* ============================================================
-   SHOW MORE (MOBILE)
-============================================================ */
-
+/* Show more mobile */
 .projects-more-wrapper {
   margin-top: 16px;
   display: none;
   justify-content: center;
 }
-
 .projects-more-btn {
   border: none;
   border-radius: 999px;
   padding: 10px 18px;
   font-size: 0.95rem;
   font-weight: 950;
-
   background: linear-gradient(135deg, #e0ecff, #f5f3ff);
   color: #1d4ed8;
-
   cursor: pointer;
   box-shadow: 0 10px 24px rgba(37, 99, 235, 0.2);
-  transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
 }
-
-@media (hover: hover) {
-  .projects-more-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 34px rgba(37, 99, 235, 0.28);
-    filter: brightness(1.01);
-  }
-}
-
-.projects-more-btn:focus-visible {
-  outline: 3px solid rgba(59, 130, 246, 0.35);
-  outline-offset: 3px;
-}
-
 @media (max-width: 600px) {
   .projects-more-wrapper {
     display: flex;
@@ -739,27 +581,238 @@ html {
 }
 
 /* ============================================================
-   RESPONSIVE
+   Instagram Icon Pill (Card)
 ============================================================ */
 
+.project-metaRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.project-instaPill {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
+  overflow: hidden;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+}
+
+.project-instaPill__glow {
+  position: absolute;
+  inset: -4px;
+  border-radius: 999px;
+  pointer-events: none;
+  background: conic-gradient(
+    from 180deg,
+    rgba(249, 115, 22, 0.35),
+    rgba(236, 72, 153, 0.35),
+    rgba(59, 130, 246, 0.35),
+    rgba(249, 115, 22, 0.35)
+  );
+  filter: blur(14px);
+  opacity: 0.35;
+  animation: instaGlowSpin 3.2s linear infinite;
+}
+
+@keyframes instaGlowSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (hover: hover) {
+  .project-instaPill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.14);
+    filter: brightness(1.01);
+  }
+  .project-instaPill:hover .project-instaPill__glow {
+    opacity: 0.5;
+  }
+}
+
+/* ============================================================
+   Instagram Button (Expanded top) — EN only by JSX
+============================================================ */
+
+.project-socialRow {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.project-instagramBtn {
+  position: relative;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 999px;
+  padding: 10px 12px;
+  cursor: pointer;
+  color: #0b1220;
+  font-weight: 950;
+  font-size: 0.92rem;
+  background: radial-gradient(120% 120% at 10% 10%, rgba(249, 115, 22, 0.16), transparent 55%),
+    radial-gradient(120% 120% at 90% 0%, rgba(59, 130, 246, 0.14), transparent 58%),
+    rgba(255, 255, 255, 0.92);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
+  overflow: hidden;
+}
+
+.project-instagramGlow {
+  position: absolute;
+  inset: -2px;
+  border-radius: 999px;
+  pointer-events: none;
+  background: conic-gradient(
+    from 180deg,
+    rgba(249, 115, 22, 0.35),
+    rgba(236, 72, 153, 0.35),
+    rgba(59, 130, 246, 0.35),
+    rgba(249, 115, 22, 0.35)
+  );
+  filter: blur(16px);
+  opacity: 0.35;
+  animation: instaGlowSpin 3.2s linear infinite;
+}
+
+.project-instagramIcon,
+.project-instagramText {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   PREMIUM MOVING CAROUSEL (FINAL — NO DUPLICATES)
+============================================================ */
+
+.project-carousel {
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.72);
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+}
+
+.project-carousel__viewport {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.project-carousel__track {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  width: max-content;
+  animation: projectMarquee var(--duration, 26s) linear infinite;
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  .project-carousel:hover .project-carousel__track {
+    animation-play-state: paused;
+  }
+}
+
+.project-carousel__item {
+  flex: 0 0 auto;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateZ(0);
+}
+
+.project-carousel__item img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  filter: saturate(1.08) contrast(1.06);
+  transform: scale(1.02);
+}
+
+@keyframes projectMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.project-carousel__fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 56px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.project-carousel__fade--left {
+  left: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+}
+
+.project-carousel__fade--right {
+  right: 0;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+}
+
+/* Variants */
+.project-carousel--card .project-carousel__item {
+  width: 150px;
+  aspect-ratio: 16 / 10;
+}
+
+.project-carousel--hero .project-carousel__item {
+  width: 210px;
+  aspect-ratio: 16 / 10;
+}
+
+/* Ensure carousel fills card media height nicely */
+.project-image-wrapper .project-carousel {
+  height: 190px;
+}
+.project-image-wrapper .project-carousel__viewport,
+.project-image-wrapper .project-carousel__item,
+.project-image-wrapper .project-carousel__item img {
+  height: 100%;
+}
+
+/* Responsive */
 @media (max-width: 1100px) {
   .projects-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
-  /* expanded: stack */
   .project-expanded__content {
     grid-template-columns: 1fr;
   }
-
-  .project-expanded__image {
-    height: 220px;
-  }
-
   .project-doc {
     max-height: min(60vh, 560px);
   }
-
   .project-heroCard {
     position: relative;
     top: 0;
@@ -809,16 +862,17 @@ html {
     width: 100%;
   }
 
-  /* sticky on mobile can feel cramped */
   .project-heroCard {
     position: relative;
     top: 0;
   }
 
-  .project-p,
-  .project-ul,
-  .project-ol {
-    font-size: 0.96rem;
+  .project-carousel--card .project-carousel__item {
+    width: 140px;
+  }
+
+  .project-carousel--hero .project-carousel__item {
+    width: 190px;
   }
 }
 
@@ -832,24 +886,21 @@ html {
     border-radius: 16px;
   }
 
-  .project-h2 {
-    font-size: 1.08rem;
-  }
-
-  .project-p {
-    font-size: 0.96rem;
-  }
-
   .project-expanded__close {
     width: 42px;
     height: 42px;
   }
+
+  .project-carousel--card .project-carousel__item {
+    width: 132px;
+  }
+
+  .project-carousel--hero .project-carousel__item {
+    width: 172px;
+  }
 }
 
-/* ============================================================
-   ACCESSIBILITY: reduce motion
-============================================================ */
-
+/* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -861,14 +912,59 @@ html {
     transition: none;
   }
 
-  .project-image {
-    transition: none;
+  .project-carousel__track,
+  .project-instagramGlow,
+  .project-instaPill__glow {
+    animation: none !important;
   }
+}
 
-  .project-read-more-btn,
-  .projects-more-btn,
-  .project-expanded__button,
-  .project-expanded__close {
-    transition: none;
+/* ============================================================
+   FINAL FIX OVERRIDE — carousel must fill the card height
+   Paste this at the VERY BOTTOM of projects.css
+============================================================ */
+
+/* Ensure the wrapper defines the media height */
+.project-image-wrapper {
+  height: 190px;
+}
+
+/* Make carousel fill wrapper height */
+.project-image-wrapper .project-carousel,
+.project-image-wrapper .project-carousel__viewport {
+  height: 100% !important;
+}
+
+/* Track must stretch full height (so items can too) */
+.project-image-wrapper .project-carousel__track {
+  height: 100% !important;
+  align-items: stretch !important;
+}
+
+/* Items MUST fill height */
+.project-image-wrapper .project-carousel__item {
+  height: 100% !important;
+  width: 280px !important;            /* nice big cards */
+  border-radius: 18px !important;
+}
+
+/* Images must fill item */
+.project-image-wrapper .project-carousel__item img {
+  height: 100% !important;
+  width: 100% !important;
+  object-fit: cover !important;
+  border-radius: 18px !important;
+}
+
+/* Make it responsive */
+@media (max-width: 700px) {
+  .project-image-wrapper .project-carousel__item {
+    width: 240px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .project-image-wrapper .project-carousel__item {
+    width: 210px !important;
   }
 }
