@@ -17,7 +17,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 30;
+  z-index: 200000;          /* ✅ raised above sermons */
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
@@ -155,10 +155,11 @@
   }
 
   .navbar-links {
-    position: absolute;
+    position: fixed;         /* ✅ was absolute */
     top: 72px;
     right: 0;
     left: 0;
+    z-index: 200001;         /* ✅ above everything */
     flex-direction: column;
     background-color: var(--nav-bg);
     padding: 16px 0 20px;
