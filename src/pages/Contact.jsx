@@ -1,28 +1,35 @@
 import React, { useState } from "react";
 import "../styling/contact.css";
+import { useLanguage } from "../contexts/LanguageContext";
+import { contactTexts } from "../i18n/contact";
 
 const MAP_EMBED_SRC =
   "https://maps.google.com/maps?q=51.55854,-0.22529&z=16&output=embed";
 
-// ✅ Web3Forms endpoint
 const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
-
-// ✅ Put your Web3Forms access key here
 const WEB3FORMS_ACCESS_KEY = "60ec16b5-0196-4db9-92d5-0e515e02c393";
 
 function Contact() {
+  const { lang } = useLanguage();
+  const t = contactTexts[lang];
+
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
   const [sentTo, setSentTo] = useState("");
-  const [values, setValues] = useState({ name: "", email: "", message: "" });
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
 
   const isValidEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
 
   const validate = () => {
     if (!values.name.trim()) return false;
-    if (!values.email.trim() || !isValidEmail(values.email.trim())) return false;
-    if (!values.message.trim() || values.message.trim().length < 3) return false;
-    if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY.includes("PASTE_"))
+    if (!values.email.trim() || !isValidEmail(values.email.trim()))
       return false;
+    if (!values.message.trim() || values.message.trim().length < 3)
+      return false;
+    if (!WEB3FORMS_ACCESS_KEY) return false;
     return true;
   };
 
@@ -47,11 +54,11 @@ function Contact() {
       const payload = {
         access_key: WEB3FORMS_ACCESS_KEY,
         subject: "ከደብረስላሴ Website የተላከ መልእክት",
-        from_name: "ከደብረስላሴ Website የተላከ መልእክት",
+        from_name: "Debre-Genet Holy Trinity Church Website",
         name: values.name,
         email: values.email,
         message: values.message,
-        replyto: values.email, // ✅ makes replying easy (reply goes to sender)
+        replyto: values.email,
       };
 
       const res = await fetch(WEB3FORMS_ENDPOINT, {
@@ -63,7 +70,7 @@ function Contact() {
       const data = await res.json();
 
       if (!res.ok || !data?.success) {
-        throw new Error(data?.message || "Web3Forms submission failed");
+        throw new Error(data?.message || "Submission failed");
       }
 
       setStatus("success");
@@ -77,98 +84,122 @@ function Contact() {
 
   return (
     <main className="page page--contact" id="contact">
+      {/* HEADER */}
       <section className="section-header section-header--contact">
-        <h2>Contact &amp; Visit Us</h2>
-        <p>
-          Get in touch with the church office, send us a message, or plan your
-          visit. We are always happy to hear from you.
-        </p>
+        <h2 className="amharic-fix">{t.header.title}</h2>
+        <p className="amharic-fix">{t.header.description}</p>
       </section>
 
       <section className="contact-grid">
-        {/* LEFT */}
+        {/* LEFT COLUMN */}
         <div className="contact-column contact-column--info">
           <div className="contact-card">
-            <h3>Contact Details</h3>
+            <h3 className="amharic-fix">{t.details.title}</h3>
 
             <div className="contact-kv">
               <div className="contact-kv__row">
-                <span className="contact-kv__label">Email</span>
-                <a className="contact-kv__value" href="mailto:office@dght.uk">
+                <span className="contact-kv__label">
+                  {t.details.email}
+                </span>
+                <a
+                  className="contact-kv__value"
+                  href="mailto:office@dght.uk"
+                >
                   office@dght.uk
                 </a>
               </div>
 
               <div className="contact-kv__row">
-                <span className="contact-kv__label">Phone</span>
-                <a className="contact-kv__value" href="tel:+447341339751">
+                <span className="contact-kv__label">
+                  {t.details.phone}
+                </span>
+                <a
+                  className="contact-kv__value"
+                  href="tel:+447341339751"
+                >
                   07341 339 751
                 </a>
               </div>
             </div>
 
-            <p className="contact-visit-text">
-              Please contact us for baptisms, weddings, house blessings, or if
-              you would like to meet with a priest.
+            <p className="contact-visit-text amharic-fix">
+              {t.details.note}
             </p>
           </div>
 
           <div className="contact-card">
-            <h3>Visit Us</h3>
-            <p className="contact-address">
+            <h3 className="amharic-fix">{t.visit.title}</h3>
+
+            <p className="contact-address amharic-fix">
               <span className="contact-address__title">
-                Debre-Genet Holy Trinity Church
+                {t.visit.churchName}
               </span>
-              <span className="contact-address__line">St Michael&apos;s Road</span>
-              <span className="contact-address__line">London NW2 6XG</span>
+              <span className="contact-address__line">
+                {t.visit.address1}
+              </span>
+              <span className="contact-address__line">
+                {t.visit.address2}
+              </span>
             </p>
-            <p className="contact-visit-text">
-              Sunday liturgy and main services are held at the address above.
-              Please check our service times for the latest schedule.
+
+            <p className="contact-visit-text amharic-fix">
+              {t.visit.note}
             </p>
           </div>
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT COLUMN */}
         <div className="contact-column contact-column--form-map">
           <form className="contact-form" onSubmit={onSubmit} noValidate>
             <div className="form-header">
-              <h3>Send Us a Message</h3>
-              <p className="form-subtitle">
-                We usually respond via email within 24–48 hours.
+              <h3 className="amharic-fix">{t.form.title}</h3>
+              <p className="form-subtitle amharic-fix">
+                {t.form.subtitle}
               </p>
             </div>
 
             {status === "success" && (
-              <div className="form-alert form-alert--success" role="status">
-                <div className="form-alert__title">Thank you! 🙏</div>
+              <div
+                className="form-alert form-alert--success"
+                role="status"
+              >
+                <div className="form-alert__title">
+                  {t.form.success.title}
+                </div>
                 <div className="form-alert__text">
-                  We’ve received your message. We’ll get back to you at{" "}
-                  <strong>{sentTo}</strong>.
+                  {t.form.success.message}{" "}
+                  <strong>{sentTo}</strong>
                 </div>
               </div>
             )}
 
             {status === "error" && (
-              <div className="form-alert form-alert--error" role="status">
-                <div className="form-alert__title">Please check your details</div>
+              <div
+                className="form-alert form-alert--error"
+                role="status"
+              >
+                <div className="form-alert__title">
+                  {t.form.error.title}
+                </div>
                 <div className="form-alert__text">
-                  Make sure your name, email, and message are filled correctly.
-                  If it still fails, email us directly at{" "}
-                  <a href="mailto:office@dght.uk">office@dght.uk</a>.
+                  {t.form.error.message}{" "}
+                  <a href="mailto:office@dght.uk">
+                    office@dght.uk
+                  </a>
                 </div>
               </div>
             )}
 
-            {/* ✅ 2-column group on desktop */}
             <div className="form-row-grid">
               <div className="form-row">
-                <label htmlFor="contact-name">Name</label>
+                <label htmlFor="contact-name">
+                  {t.form.fields.name.label}
+                </label>
                 <input
                   id="contact-name"
                   type="text"
                   name="name"
-                  placeholder="Your full name"
+                  placeholder={t.form.fields.name.placeholder}
                   value={values.name}
                   onChange={onChange}
                   disabled={status === "sending"}
@@ -177,12 +208,14 @@ function Contact() {
               </div>
 
               <div className="form-row">
-                <label htmlFor="contact-email">Email</label>
+                <label htmlFor="contact-email">
+                  {t.form.fields.email.label}
+                </label>
                 <input
                   id="contact-email"
                   type="email"
                   name="email"
-                  placeholder="you@example.com"
+                  placeholder={t.form.fields.email.placeholder}
                   value={values.email}
                   onChange={onChange}
                   disabled={status === "sending"}
@@ -192,12 +225,14 @@ function Contact() {
             </div>
 
             <div className="form-row">
-              <label htmlFor="contact-message">Message</label>
+              <label htmlFor="contact-message">
+                {t.form.fields.message.label}
+              </label>
               <textarea
                 id="contact-message"
                 name="message"
                 rows="5"
-                placeholder="How can we help?"
+                placeholder={t.form.fields.message.placeholder}
                 value={values.message}
                 onChange={onChange}
                 disabled={status === "sending"}
@@ -209,21 +244,19 @@ function Contact() {
               type="submit"
               disabled={status === "sending"}
             >
-              {status === "sending" ? "Sending…" : "Send Message"}
+              {status === "sending"
+                ? t.form.submit.sending
+                : t.form.submit.idle}
             </button>
 
-            <p className="form-note">
-              By submitting, you agree that we may contact you back using the
-              email you provided.
+            <p className="form-note amharic-fix">
+              {t.form.note}
             </p>
           </form>
 
           <div className="map-card">
-            <h3>Map &amp; Directions</h3>
-            <p className="map-text">
-              Find us on the map below. You can zoom and move around, or open
-              the location directly in Google Maps.
-            </p>
+            <h3 className="amharic-fix">{t.map.title}</h3>
+            <p className="map-text amharic-fix">{t.map.text}</p>
 
             <div className="map-embed-wrapper">
               <iframe
@@ -231,7 +264,7 @@ function Contact() {
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Debre-Genet Holy Trinity Church map"
+                title="Church location map"
               />
             </div>
 
@@ -241,7 +274,7 @@ function Contact() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Open in Google Maps
+              {t.map.open}
             </a>
           </div>
         </div>

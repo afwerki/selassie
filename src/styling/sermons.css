@@ -1,11 +1,3 @@
-/* ============================================================
-   SERMONS / TEACHINGS / QUIZ — CLEAN PROFESSIONAL UI (FIXED)
-   src/styling/sermons.css
-   - Fixes huge written-teaching image (now card-sized, cropped nicely)
-   - Keeps burger ONLY on mobile
-   - Removes tips (sermons-hint hidden)
-============================================================ */
-
 :root {
   --ser-ink: #0f1b33;
   --ser-muted: rgba(15, 27, 51, 0.72);
@@ -24,7 +16,27 @@
   --ser-radius: 22px;
 }
 
-/* ---------- SECTION WRAP ---------- */
+/* ============================================================
+   A11Y + MOTION
+============================================================ */
+:focus-visible {
+  outline: 3px solid rgba(47, 104, 181, 0.28);
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   SECTION WRAP
+============================================================ */
 .sermons-section {
   position: relative;
   margin-top: 60px;
@@ -32,6 +44,12 @@
   max-width: 1100px;
   margin-left: auto;
   margin-right: auto;
+  overflow: visible;
+}
+
+/* when menu open, create predictable stacking context */
+.sermons-section.is-menu-open {
+  isolation: isolate;
 }
 
 /* background glow */
@@ -73,10 +91,24 @@
 }
 
 /* ============================================================
-   TABS (DESKTOP)
+   WOW STAGGER (cards enter nicely)
 ============================================================ */
+.wow-stagger {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: wowIn 420ms ease forwards;
+  animation-delay: calc(var(--stagger, 0) * 70ms);
+}
 
+@keyframes wowIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   TABS (DESKTOP) + ANIMATED INDICATOR
+============================================================ */
 .sermons-tabs {
+  position: relative;
   display: inline-flex;
   gap: 8px;
   padding: 7px;
@@ -86,6 +118,7 @@
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(10px);
   margin: 16px 0 14px;
+  overflow: hidden;
 }
 
 .sermons-tab {
@@ -99,11 +132,17 @@
   color: rgba(15, 27, 51, 0.80);
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+  position: relative;
+  z-index: 2;
 }
 
 .sermons-tab:hover {
   background: rgba(242, 181, 68, 0.12);
   transform: translateY(-1px);
+}
+
+.sermons-tab:active {
+  transform: translateY(0px) scale(0.99);
 }
 
 .sermons-tab.active {
@@ -118,10 +157,36 @@
   opacity: 0.85;
 }
 
-/* ============================================================
-   TOOLBAR (ALWAYS VISIBLE)
-============================================================ */
+/* ✅ animated pill indicator */
+.sermons-tab-indicator {
+  position: absolute;
+  top: 7px;
+  bottom: 7px;
+  left: 7px;
+  width: calc((100% - 14px - 16px) / 3);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(47, 104, 181, 0.12), rgba(242, 181, 68, 0.14));
+  border: 1px solid rgba(15, 27, 51, 0.08);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+  z-index: 1;
+  transform: translateX(0);
+  transition: transform 0.28s cubic-bezier(.2,.85,.2,1);
+  animation: indicatorPulse 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
 
+@keyframes indicatorPulse {
+  0%, 100% { transform: translateX(var(--ix, 0)) scale(1); }
+  50% { transform: translateX(var(--ix, 0)) scale(1.01); }
+}
+
+.sermons-tab-indicator--videos { --ix: 0px; }
+.sermons-tab-indicator--teachings { --ix: 33.5%; }
+.sermons-tab-indicator--qa { --ix: 67%; }
+
+/* ============================================================
+   TOOLBAR
+============================================================ */
 .sermons-toolbar {
   display: grid;
   grid-template-columns: 1fr auto auto auto;
@@ -129,6 +194,8 @@
   align-items: center;
   margin-top: 8px;
   margin-bottom: 10px;
+  position: relative;
+  z-index: 100002;
 }
 
 .sermons-search {
@@ -147,6 +214,11 @@
   font-size: 0.95rem;
   outline: none;
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.sermons-search input:focus {
+  box-shadow: 0 16px 40px rgba(47, 104, 181, 0.14);
 }
 
 .sermons-search input:disabled {
@@ -164,7 +236,10 @@
   border-radius: 999px;
   cursor: pointer;
   font-weight: 900;
+  transition: transform 0.16s ease;
 }
+
+.sermons-clear:active { transform: scale(0.96); }
 
 .sermons-sort select {
   border: 1px solid rgba(15, 27, 51, 0.14);
@@ -191,25 +266,17 @@
 }
 
 /* ============================================================
-   REMOVE TIPS (YOU SAID NO NEED)
+   MOBILE MENU
 ============================================================ */
-.sermons-hint {
-  display: none !important;
-}
-
-/* ============================================================
-   MOBILE BURGER (ONLY MOBILE)
-============================================================ */
-
 .sermons-mobile-menu-wrap {
-  position: relative; /* anchor for dropdown */
-  z-index: 60;        /* ensure above cards */
-  display: none;      /* hidden on desktop */
+  position: relative;
+  z-index: 10001;
+  display: none;
 }
 
 .sermons-burger {
   border: 1px solid rgba(15, 27, 51, 0.14);
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.92);
   border-radius: 999px;
   padding: 10px 12px;
   display: inline-flex;
@@ -220,20 +287,14 @@
   font-weight: 900;
   color: rgba(15, 27, 51, 0.92);
   white-space: nowrap;
+  transition: transform 0.16s ease;
 }
 
-.sermons-burger-icon {
-  font-size: 1.05rem;
-}
+.sermons-burger:active { transform: scale(0.99); }
 
-.sermons-burger-label {
-  font-size: 0.92rem;
-  white-space: nowrap;
-}
-
-.sermons-burger-caret {
-  opacity: 0.75;
-}
+.sermons-burger-icon { font-size: 1.05rem; }
+.sermons-burger-label { font-size: 0.92rem; white-space: nowrap; }
+.sermons-burger-caret { opacity: 0.75; }
 
 .sermons-mobile-menu {
   position: absolute;
@@ -245,7 +306,13 @@
   border-radius: 16px;
   box-shadow: 0 26px 80px rgba(15, 23, 42, 0.18);
   overflow: hidden;
-  z-index: 9999;
+  z-index: 100000;
+  animation: menuDrop 180ms ease;
+}
+
+@keyframes menuDrop {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .sermons-mobile-item {
@@ -269,15 +336,38 @@
   background: linear-gradient(135deg, rgba(242, 181, 68, 0.22), rgba(246, 207, 119, 0.18));
 }
 
+.sermons-menu-scrim {
+  position: fixed;
+  inset: 0;
+  border: none;
+  background: rgba(10, 20, 36, 0.08);
+  padding: 0;
+  margin: 0;
+  z-index: 90000;
+}
+
+/* when menu open, page content can't steal clicks */
+.sermons-section.is-menu-open .sermons-content {
+  pointer-events: none;
+}
+
+.sermons-section.is-menu-open .sermons-mobile-menu-wrap,
+.sermons-section.is-menu-open .sermons-mobile-menu,
+.sermons-section.is-menu-open .sermons-burger,
+.sermons-section.is-menu-open .sermons-menu-scrim {
+  pointer-events: auto;
+}
+
 /* ============================================================
    TAGS
 ============================================================ */
-
 .sermons-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin: 8px 0 18px;
+  position: relative;
+  z-index: 5;
 }
 
 .sermons-tag {
@@ -288,7 +378,15 @@
   font-weight: 850;
   font-size: 0.86rem;
   cursor: pointer;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
 }
+
+.sermons-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.sermons-tag:active { transform: translateY(0) scale(0.99); }
 
 .sermons-tag.active {
   background: rgba(47, 104, 181, 0.10);
@@ -299,15 +397,11 @@
 /* ============================================================
    PANELS
 ============================================================ */
-
-.tab-panel {
-  margin-top: 6px;
-}
+.tab-panel { margin-top: 6px; }
 
 /* ============================================================
    LOADING / EMPTY
 ============================================================ */
-
 .sermons-skeleton-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -327,9 +421,7 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.sermons-skeleton-card--t {
-  height: 190px;
-}
+.sermons-skeleton-card--t { height: 190px; }
 
 @keyframes shimmer {
   0% { background-position: 0% 0; }
@@ -355,7 +447,6 @@
 /* ============================================================
    VIDEOS
 ============================================================ */
-
 .video-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -373,7 +464,22 @@
   box-shadow: var(--ser-shadow);
   backdrop-filter: blur(10px);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
+
+.video-card::after {
+  content: "";
+  position: absolute;
+  inset: -30px;
+  background: radial-gradient(circle at 20% 10%, rgba(242,181,68,0.16), transparent 45%),
+              radial-gradient(circle at 90% 30%, rgba(47,104,181,0.12), transparent 48%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.video-card:hover::after { opacity: 1; }
 
 .video-card:hover {
   transform: translateY(-4px);
@@ -390,7 +496,7 @@
   border-radius: 18px;
   overflow: hidden;
   cursor: pointer;
-  min-height: 180px;
+  min-height: 160px;
 }
 
 .video-thumb img {
@@ -433,7 +539,10 @@
   border-radius: 999px;
   padding: 9px 12px;
   font-weight: 950;
+  transition: transform 0.16s ease;
 }
+
+.video-thumb:active .video-play { transform: scale(0.99); }
 
 .video-play-icon {
   width: 26px;
@@ -445,9 +554,7 @@
   background: linear-gradient(135deg, var(--ser-gold), var(--ser-gold2));
 }
 
-.video-info {
-  padding: 2px 4px;
-}
+.video-info { padding: 2px 4px; }
 
 .sermons-meta {
   margin: 0 0 6px;
@@ -466,14 +573,26 @@
   line-height: 1.25;
 }
 
-.video-info p {
-  margin: 6px 0 0;
+.video-desc {
+  margin-top: 8px;
   color: rgba(15, 27, 51, 0.70);
   line-height: 1.6;
-  font-size: 0.97rem;
+  font-size: 0.95rem;
+  max-height: 96px;
+  overflow: auto;
+  padding-right: 6px;
 }
 
-/* pills / mini tags */
+.video-desc::-webkit-scrollbar { width: 8px; }
+.video-desc::-webkit-scrollbar-thumb {
+  background: rgba(15, 27, 51, 0.18);
+  border-radius: 999px;
+}
+.video-desc::-webkit-scrollbar-track {
+  background: rgba(15, 27, 51, 0.06);
+  border-radius: 999px;
+}
+
 .featured-pill {
   position: absolute;
   top: 12px;
@@ -510,9 +629,8 @@
 }
 
 /* ============================================================
-   TEACHINGS (FIXED IMAGE — NO MORE HUGE)
+   TEACHINGS
 ============================================================ */
-
 .teaching-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -527,8 +645,22 @@
   box-shadow: 0 14px 36px rgba(15, 23, 42, 0.10);
   backdrop-filter: blur(10px);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  overflow: hidden; /* critical: keeps media rounded */
+  overflow: hidden;
+  position: relative;
 }
+
+.teaching-card::after {
+  content: "";
+  position: absolute;
+  inset: -30px;
+  background: radial-gradient(circle at 20% 10%, rgba(47,104,181,0.12), transparent 45%),
+              radial-gradient(circle at 90% 30%, rgba(242,181,68,0.14), transparent 48%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.teaching-card:hover::after { opacity: 1; }
 
 .teaching-card:hover {
   transform: translateY(-4px);
@@ -536,10 +668,9 @@
   border-color: rgba(47, 104, 181, 0.20);
 }
 
-/* ✅ this matches your JSX: <div className="teaching-media"><img /></div> */
 .teaching-media {
   width: 100%;
-  height: 170px;               /* card-sized */
+  height: 170px;
   border-radius: 18px;
   overflow: hidden;
   margin-bottom: 12px;
@@ -551,7 +682,7 @@
 .teaching-media img {
   width: 100%;
   height: 100%;
-  object-fit: cover;           /* crops nicely */
+  object-fit: cover;
   display: block;
   transform: scale(1.02);
   transition: transform 0.35s ease;
@@ -561,7 +692,6 @@
   transform: scale(1.06);
 }
 
-/* optional: soft overlay so text area feels premium */
 .teaching-media::after {
   content: "";
   position: absolute;
@@ -637,7 +767,10 @@
   background: linear-gradient(135deg, rgba(242, 181, 68, 0.95), rgba(246, 207, 119, 0.92));
   color: #142645;
   box-shadow: 0 16px 32px rgba(242, 181, 68, 0.22);
+  transition: transform 0.16s ease;
 }
+
+.teaching-btn:active { transform: scale(0.99); }
 
 .teaching-btn--disabled {
   opacity: 0.55;
@@ -646,9 +779,8 @@
 }
 
 /* ============================================================
-   QUIZ SETS (constrained image)
+   QUIZ SETS
 ============================================================ */
-
 .quiz-sets-header h3 {
   margin: 0 0 6px;
   font-size: 1.25rem;
@@ -686,6 +818,7 @@
   display: flex;
   flex-direction: column;
   min-height: 320px;
+  position: relative;
 }
 
 .quiz-set-card:hover {
@@ -700,6 +833,7 @@
   height: 170px;
   overflow: hidden;
   flex: 0 0 auto;
+  background: rgba(15, 23, 42, 0.06);
 }
 
 .quiz-set-image img {
@@ -719,12 +853,16 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.10), transparent 60%);
+  background: linear-gradient(
+    to top,
+    rgba(15, 23, 42, 0.55),
+    rgba(15, 23, 42, 0.10),
+    transparent 60%
+  );
+  pointer-events: none;
 }
 
-.quiz-set-body {
-  padding: 12px 14px 14px;
-}
+.quiz-set-body { padding: 12px 14px 14px; }
 
 .quiz-set-topline {
   display: flex;
@@ -732,12 +870,6 @@
   align-items: baseline;
   gap: 8px;
   margin-bottom: 6px;
-}
-
-.quiz-set-date {
-  font-size: 0.78rem;
-  color: rgba(15, 27, 51, 0.55);
-  font-weight: 900;
 }
 
 .quiz-set-status {
@@ -797,38 +929,46 @@
   color: #14335f;
   cursor: pointer;
   box-shadow: 0 14px 32px rgba(15, 23, 42, 0.10);
+  transition: transform 0.16s ease;
 }
 
-/* Back link */
+.quiz-sets-show-more:active { transform: scale(0.99); }
+
+/* ============================================================
+   QUIZ — base
+============================================================ */
+.quiz-shell {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 6px 2px 2px;
+  animation: quizFadeUp 320ms ease;
+}
+
+@keyframes quizFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .quiz-back-link {
   border: none;
-  background: none;
-  padding: 0;
-  margin-bottom: 10px;
-  font-size: 0.92rem;
-  font-weight: 1000;
-  color: #1d4ed8;
+  background: rgba(255,255,255,0.8);
+  border: 1px solid rgba(15,27,51,0.12);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 900;
   cursor: pointer;
+  margin-bottom: 10px;
 }
 
 .quiz-back-link--top { margin-bottom: 12px; }
 
-/* ============================================================
-   QUIZ RUNNER
-============================================================ */
-
-.quiz-header h3 {
-  margin: 0;
-  font-size: 1.35rem;
-  color: var(--ser-ink);
-  letter-spacing: -0.01em;
-}
-
-.quiz-header p {
-  margin-top: 6px;
-  color: rgba(15, 27, 51, 0.70);
-  font-size: 0.95rem;
-  line-height: 1.6;
+.quiz-header {
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(15,27,51,0.10);
+  box-shadow: 0 14px 44px rgba(15,23,42,0.08);
+  margin-bottom: 12px;
 }
 
 .quiz-header-top {
@@ -839,211 +979,269 @@
 }
 
 .quiz-progress-label {
-  font-size: 0.85rem;
-  color: rgba(15, 27, 51, 0.62);
   font-weight: 1000;
+  color: rgba(15,27,51,0.66);
 }
 
 .quiz-progress {
-  margin-top: 10px;
-  width: 100%;
-  height: 7px;
+  height: 10px;
   border-radius: 999px;
-  background: rgba(15, 27, 51, 0.10);
+  background: rgba(15,27,51,0.08);
   overflow: hidden;
+  margin-top: 10px;
 }
 
 .quiz-progress-bar {
   height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--ser-blue), var(--ser-gold));
-  transition: width 0.3s ease-out;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(47,104,181,0.55), rgba(242,181,68,0.55));
+  transition: width 240ms ease;
 }
 
 .quiz-card {
-  background: var(--ser-card);
-  padding: 18px;
-  border-radius: var(--ser-radius);
-  margin-top: 16px;
-  box-shadow: 0 18px 55px rgba(15, 23, 42, 0.12);
-  border: 1px solid rgba(15, 27, 51, 0.08);
-  backdrop-filter: blur(10px);
+  border-radius: 22px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(15, 27, 51, 0.10);
+  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.12);
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ============================================================
+   ✅ QUIZ ANIMATIONS (you already toggle these classes in JSX)
+============================================================ */
+.quiz-card--enter {
+  animation: quizCardEnter 280ms cubic-bezier(.2,.85,.2,1) both;
+}
+@keyframes quizCardEnter {
+  from { opacity: 0; transform: translateY(10px) scale(0.99); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Correct: pop + glow + burst */
+.quiz-card--correct-animate {
+  border-color: rgba(22,163,74,0.28);
+  box-shadow: 0 22px 70px rgba(22,163,74,0.16), 0 18px 60px rgba(15, 23, 42, 0.12);
+  animation: correctPop 520ms cubic-bezier(.2,.9,.2,1) both;
+}
+
+@keyframes correctPop {
+  0%   { transform: scale(0.98); }
+  35%  { transform: scale(1.02); }
+  70%  { transform: scale(0.995); }
+  100% { transform: scale(1); }
+}
+
+/* Burst overlay */
+.quiz-card--correct-animate::before {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(34,197,94,0.22), transparent 52%),
+    radial-gradient(circle at 75% 35%, rgba(242,181,68,0.18), transparent 56%),
+    radial-gradient(circle at 55% 80%, rgba(47,104,181,0.14), transparent 58%);
+  opacity: 0;
+  animation: burstIn 520ms ease both;
+  pointer-events: none;
+}
+
+@keyframes burstIn {
+  0% { opacity: 0; transform: scale(0.96); }
+  35% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.55; transform: scale(1.01); }
+}
+
+/* Confetti dots (CSS-only, no JS) */
+.quiz-card--correct-animate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, rgba(34,197,94,0.9) 0 3px, transparent 4px) 12% 20%/22px 22px,
+    radial-gradient(circle, rgba(242,181,68,0.95) 0 3px, transparent 4px) 78% 24%/24px 24px,
+    radial-gradient(circle, rgba(47,104,181,0.9) 0 3px, transparent 4px) 62% 78%/26px 26px,
+    radial-gradient(circle, rgba(34,197,94,0.8) 0 2px, transparent 3px) 30% 70%/20px 20px,
+    radial-gradient(circle, rgba(242,181,68,0.85) 0 2px, transparent 3px) 88% 62%/18px 18px;
+  opacity: 0;
+  animation: confetti 650ms ease both;
+}
+
+@keyframes confetti {
+  0% { opacity: 0; transform: translateY(10px); filter: blur(0.2px); }
+  35% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+/* Incorrect: shake */
+.quiz-card--incorrect-animate {
+  border-color: rgba(239,68,68,0.22);
+  animation: wrongShake 420ms ease both;
+}
+@keyframes wrongShake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
 }
 
 .quiz-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
 .quiz-difficulty {
-  font-size: 0.82rem;
-  color: rgba(15, 27, 51, 0.70);
-  font-weight: 900;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(15, 27, 51, 0.06);
-  border: 1px solid rgba(15, 27, 51, 0.08);
+  font-weight: 1000;
+  font-size: 0.85rem;
+  color: rgba(15,27,51,0.64);
 }
 
 .quiz-question {
-  margin: 14px 0 10px;
-  font-size: 1.12rem;
-  font-weight: 1000;
-  color: var(--ser-ink);
-  line-height: 1.35;
+  margin: 8px 0 12px;
+  color: rgba(15,27,51,0.95);
+  letter-spacing: -0.01em;
 }
 
 .quiz-options {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 10px;
+  margin-top: 10px;
 }
 
 .quiz-option {
-  padding: 12px 14px;
   border-radius: 16px;
-  border: 1px solid rgba(15, 27, 51, 0.14);
-  background: rgba(255, 255, 255, 0.72);
-  cursor: pointer;
-  text-align: left;
+  border: 1px solid rgba(15,27,51,0.12);
+  background: rgba(255,255,255,0.9);
+  padding: 12px 12px;
   display: flex;
-  gap: 10px;
   align-items: center;
-  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, border-color 0.16s ease;
-  font-size: 0.97rem;
-  color: rgba(15, 27, 51, 0.86);
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 900;
+  text-align: left;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
 }
 
 .quiz-option:hover {
-  background: rgba(242, 181, 68, 0.10);
-  border-color: rgba(242, 181, 68, 0.28);
-  transform: translateY(-2px);
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.10);
+  border-color: rgba(47,104,181,0.22);
+  box-shadow: 0 14px 34px rgba(15,23,42,0.10);
+  transform: translateY(-1px);
+}
+
+.quiz-option:active { transform: translateY(0) scale(0.99); }
+
+.quiz-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.92;
 }
 
 .quiz-option-bullet {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 999px;
-  background: rgba(15, 27, 51, 0.26);
+  background: rgba(15,27,51,0.18);
+  flex: 0 0 auto;
 }
 
 .quiz-option--selected {
-  border-color: rgba(47, 104, 181, 0.38);
-  background: rgba(47, 104, 181, 0.08);
+  border-color: rgba(47,104,181,0.30);
+  background: rgba(47,104,181,0.06);
 }
 
 .quiz-option--correct {
-  border-color: rgba(22, 163, 74, 0.45);
-  background: rgba(22, 163, 74, 0.08);
+  border-color: rgba(22,163,74,0.28);
+  background: rgba(22,163,74,0.08);
 }
 
 .quiz-option--incorrect {
-  border-color: rgba(220, 38, 38, 0.40);
-  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(239,68,68,0.24);
+  background: rgba(239,68,68,0.06);
 }
 
 .quiz-reaction {
-  position: relative;
   margin-top: 12px;
-  padding: 10px 14px 10px 38px;
-  border-radius: 18px;
   font-weight: 1000;
-  font-size: 0.95rem;
 }
 
-.quiz-reaction--correct {
-  background: linear-gradient(90deg, rgba(22, 163, 74, 0.10), rgba(22, 163, 74, 0.06));
-  color: #166534;
-  border: 1px solid rgba(22, 163, 74, 0.22);
+.quiz-reaction--correct { color: #166534; }
+.quiz-reaction--incorrect { color: #991b1b; }
+
+/* Collapsible explanation */
+.quiz-explain {
+  margin-top: 12px;
+  border-radius: 16px;
+  background: rgba(15, 27, 51, 0.05);
+  border: 1px solid rgba(15, 27, 51, 0.08);
+  padding: 10px 12px;
 }
 
-.quiz-reaction--incorrect {
-  background: linear-gradient(90deg, rgba(220, 38, 38, 0.10), rgba(220, 38, 38, 0.06));
-  color: #b91c1c;
-  border: 1px solid rgba(220, 38, 38, 0.20);
+.quiz-explain summary {
+  cursor: pointer;
+  font-weight: 1000;
+  color: rgba(15,27,51,0.88);
 }
 
-.quiz-reaction--correct::before,
-.quiz-reaction--incorrect::before {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.2rem;
-}
-
-.quiz-reaction--correct::before { content: "✅"; }
-.quiz-reaction--incorrect::before { content: "⚠️"; }
-
-.quiz-explanation {
+.quiz-explain-body {
   margin-top: 10px;
-  font-size: 0.92rem;
-  color: rgba(15, 27, 51, 0.72);
+  color: rgba(15, 27, 51, 0.78);
   line-height: 1.65;
 }
 
 .quiz-footer {
-  margin-top: 14px;
   display: flex;
   justify-content: flex-end;
+  margin-top: 12px;
 }
 
 .quiz-next-btn,
 .quiz-reset-btn {
   border: none;
   border-radius: 999px;
-  padding: 10px 18px;
+  padding: 10px 14px;
   font-weight: 1000;
-  letter-spacing: 0.01em;
-  color: #142645;
-  background: linear-gradient(135deg, var(--ser-gold), var(--ser-gold2));
-  box-shadow: 0 16px 32px rgba(242, 181, 68, 0.26);
   cursor: pointer;
+  background: linear-gradient(135deg, rgba(242, 181, 68, 0.95), rgba(246, 207, 119, 0.92));
+  color: #142645;
+  box-shadow: 0 16px 32px rgba(242, 181, 68, 0.22);
+  transition: transform 0.16s ease;
 }
 
-.quiz-next-btn[disabled] {
+.quiz-next-btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
   box-shadow: none;
 }
 
-/* ============================================================
-   QUIZ RESULT CARD
-============================================================ */
+.quiz-next-btn:active,
+.quiz-reset-btn:active { transform: scale(0.99); }
 
 .quiz-result-card {
-  background: var(--ser-card);
-  border-radius: var(--ser-radius);
-  padding: 22px;
-  box-shadow: 0 22px 70px rgba(15, 23, 42, 0.14);
-  border: 1px solid rgba(15, 27, 51, 0.08);
-  max-width: 520px;
-  margin-top: 18px;
-}
-
-.quiz-result-card h3 {
-  margin: 0 0 6px;
-  font-size: 1.35rem;
-  letter-spacing: -0.01em;
+  padding: 14px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(15, 27, 51, 0.10);
+  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.12);
 }
 
 .quiz-score {
-  margin: 6px 0 12px;
-  font-size: 1.05rem;
-  color: rgba(15, 27, 51, 0.78);
   font-weight: 900;
+  color: rgba(15,27,51,0.78);
 }
 
 /* ============================================================
    VIDEO MODAL
 ============================================================ */
-
 .sermons-modal {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 999999;
   background: rgba(10, 20, 36, 0.62);
   display: flex;
   align-items: center;
@@ -1103,16 +1301,11 @@
 }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE (base)
 ============================================================ */
-
 @media (max-width: 1000px) {
-  .video-card {
-    grid-template-columns: 1fr;
-  }
-  .video-thumb {
-    min-height: 210px;
-  }
+  .video-card { grid-template-columns: 1fr; }
+  .video-thumb { min-height: 210px; }
 }
 
 @media (max-width: 900px) {
@@ -1120,57 +1313,168 @@
   .teaching-grid {
     grid-template-columns: 1fr;
   }
-
-  .quiz-sets-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  .quiz-sets-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 700px) {
-  /* hide desktop tabs, show burger */
-  .sermons-tabs--desktop {
-    display: none;
-  }
-  .sermons-mobile-menu-wrap {
-    display: block;
-  }
+  .sermons-tabs--desktop { display: none; }
+  .sermons-mobile-menu-wrap { display: block; }
 
-  /* toolbar becomes compact */
   .sermons-toolbar {
     grid-template-columns: 1fr auto;
     grid-auto-rows: auto;
+    gap: 10px;
   }
 
-  /* sort under row on mobile */
-  .sermons-sort {
-    grid-column: 1 / -1;
-  }
+  .sermons-sort { grid-column: 1 / -1; }
+  .sermons-sort select { width: 100%; }
+  .sermons-reset { display: none; }
 
-  .sermons-sort select {
-    width: 100%;
-  }
+  .teaching-media { height: 160px; }
 
-  .sermons-reset {
-    display: none;
-  }
-
-  .quiz-sets-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .quiz-set-image {
-    height: 190px;
-  }
-
-  /* slightly taller teaching image on mobile */
-  .teaching-media {
-    height: 190px;
-  }
+  .quiz-sets-grid { grid-template-columns: 1fr; }
+  .quiz-set-image { height: 160px; }
 }
 
 @media (min-width: 701px) {
-  /* on desktop, burger hidden */
-  .sermons-mobile-menu-wrap {
+  .sermons-mobile-menu-wrap { display: none; }
+}
+
+/* ============================================================
+   ✅ FINAL MOBILE PREMIUM UPGRADE (VIDEOS + QUIZ SETS)
+   (This overrides the earlier responsive blocks on purpose)
+============================================================ */
+@media (max-width: 700px) {
+  /* ---------- Video cards become compact “media row” cards ---------- */
+  .video-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .video-card {
+    grid-template-columns: 120px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .video-thumb {
+    min-height: 86px;
+    height: 86px;
+    border-radius: 14px;
+  }
+
+  .video-play {
+    left: 8px;
+    bottom: 8px;
+    padding: 6px 9px;
+    gap: 6px;
+    font-size: 0.82rem;
+  }
+
+  .video-play-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 0.85rem;
+  }
+
+  .featured-pill {
+    top: 8px;
+    right: 8px;
+    padding: 5px 8px;
+    font-size: 0.70rem;
+  }
+
+  .sermons-meta {
+    font-size: 0.72rem;
+    margin-bottom: 4px;
+  }
+
+  .video-info h3 {
+    font-size: 0.98rem;
+    line-height: 1.25;
+    margin: 0 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* max 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* hide long desc on mobile – keeps card small */
+  .video-desc {
     display: none;
+  }
+
+  /* tags: small, single line wrap */
+  .mini-tags {
+    margin-top: 6px;
+    gap: 6px;
+  }
+
+  .mini-tag {
+    font-size: 0.72rem;
+    padding: 4px 8px;
+  }
+
+  /* ---------- Quiz Sets: compact + premium ---------- */
+  .quiz-sets-grid {
+    gap: 12px;
+  }
+
+  .quiz-set-card {
+    min-height: auto;
+    border-radius: 18px;
+  }
+
+  .quiz-set-image {
+    height: 120px;
+  }
+
+  .quiz-set-body {
+    padding: 12px 12px 12px;
+  }
+
+  .quiz-set-title {
+    font-size: 0.98rem;
+    margin: 6px 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .quiz-set-description {
+    font-size: 0.86rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* keep compact */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .quiz-set-meta {
+    margin-top: 8px;
+    font-size: 0.78rem;
+  }
+
+  /* ---------- Quiz play view: more “game-like” on mobile ---------- */
+  .quiz-card {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .quiz-question {
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  .quiz-option {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .quiz-next-btn {
+    width: 100%;
+    justify-content: center;
   }
 }

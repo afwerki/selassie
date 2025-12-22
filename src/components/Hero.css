@@ -14,7 +14,7 @@
 }
 
 /* =========================================================
-   VIDEO (2-layer crossfade for mobile autoplay stability)
+   VIDEO (2-layer crossfade)
 ========================================================= */
 
 .hero__videoWrap {
@@ -31,7 +31,9 @@
   height: 100%;
   object-fit: cover;
 
-  /* nicer look */
+  /* ✅ prevents flash / blink on desktop */
+  background: #020617;
+
   transform: scale(1.035);
   filter: saturate(1.07) contrast(1.06) brightness(0.92);
 
@@ -49,7 +51,7 @@
 }
 
 /* =========================================================
-   SUBTLE PHOTO WASH (keeps brand mood without hiding video)
+   SUBTLE PHOTO WASH
 ========================================================= */
 
 .hero__photoWash {
@@ -58,13 +60,13 @@
   z-index: 1;
   background-size: cover;
   background-position: center;
-  opacity: 0.10;              /* ✅ keep video visible */
-  mix-blend-mode: soft-light; /* ✅ premium wash */
+  opacity: 0.10;
+  mix-blend-mode: soft-light;
   filter: blur(0.2px);
 }
 
 /* =========================================================
-   OVERLAYS (readability without killing the video)
+   OVERLAYS
 ========================================================= */
 
 .hero__overlay {
@@ -96,7 +98,7 @@
 }
 
 /* =========================================================
-   FLOATING ACCENTS (simple, clean)
+   FLOATING ACCENTS
 ========================================================= */
 
 .hero__shape {
@@ -136,6 +138,7 @@
   from { transform: translateY(-10px) rotate(0deg); }
   to   { transform: translateY(12px) rotate(10deg); }
 }
+
 @keyframes heroOrb {
   from { transform: translate(-14px, 10px) scale(1); }
   to   { transform: translate(14px, -10px) scale(1.08); }
@@ -151,13 +154,11 @@
   z-index: 5;
   display: flex;
   align-items: center;
-
-  /* ✅ keep it away from edges but not huge */
   padding: 0 clamp(1.1rem, 5vw, 4rem);
 }
 
 /* =========================================================
-   GLASS CARD (smaller + video-visible)
+   GLASS CARD
 ========================================================= */
 
 .heroCard {
@@ -166,10 +167,9 @@
   padding: 18px 18px 14px;
   position: relative;
 
-  /* ✅ real glass */
   background:
     radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.22), transparent 55%),
-    rgba(2, 6, 23, 0.24); /* ✅ lighter so video shows */
+    rgba(2, 6, 23, 0.24);
   border: 1px solid rgba(255, 255, 255, 0.14);
 
   backdrop-filter: blur(18px);
@@ -178,7 +178,6 @@
   box-shadow: 0 26px 76px rgba(0, 0, 0, 0.50);
 }
 
-/* inner hairline */
 .heroCard::before {
   content: "";
   position: absolute;
@@ -188,7 +187,6 @@
   pointer-events: none;
 }
 
-/* top sheen */
 .heroCard::after {
   content: "";
   position: absolute;
@@ -232,7 +230,7 @@
 }
 
 /* =========================================================
-   ANIMATION (stronger, modern)
+   ANIMATION
 ========================================================= */
 
 .heroAnim {
@@ -308,7 +306,8 @@
   display: inline-flex;
   align-items: baseline;
   gap: 4px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
   font-size: 0.78rem;
   letter-spacing: 0.14em;
   color: rgba(226, 232, 240, 0.82);
@@ -349,7 +348,7 @@
 }
 
 /* =========================================================
-   RESPONSIVE (mobile MUST show the video)
+   RESPONSIVE
 ========================================================= */
 
 @media (max-width: 768px) {
@@ -363,14 +362,13 @@
     padding-bottom: 74px;
   }
 
-  /* ✅ smaller + more transparent glass on mobile */
   .heroCard {
     width: min(460px, 94vw);
     padding: 16px 14px 14px;
     border-radius: 18px;
     background:
       radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.20), transparent 60%),
-      rgba(2, 6, 23, 0.18); /* ✅ lighter so video shows */
+      rgba(2, 6, 23, 0.18);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
   }
@@ -409,5 +407,10 @@
 @media (prefers-reduced-motion: reduce) {
   .hero__video { display: none; }
   .hero__shape { animation: none !important; }
-  .heroAnim { animation: none !important; opacity: 1; transform: none; filter: none; }
+  .heroAnim {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
 }
