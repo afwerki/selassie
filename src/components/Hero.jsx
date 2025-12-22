@@ -7,7 +7,7 @@ import slide1 from "../assets/images/church_inside.png";
 import slide2 from "../assets/images/jesus.png";
 import slide3 from "../assets/images/mission.jpg";
 
-// ✅ TEMP: duplicate the same mp4 4 times for now (replace later)
+// ✅ TEMP: duplicate same mp4 4 times for now (replace later)
 import heroVideo1 from "../assets/videos/church-hero.mp4";
 import heroVideo2 from "../assets/videos/church-hero.mp4";
 import heroVideo3 from "../assets/videos/church-hero.mp4";
@@ -30,12 +30,16 @@ function Hero() {
 
   const [active, setActive] = useState(0);
 
-  // ✅ Video crossfade system (2 video elements only — best for mobile autoplay)
-  const [videoIndex, setVideoIndex] = useState(0); // which video in heroVideos should be loaded next
-  const [videoSlot, setVideoSlot] = useState(0);   // 0 or 1 (which <video> is visible)
+  // ✅ Crossfade system: only 2 video tags
+  const [videoIndex, setVideoIndex] = useState(0);
+  const [videoSlot, setVideoSlot] = useState(0); // 0 or 1 (which is visible)
 
   const videoARef = useRef(null);
   const videoBRef = useRef(null);
+
+  // ✅ Use explicit <source> for desktop reliability
+  const [srcA, setSrcA] = useState(heroVideos[0]);
+  const [srcB, setSrcB] = useState(heroVideos[1] || heroVideos[0]);
 
   const [isPaused, setIsPaused] = useState(false);
   const [touchStartX, setTouchStartX] = useState(null);
@@ -44,7 +48,7 @@ function Hero() {
   const goNext = () => goTo(active + 1);
   const goPrev = () => goTo(active - 1);
 
-  // ✅ SINGLE timer to rotate BOTH slide text + background video together
+  // ✅ single timer for both slide text + video
   useEffect(() => {
     if (isPaused) return;
 
@@ -56,41 +60,46 @@ function Hero() {
     return () => clearInterval(timer);
   }, [isPaused, slides.length]);
 
-  // ✅ Load the next video into the hidden slot, then swap slots for crossfade
+  // ✅ Load next src into hidden slot, swap only when "playing"
   useEffect(() => {
-    const incomingRef = videoSlot === 0 ? videoBRef : videoARef;
+    const nextSrc = heroVideos[videoIndex];
+
+    // hidden/incoming slot = opposite of current visible slot
+    const incomingIsB = videoSlot === 0;
+
+    // Set incoming source
+    if (incomingIsB) setSrcB(nextSrc);
+    else setSrcA(nextSrc);
+
+    const incomingRef = incomingIsB ? videoBRef : videoARef;
     const incoming = incomingRef.current;
     if (!incoming) return;
 
-    // Set source
-    incoming.src = heroVideos[videoIndex];
-    incoming.load();
-
-    // Try to play as soon as it can (iOS safe)
     const tryPlay = async () => {
       try {
         await incoming.play();
       } catch {
-        // ignore autoplay failures; user gesture will fix it
+        // ignore autoplay failures (muted should allow it)
       }
     };
 
-    const onCanPlay = () => {
-      tryPlay();
-      // swap visible slot -> triggers CSS crossfade
+    const onPlaying = () => {
+      // ✅ swap only when video is truly playing (prevents blink on desktop)
       setVideoSlot((s) => (s === 0 ? 1 : 0));
     };
 
-    incoming.addEventListener("canplay", onCanPlay, { once: true });
+    incoming.addEventListener("playing", onPlaying, { once: true });
+    tryPlay();
 
-    // fallback (some browsers won’t fire canplay reliably)
+    // fallback if playing doesn't fire
     const fallback = setTimeout(() => {
-      tryPlay();
       setVideoSlot((s) => (s === 0 ? 1 : 0));
-    }, 900);
+    }, 1200);
 
-    return () => clearTimeout(fallback);
-  }, [videoIndex]); // eslint-disable-line react-hooks/exhaustive-deps
+    return () => {
+      clearTimeout(fallback);
+    };
+  }, [videoIndex]); // keep minimal deps on purpose
 
   // Keyboard navigation
   const handleKeyDown = (e) => {
@@ -127,7 +136,7 @@ function Hero() {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* ✅ Background video crossfade (2 videos only) */}
+      {/* ✅ Background video crossfade */}
       <div className="hero__videoWrap" aria-hidden="true">
         <video
           ref={videoARef}
@@ -138,7 +147,10 @@ function Hero() {
           playsInline
           preload="auto"
           poster={activeSlide?.image}
-        />
+        >
+          <source src={srcA} type="video/mp4" />
+        </video>
+
         <video
           ref={videoBRef}
           className={`hero__video ${videoSlot === 1 ? "is-on" : "is-off"}`}
@@ -148,10 +160,12 @@ function Hero() {
           playsInline
           preload="auto"
           poster={activeSlide?.image}
-        />
+        >
+          <source src={srcB} type="video/mp4" />
+        </video>
       </div>
 
-      {/* ✅ super subtle photo wash (keeps vibe but doesn’t hide video) */}
+      {/* ✅ subtle photo wash */}
       <div
         className="hero__photoWash"
         style={{ backgroundImage: `url(${activeSlide?.image})` }}
@@ -162,13 +176,12 @@ function Hero() {
       <div className="hero__overlay" aria-hidden="true" />
       <div className="hero__noise" aria-hidden="true" />
 
-      {/* floating accents */}
+      {/* accents */}
       <div className="hero__shape hero__shape--cross" aria-hidden="true" />
       <div className="hero__shape hero__shape--orb" aria-hidden="true" />
 
       {/* content */}
       <div className="hero__content">
-        {/* ✅ key remount => animations replay when slide/lang changes */}
         <div className="heroCard" key={`heroCard-${lang}-${active}`}>
           <h1 className="heroCard__title heroAnim heroAnim--1 amharic-fix">
             {activeSlide?.title}
@@ -203,6 +216,7 @@ function Hero() {
             className={`heroDot ${i === active ? "is-active" : ""}`}
             onClick={() => {
               setIsPaused(true);
+              setVideoIndex(i % heroVideos.length);
               goTo(i);
             }}
             aria-label={`Go to slide ${i + 1}`}
