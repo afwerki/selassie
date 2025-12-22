@@ -163,12 +163,11 @@
   top: 7px;
   bottom: 7px;
   left: 7px;
-  width: calc((100% - 14px - 16px) / 3); /* approximate for 3 tabs; looks great in practice */
+  width: calc((100% - 14px - 16px) / 3);
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(47, 104, 181, 0.12), rgba(242, 181, 68, 0.14));
   border: 1px solid rgba(15, 27, 51, 0.08);
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
-  filter: blur(0px);
   z-index: 1;
   transform: translateX(0);
   transition: transform 0.28s cubic-bezier(.2,.85,.2,1);
@@ -181,7 +180,6 @@
   50% { transform: translateX(var(--ix, 0)) scale(1.01); }
 }
 
-/* map active tab to indicator shift */
 .sermons-tab-indicator--videos { --ix: 0px; }
 .sermons-tab-indicator--teachings { --ix: 33.5%; }
 .sermons-tab-indicator--qa { --ix: 67%; }
@@ -197,9 +195,8 @@
   margin-top: 8px;
   margin-bottom: 10px;
   position: relative;
-z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
+  z-index: 100002;
 }
-
 
 .sermons-search {
   position: relative;
@@ -339,28 +336,6 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
   background: linear-gradient(135deg, rgba(242, 181, 68, 0.22), rgba(246, 207, 119, 0.18));
 }
 
-.sermons-mobile-indicator-wrap {
-  position: relative;
-  height: 10px;
-  padding: 10px 12px 12px;
-  background: rgba(15, 27, 51, 0.03);
-}
-
-.sermons-mobile-indicator {
-  display: block;
-  height: 6px;
-  border-radius: 999px;
-  width: 36%;
-  background: linear-gradient(135deg, rgba(47, 104, 181, 0.25), rgba(242, 181, 68, 0.28));
-  border: 1px solid rgba(15, 27, 51, 0.08);
-  transition: transform 0.26s cubic-bezier(.2,.85,.2,1);
-}
-
-.sermons-mobile-indicator--videos { transform: translateX(0%); }
-.sermons-mobile-indicator--teachings { transform: translateX(86%); }
-.sermons-mobile-indicator--qa { transform: translateX(172%); }
-
-/* ✅ Scrim (below menu, above content) */
 .sermons-menu-scrim {
   position: fixed;
   inset: 0;
@@ -371,7 +346,7 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
   z-index: 90000;
 }
 
-/* ✅ Bulletproof: when menu open, page content can't steal clicks */
+/* when menu open, page content can't steal clicks */
 .sermons-section.is-menu-open .sermons-content {
   pointer-events: none;
 }
@@ -470,7 +445,7 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
 }
 
 /* ============================================================
-   VIDEOS (smaller cards + scroll desc)
+   VIDEOS
 ============================================================ */
 .video-grid {
   display: grid;
@@ -493,7 +468,6 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
   overflow: hidden;
 }
 
-/* subtle glow */
 .video-card::after {
   content: "";
   position: absolute;
@@ -599,7 +573,6 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
   line-height: 1.25;
 }
 
-/* ✅ scrollable description (prevents giant cards) */
 .video-desc {
   margin-top: 8px;
   color: rgba(15, 27, 51, 0.70);
@@ -610,7 +583,6 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
   padding-right: 6px;
 }
 
-/* prettier scrollbar */
 .video-desc::-webkit-scrollbar { width: 8px; }
 .video-desc::-webkit-scrollbar-thumb {
   background: rgba(15, 27, 51, 0.18);
@@ -807,7 +779,7 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
 }
 
 /* ============================================================
-   QUIZ SETS — PREVENT HUGE IMAGE (your fix kept)
+   QUIZ SETS
 ============================================================ */
 .quiz-sets-header h3 {
   margin: 0 0 6px;
@@ -846,6 +818,7 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
   display: flex;
   flex-direction: column;
   min-height: 320px;
+  position: relative;
 }
 
 .quiz-set-card:hover {
@@ -897,12 +870,6 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
   align-items: baseline;
   gap: 8px;
   margin-bottom: 6px;
-}
-
-.quiz-set-date {
-  font-size: 0.78rem;
-  color: rgba(15, 27, 51, 0.55);
-  font-weight: 900;
 }
 
 .quiz-set-status {
@@ -968,8 +935,7 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
 .quiz-sets-show-more:active { transform: scale(0.99); }
 
 /* ============================================================
-   QUIZ — PREMIUM SHELL + MOTION (adds wow)
-   (keeps your logic; styling upgrades only)
+   QUIZ — base
 ============================================================ */
 .quiz-shell {
   max-width: 760px;
@@ -1038,6 +1004,89 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
   border: 1px solid rgba(15, 27, 51, 0.10);
   box-shadow: 0 18px 60px rgba(15, 23, 42, 0.12);
   padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ============================================================
+   ✅ QUIZ ANIMATIONS (you already toggle these classes in JSX)
+============================================================ */
+.quiz-card--enter {
+  animation: quizCardEnter 280ms cubic-bezier(.2,.85,.2,1) both;
+}
+@keyframes quizCardEnter {
+  from { opacity: 0; transform: translateY(10px) scale(0.99); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Correct: pop + glow + burst */
+.quiz-card--correct-animate {
+  border-color: rgba(22,163,74,0.28);
+  box-shadow: 0 22px 70px rgba(22,163,74,0.16), 0 18px 60px rgba(15, 23, 42, 0.12);
+  animation: correctPop 520ms cubic-bezier(.2,.9,.2,1) both;
+}
+
+@keyframes correctPop {
+  0%   { transform: scale(0.98); }
+  35%  { transform: scale(1.02); }
+  70%  { transform: scale(0.995); }
+  100% { transform: scale(1); }
+}
+
+/* Burst overlay */
+.quiz-card--correct-animate::before {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(34,197,94,0.22), transparent 52%),
+    radial-gradient(circle at 75% 35%, rgba(242,181,68,0.18), transparent 56%),
+    radial-gradient(circle at 55% 80%, rgba(47,104,181,0.14), transparent 58%);
+  opacity: 0;
+  animation: burstIn 520ms ease both;
+  pointer-events: none;
+}
+
+@keyframes burstIn {
+  0% { opacity: 0; transform: scale(0.96); }
+  35% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.55; transform: scale(1.01); }
+}
+
+/* Confetti dots (CSS-only, no JS) */
+.quiz-card--correct-animate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, rgba(34,197,94,0.9) 0 3px, transparent 4px) 12% 20%/22px 22px,
+    radial-gradient(circle, rgba(242,181,68,0.95) 0 3px, transparent 4px) 78% 24%/24px 24px,
+    radial-gradient(circle, rgba(47,104,181,0.9) 0 3px, transparent 4px) 62% 78%/26px 26px,
+    radial-gradient(circle, rgba(34,197,94,0.8) 0 2px, transparent 3px) 30% 70%/20px 20px,
+    radial-gradient(circle, rgba(242,181,68,0.85) 0 2px, transparent 3px) 88% 62%/18px 18px;
+  opacity: 0;
+  animation: confetti 650ms ease both;
+}
+
+@keyframes confetti {
+  0% { opacity: 0; transform: translateY(10px); filter: blur(0.2px); }
+  35% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+/* Incorrect: shake */
+.quiz-card--incorrect-animate {
+  border-color: rgba(239,68,68,0.22);
+  animation: wrongShake 420ms ease both;
+}
+@keyframes wrongShake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
 }
 
 .quiz-card-header {
@@ -1090,7 +1139,7 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
 
 .quiz-option:disabled {
   cursor: not-allowed;
-  opacity: 0.88;
+  opacity: 0.92;
 }
 
 .quiz-option-bullet {
@@ -1124,7 +1173,7 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
 .quiz-reaction--correct { color: #166534; }
 .quiz-reaction--incorrect { color: #991b1b; }
 
-/* ✅ Collapsible explanation */
+/* Collapsible explanation */
 .quiz-explain {
   margin-top: 12px;
   border-radius: 16px;
@@ -1252,7 +1301,7 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
 }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE (base)
 ============================================================ */
 @media (max-width: 1000px) {
   .video-card { grid-template-columns: 1fr; }
@@ -1281,42 +1330,151 @@ z-index: 100002; /* ✅ above .sermons-menu-scrim (90000) */
   .sermons-sort select { width: 100%; }
   .sermons-reset { display: none; }
 
-  .video-card {
-    padding: 12px;
-    gap: 10px;
-    border-radius: 18px;
-  }
-
-  .video-thumb {
-    min-height: 150px;
-    border-radius: 16px;
-  }
-
-  .video-play {
-    left: 10px;
-    bottom: 10px;
-    padding: 7px 10px;
-    gap: 8px;
-  }
-
-  .video-play-icon {
-    width: 22px;
-    height: 22px;
-  }
-
-  .video-info h3 {
-    font-size: 1rem;
-    margin: 0 0 6px;
-  }
-
-  .sermons-meta { font-size: 0.76rem; }
-
   .teaching-media { height: 160px; }
 
   .quiz-sets-grid { grid-template-columns: 1fr; }
-  .quiz-set-image { height: 190px; }
+  .quiz-set-image { height: 160px; }
 }
 
 @media (min-width: 701px) {
   .sermons-mobile-menu-wrap { display: none; }
+}
+
+/* ============================================================
+   ✅ FINAL MOBILE PREMIUM UPGRADE (VIDEOS + QUIZ SETS)
+   (This overrides the earlier responsive blocks on purpose)
+============================================================ */
+@media (max-width: 700px) {
+  /* ---------- Video cards become compact “media row” cards ---------- */
+  .video-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .video-card {
+    grid-template-columns: 120px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .video-thumb {
+    min-height: 86px;
+    height: 86px;
+    border-radius: 14px;
+  }
+
+  .video-play {
+    left: 8px;
+    bottom: 8px;
+    padding: 6px 9px;
+    gap: 6px;
+    font-size: 0.82rem;
+  }
+
+  .video-play-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 0.85rem;
+  }
+
+  .featured-pill {
+    top: 8px;
+    right: 8px;
+    padding: 5px 8px;
+    font-size: 0.70rem;
+  }
+
+  .sermons-meta {
+    font-size: 0.72rem;
+    margin-bottom: 4px;
+  }
+
+  .video-info h3 {
+    font-size: 0.98rem;
+    line-height: 1.25;
+    margin: 0 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* max 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* hide long desc on mobile – keeps card small */
+  .video-desc {
+    display: none;
+  }
+
+  /* tags: small, single line wrap */
+  .mini-tags {
+    margin-top: 6px;
+    gap: 6px;
+  }
+
+  .mini-tag {
+    font-size: 0.72rem;
+    padding: 4px 8px;
+  }
+
+  /* ---------- Quiz Sets: compact + premium ---------- */
+  .quiz-sets-grid {
+    gap: 12px;
+  }
+
+  .quiz-set-card {
+    min-height: auto;
+    border-radius: 18px;
+  }
+
+  .quiz-set-image {
+    height: 120px;
+  }
+
+  .quiz-set-body {
+    padding: 12px 12px 12px;
+  }
+
+  .quiz-set-title {
+    font-size: 0.98rem;
+    margin: 6px 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .quiz-set-description {
+    font-size: 0.86rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* keep compact */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .quiz-set-meta {
+    margin-top: 8px;
+    font-size: 0.78rem;
+  }
+
+  /* ---------- Quiz play view: more “game-like” on mobile ---------- */
+  .quiz-card {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .quiz-question {
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  .quiz-option {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .quiz-next-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
