@@ -109,7 +109,7 @@ export const membershipForm = {
     options: {
       select: "ይምረጡ",
       yes: "አዎ",
-      no: "አልተጠመቅሁም",
+      no: "አይ",
       notSure: "እርግጠኛ አደለሁም",
       english: "እንግሊዝኛ",
       amharic: "አማርኛ",
