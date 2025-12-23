@@ -1,6 +1,8 @@
 // MembershipForm.jsx
 import { useEffect, useRef, useState } from "react";
 import "./MembershipForm.css";
+import { useLanguage } from "../contexts/LanguageContext";
+import { membershipForm } from "../i18n/membershipForm";
 
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbw11kXjsTOcpAI3HmTh9rLgZ53K_CLPu4658hmI6R4qlBanXC1VdUpyxJbd_Dp4fukp/exec";
@@ -8,9 +10,15 @@ const SCRIPT_URL =
 const ukPostcodeRegex = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
 
 function MembershipForm() {
+  const { lang } = useLanguage();
+
+  // ✅ IMPORTANT: membershipForm already contains the language object
+  // so do NOT do t.membershipForm
+  const m = membershipForm[lang] || membershipForm.en;
+
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState(null); // { type: "success"|"error", text: string } | null
 
   const modalRef = useRef(null);
   const closeBtnRef = useRef(null);
@@ -33,7 +41,7 @@ function MembershipForm() {
       return;
     }
 
-    const t = setTimeout(() => closeBtnRef.current?.focus?.(), 0);
+    const tt = setTimeout(() => closeBtnRef.current?.focus?.(), 0);
 
     const onKeyDown = (e) => {
       if (e.key === "Escape") closeModal();
@@ -60,74 +68,70 @@ function MembershipForm() {
 
     document.addEventListener("keydown", onKeyDown);
     return () => {
-      clearTimeout(t);
+      clearTimeout(tt);
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [isOpen, isSubmitting]);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setMessage(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setMessage(null);
 
-  const form = e.target;
-  const formData = new FormData(form);
+    const form = e.target;
+    const formData = new FormData(form);
 
-  // ---- UK VALIDATION (postcode in separate field) ----
-  const postcode = (form.postcode?.value || "").trim();
+    // ---- UK VALIDATION (postcode in separate field) ----
+    const postcode = (form.postcode?.value || "").trim();
 
-  if (!postcode || !ukPostcodeRegex.test(postcode)) {
-    setMessage(
-      "This registration is only for UK residents. Please enter a valid UK postcode."
-    );
-    setIsSubmitting(false);
-    return;
-  }
+    if (!postcode || !ukPostcodeRegex.test(postcode)) {
+      setMessage({ type: "error", text: m.messages.ukOnly });
+      setIsSubmitting(false);
+      return;
+    }
 
-  // ---- ENSURE CLEAN VALUES ARE SUBMITTED ----
-  const address1 = (form.address1?.value || "").trim();
-  const address2 = (form.address2?.value || "").trim();
-  const city = (form.city?.value || "").trim();
-  const county = (form.county?.value || "").trim();
-  const country = (form.country?.value || "United Kingdom").trim();
+    // ---- ENSURE CLEAN VALUES ARE SUBMITTED ----
+    const address1 = (form.address1?.value || "").trim();
+    const address2 = (form.address2?.value || "").trim();
+    const city = (form.city?.value || "").trim();
+    const county = (form.county?.value || "").trim();
+    const country = (form.country?.value || "United Kingdom").trim();
 
-  formData.set("postcode", postcode);
-  formData.set("address1", address1);
-  formData.set("address2", address2);
-  formData.set("city", city);
-  formData.set("county", county);
-  formData.set("country", country);
+    formData.set("postcode", postcode);
+    formData.set("address1", address1);
+    formData.set("address2", address2);
+    formData.set("city", city);
+    formData.set("county", county);
+    formData.set("country", country);
 
-  // ✅ IMPORTANT: also send a single combined address field (fallback)
-  const combinedAddress = [address1, address2, city, county, postcode, country]
-    .filter(Boolean)
-    .join(", ");
+    // ✅ IMPORTANT: also send a single combined address field (fallback)
+    const combinedAddress = [address1, address2, city, county, postcode, country]
+      .filter(Boolean)
+      .join(", ");
 
-  formData.set("address", combinedAddress);
+    formData.set("address", combinedAddress);
 
-  try {
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: formData,
-      mode: "no-cors",
-    });
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors",
+      });
 
-    setMessage("Thank you! Your membership request has been received.");
-    form.reset();
+      setMessage({ type: "success", text: m.messages.success });
+      form.reset();
 
-    setTimeout(() => {
-      setIsOpen(false);
-      setMessage(null);
-    }, 1800);
-  } catch (err) {
-    console.error(err);
-    setMessage("Sorry, something went wrong. Please try again.");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-
+      setTimeout(() => {
+        setIsOpen(false);
+        setMessage(null);
+      }, 1800);
+    } catch (err) {
+      console.error(err);
+      setMessage({ type: "error", text: m.messages.error });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -139,7 +143,7 @@ const handleSubmit = async (e) => {
         aria-haspopup="dialog"
         aria-expanded={isOpen}
       >
-        Register as a Member
+        {m.floatingButton}
       </button>
 
       {/* Modal */}
@@ -159,8 +163,10 @@ const handleSubmit = async (e) => {
           >
             <div className="member-modal-header">
               <div className="member-title-wrap">
-                <div className="member-badge">Membership</div>
-                <h2 id="member-modal-title">Registration</h2>
+                <div className="member-badge">{m.badge}</div>
+                <h2 id="member-modal-title" className="amharic-fix">
+                  {m.title}
+                </h2>
               </div>
 
               <button
@@ -169,55 +175,56 @@ const handleSubmit = async (e) => {
                 className="member-close-btn"
                 onClick={closeModal}
                 disabled={isSubmitting}
-                aria-label="Close membership form"
-                title="Close"
+                aria-label={m.closeAria}
+                title={m.closeTitle}
               >
                 <span className="member-close-icon" aria-hidden="true" />
               </button>
             </div>
 
-            <p className="member-intro">
-              Please fill in the details below to register as a member of
-              Selassie Ethiopian Orthodox Church in London.
-            </p>
+            <p className="member-intro amharic-fix">{m.intro}</p>
 
             <form className="member-form" onSubmit={handleSubmit} noValidate>
               {/* Personal */}
               <div className="member-section">
-                <div className="member-section__title">Personal details</div>
+                <div className="member-section__title amharic-fix">
+                  {m.sections.personal}
+                </div>
 
                 <div className="member-row">
-                  <label>
-                    Full Name <span className="req">*</span>
+                  <label className="amharic-fix">
+                    {m.fields.fullName}{" "}
+                    <span className="req">{m.requiredMark}</span>
                     <input
                       type="text"
                       name="name"
                       required
-                      placeholder="Your full name"
+                      placeholder={m.fields.fullNamePh}
                       autoComplete="name"
                     />
                   </label>
                 </div>
 
                 <div className="member-row member-row-two">
-                  <label>
-                    Email <span className="req">*</span>
+                  <label className="amharic-fix">
+                    {m.fields.email}{" "}
+                    <span className="req">{m.requiredMark}</span>
                     <input
                       type="email"
                       name="email"
                       required
-                      placeholder="you@example.com"
+                      placeholder={m.fields.emailPh}
                       autoComplete="email"
                       inputMode="email"
                     />
                   </label>
 
-                  <label>
-                    Phone
+                  <label className="amharic-fix">
+                    {m.fields.phone}
                     <input
                       type="tel"
                       name="phone"
-                      placeholder="+44 ..."
+                      placeholder={m.fields.phonePh}
                       autoComplete="tel"
                       inputMode="tel"
                     />
@@ -227,47 +234,49 @@ const handleSubmit = async (e) => {
 
               {/* Preferences */}
               <div className="member-section">
-                <div className="member-section__title">Preferences</div>
+                <div className="member-section__title amharic-fix">
+                  {m.sections.preferences}
+                </div>
 
                 <div className="member-row member-row-two">
-                  <label>
-                    Preferred Language
+                  <label className="amharic-fix">
+                    {m.fields.preferredLanguage}
                     <select name="language" defaultValue="English">
-                      <option value="English">English</option>
-                      <option value="Amharic">Amharic</option>
-                      <option value="Tigrinya">Tigrinya</option>
-                      <option value="Other">Other</option>
+                      <option value="English">{m.options.english}</option>
+                      <option value="Amharic">{m.options.amharic}</option>
+                      <option value="Tigrinya">{m.options.tigrinya}</option>
+                      <option value="Other">{m.options.other}</option>
                     </select>
                   </label>
 
-                  <label>
-                    Family Members
+                  <label className="amharic-fix">
+                    {m.fields.familyMembers}
                     <input
                       type="number"
                       name="familySize"
                       min="1"
-                      placeholder="e.g. 4"
+                      placeholder={m.fields.familyMembersPh}
                       inputMode="numeric"
                     />
                   </label>
                 </div>
 
                 <div className="member-row member-row-two">
-                  <label>
-                    Baptised in the Orthodox Church?
+                  <label className="amharic-fix">
+                    {m.fields.baptised}
                     <select name="baptised" defaultValue="">
-                      <option value="">Select</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                      <option value="Not sure">Not sure</option>
+                      <option value="">{m.options.select}</option>
+                      <option value="Yes">{m.options.yes}</option>
+                      <option value="No">{m.options.no}</option>
+                      <option value="Not sure">{m.options.notSure}</option>
                     </select>
                   </label>
 
-                  <label>
-                    Receive newsletters?
+                  <label className="amharic-fix">
+                    {m.fields.newsletters}
                     <select name="newsletter" defaultValue="Yes">
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
+                      <option value="Yes">{m.options.yes}</option>
+                      <option value="No">{m.options.no}</option>
                     </select>
                   </label>
                 </div>
@@ -275,69 +284,74 @@ const handleSubmit = async (e) => {
 
               {/* Address (separate fields) */}
               <div className="member-section">
-                <div className="member-section__title">Address (UK only)</div>
+                <div className="member-section__title amharic-fix">
+                  {m.sections.address}
+                </div>
 
                 <div className="member-row member-row-two">
-                  <label>
-                    Address Line 1 <span className="req">*</span>
+                  <label className="amharic-fix">
+                    {m.fields.address1}{" "}
+                    <span className="req">{m.requiredMark}</span>
                     <input
                       type="text"
                       name="address1"
                       required
-                      placeholder="House number and street"
+                      placeholder={m.fields.address1Ph}
                       autoComplete="address-line1"
                     />
                   </label>
 
-                  <label>
-                    Address Line 2
+                  <label className="amharic-fix">
+                    {m.fields.address2}
                     <input
                       type="text"
                       name="address2"
-                      placeholder="Apartment, suite, etc. (optional)"
+                      placeholder={m.fields.address2Ph}
                       autoComplete="address-line2"
                     />
                   </label>
                 </div>
 
                 <div className="member-row member-row-two">
-                  <label>
-                    City / Town <span className="req">*</span>
+                  <label className="amharic-fix">
+                    {m.fields.city}{" "}
+                    <span className="req">{m.requiredMark}</span>
                     <input
                       type="text"
                       name="city"
                       required
-                      placeholder="e.g. London"
+                      placeholder={m.fields.cityPh}
                       autoComplete="address-level2"
                     />
                   </label>
 
-                  <label>
-                    County
+                  <label className="amharic-fix">
+                    {m.fields.county}
                     <input
                       type="text"
                       name="county"
-                      placeholder="e.g. Greater London"
+                      placeholder={m.fields.countyPh}
                       autoComplete="address-level1"
                     />
                   </label>
                 </div>
 
                 <div className="member-row member-row-two">
-                  <label>
-                    Postcode <span className="req">*</span>
+                  <label className="amharic-fix">
+                    {m.fields.postcode}{" "}
+                    <span className="req">{m.requiredMark}</span>
                     <input
                       type="text"
                       name="postcode"
                       required
-                      placeholder="e.g. NW2 6XG"
+                      placeholder={m.fields.postcodePh}
                       autoComplete="postal-code"
                       inputMode="text"
                     />
                   </label>
 
-                  <label>
-                    Country
+                  <label className="amharic-fix">
+                    {m.fields.country}
                     <input
                       type="text"
                       name="country"
@@ -350,15 +364,17 @@ const handleSubmit = async (e) => {
 
               {/* Support */}
               <div className="member-section">
-                <div className="member-section__title">Spiritual support</div>
+                <div className="member-section__title amharic-fix">
+                  {m.sections.support}
+                </div>
 
                 <div className="member-row">
-                  <label>
-                    How can we support you spiritually?
+                  <label className="amharic-fix">
+                    {m.fields.support}
                     <textarea
                       name="support"
                       rows="3"
-                      placeholder="Prayer requests, pastoral support, areas of interest..."
+                      placeholder={m.fields.supportPh}
                     />
                   </label>
                 </div>
@@ -371,28 +387,23 @@ const handleSubmit = async (e) => {
                   className="member-submit-btn"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Submitting..." : "Submit Registration"}
+                  {isSubmitting ? m.submit.loading : m.submit.idle}
                 </button>
 
                 {message && (
                   <span
                     className={`member-note member-note-status ${
-                      message.toLowerCase().includes("thank")
-                        ? "is-success"
-                        : "is-error"
+                      message.type === "success" ? "is-success" : "is-error"
                     }`}
                     role="status"
                     aria-live="polite"
                   >
-                    {message}
+                    {message.text}
                   </span>
                 )}
               </div>
 
-              <p className="member-legal">
-                By submitting, you agree that the church may contact you using
-                the details provided.
-              </p>
+              <p className="member-legal amharic-fix">{m.legal}</p>
             </form>
           </div>
         </div>
