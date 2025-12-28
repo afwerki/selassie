@@ -1,16 +1,25 @@
 // src/components/Navbar.jsx
 import { useState } from "react";
+import { useLocation, Link } from "react-router-dom";
 import "./Navbar.css";
 import { useLanguage } from "../contexts/LanguageContext";
 import { texts } from "../i18n/texts";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
   const { lang, toggleLanguage } = useLanguage();
   const t = texts[lang] || texts.en;
 
   const closeMenu = () => setIsOpen(false);
   const toggleMenu = () => setIsOpen((prev) => !prev);
+
+  const onHome = location.pathname === "/";
+
+  // ✅ When on homepage => "#events" (smooth scroll)
+  // ✅ When on event details or any other route => "/#events" (navigate then scroll via HashScroll)
+  const sectionHref = (id) => (onHome ? `#${id}` : `/#${id}`);
 
   // Fallback labels so items always show even if not in texts
   const projectLabel =
@@ -22,56 +31,56 @@ function Navbar() {
   return (
     <header className="navbar">
       <nav className="navbar-inner">
-        {/* Logo */}
-        <div className="navbar-logo">
+        {/* Logo (go home) */}
+        <Link to="/" className="navbar-logo" onClick={closeMenu}>
           <div className="logo-icon" aria-hidden="true">
             <span className="logo-cross-vertical" />
             <span className="logo-cross-horizontal" />
           </div>
           <span className="logo-text">{t.nav.title}</span>
-        </div>
+        </Link>
 
         {/* Links */}
         <ul className={`navbar-links ${isOpen ? "is-open" : ""}`}>
           <li>
-            <a href="#home" onClick={closeMenu}>
+            <a href={sectionHref("home")} onClick={closeMenu}>
               {t.nav.home}
             </a>
           </li>
 
           <li>
-            <a href="#about" onClick={closeMenu}>
+            <a href={sectionHref("about")} onClick={closeMenu}>
               {t.nav.about}
             </a>
           </li>
 
           <li>
-            <a href="#projects" onClick={closeMenu}>
+            <a href={sectionHref("projects")} onClick={closeMenu}>
               {projectLabel}
             </a>
           </li>
 
           <li>
-            <a href="#sermons" onClick={closeMenu}>
+            <a href={sectionHref("sermons")} onClick={closeMenu}>
               {t.nav.sermons}
             </a>
           </li>
 
           <li>
-            <a href="#events" onClick={closeMenu}>
+            <a href={sectionHref("events")} onClick={closeMenu}>
               {t.nav.events}
             </a>
           </li>
 
-          {/* NEW: News tab */}
+          {/* News tab */}
           <li>
-            <a href="#news" onClick={closeMenu}>
+            <a href={sectionHref("news")} onClick={closeMenu}>
               {newsLabel}
             </a>
           </li>
 
           <li>
-            <a href="#contact" onClick={closeMenu}>
+            <a href={sectionHref("contact")} onClick={closeMenu}>
               {t.nav.contact}
             </a>
           </li>
@@ -85,6 +94,7 @@ function Navbar() {
                 toggleLanguage();
                 closeMenu();
               }}
+              type="button"
             >
               {lang === "en" ? t.nav.amharicToggle : t.nav.englishToggle}
             </button>

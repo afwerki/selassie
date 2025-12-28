@@ -4,7 +4,7 @@ import Hero from "./components/Hero";
 import Footer from "./components/Footer";
 import MembershipForm from "./components/MembershipForm";
 import ContributionButton from "./components/ContributionButton";
-import PushSubscribe from "./components/PushSubscribe"; // ✅ ADD THIS
+import PushSubscribe from "./components/PushSubscribe";
 
 import Home from "./pages/Home";
 import Sermons from "./pages/Sermons";
@@ -20,7 +20,6 @@ function App() {
       <Navbar />
       <Hero />
 
-      {/* 🔔 Push notification button */}
       <div style={{ textAlign: "center", margin: "1rem 0" }}>
         <PushSubscribe />
       </div>
@@ -31,16 +30,12 @@ function App() {
         <Events />
         <News />
         <About />
-        <Projects/>
+        <Projects />
         <Contact />
       </main>
 
-      {/* floating membership button + modal */}
       <MembershipForm />
-
-      {/* floating contribution button with payment link */}
       <ContributionButton />
-
       <Footer />
     </>
   );

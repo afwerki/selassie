@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import "./Hero.css";
 import { useLanguage } from "../contexts/LanguageContext";
 import { texts } from "../i18n/texts";
@@ -99,7 +100,8 @@ function Hero() {
     return () => {
       clearTimeout(fallback);
     };
-  }, [videoIndex]); // keep minimal deps on purpose
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoIndex]);
 
   // Keyboard navigation
   const handleKeyDown = (e) => {
@@ -124,6 +126,10 @@ function Hero() {
   };
 
   const activeSlide = slides[active] || slides[0];
+
+  // ✅ Normalize hrefs: always route to homepage hash (works from /events/:slug too)
+  const primaryTo = activeSlide?.href || "/#events";
+  const secondaryTo = "/#contact";
 
   return (
     <section
@@ -192,12 +198,13 @@ function Hero() {
           </p>
 
           <div className="heroCard__actions heroAnim heroAnim--3">
-            <a href={activeSlide?.href} className="heroBtn heroBtn--primary">
+            <Link to={primaryTo} className="heroBtn heroBtn--primary">
               {activeSlide?.cta} <span aria-hidden="true">→</span>
-            </a>
-            <a href="#contact" className="heroBtn heroBtn--ghost">
+            </Link>
+
+            <Link to={secondaryTo} className="heroBtn heroBtn--ghost">
               {t.hero?.btnSecondary}
-            </a>
+            </Link>
           </div>
 
           <div className="heroCard__counter" aria-label="Slide counter">
