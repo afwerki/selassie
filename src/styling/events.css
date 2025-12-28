@@ -1,6 +1,50 @@
 /* =========================================================
-   CALENDAR + LIST (New Events Layout)
-   Calm, modern, Orthodox-friendly (gold accents, soft depth)
+   EVENTS.CSS (FULL)
+   Based on your existing working code + upgrades:
+   - Glam image styling (row + quick details)
+   - Better typography + spacing
+   - Modal close ALWAYS visible on iPhone (fixed + safe area)
+========================================================= */
+
+/* ---------- Base helpers (safe defaults) ---------- */
+.events-page {
+  position: relative;
+}
+
+.events-header {
+  max-width: 1100px;
+  margin: 0 auto 14px;
+  padding: 0 12px;
+}
+
+.events-header-badge {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.74rem;
+  background: rgba(242, 181, 68, 0.16);
+  color: #b45309;
+  border: 1px solid rgba(242, 181, 68, 0.25);
+}
+
+.events-header h2 {
+  margin: 10px 0 6px;
+  font-weight: 950;
+  letter-spacing: 0.01em;
+  color: #0f1b33;
+}
+
+.events-header p {
+  margin: 0;
+  color: rgba(15, 27, 51, 0.74);
+  line-height: 1.55;
+}
+
+/* =========================================================
+   CALENDAR + LIST (Your existing layout — keep it)
 ========================================================= */
 
 .events-calendar-wrap {
@@ -206,7 +250,7 @@
 }
 
 /* =========================================================
-   GLAM IMAGE THUMB (NEW)
+   GLAM IMAGE THUMB (UPGRADED but same classes)
 ========================================================= */
 
 .events-thumb {
@@ -228,15 +272,27 @@
   flex: 0 0 auto;
 }
 
+/* IMPORTANT: make image always fill & look premium */
 .events-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transform: scale(1.04);
-  filter: saturate(1.06) contrast(1.03);
+  transform: scale(1.06);
+  filter: saturate(1.08) contrast(1.05);
 }
 
+/* glossy overlay */
+.events-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), transparent 40%, rgba(15,27,51,0.18));
+  pointer-events: none;
+}
+
+/* the glow element you already add */
 .events-thumb-glow {
   position: absolute;
   inset: -40%;
@@ -266,9 +322,14 @@
   height: 108px;
   border-radius: 22px;
   border-color: rgba(242, 181, 68, 0.45);
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.14),
+    0 1px 0 rgba(255,255,255,0.6) inset;
 }
 
-/* ---------- Event rows (clean + invitation-like) ---------- */
+/* =========================================================
+   EVENT ROWS (keep your grid) + prettier text + spacing
+========================================================= */
 
 .events-list {
   display: grid;
@@ -323,11 +384,17 @@
 }
 
 /* Main text */
+.events-row-main {
+  min-width: 0;
+}
+
 .events-row-title {
-  font-weight: 900;
+  font-weight: 950;
   color: #0f1b33;
-  font-size: 0.98rem;
+  font-size: 1.02rem;
   margin-bottom: 4px;
+  line-height: 1.18;
+  word-break: break-word;
 }
 
 .events-row-meta {
@@ -336,37 +403,41 @@
   gap: 8px;
   font-size: 0.84rem;
   color: rgba(15, 27, 51, 0.70);
+  align-items: center;
 }
 
 .events-row-time {
-  font-weight: 800;
+  font-weight: 900;
   color: #b45309;
   background: rgba(242, 181, 68, 0.16);
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 999px;
+  border: 1px solid rgba(242,181,68,0.20);
 }
 
 .events-row-loc {
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 999px;
   background: rgba(47, 104, 181, 0.10);
   color: rgba(15, 27, 51, 0.78);
-  font-weight: 700;
+  font-weight: 800;
+  border: 1px solid rgba(47,104,181,0.16);
 }
 
 .events-row-fulldate {
   opacity: 0.9;
+  font-weight: 700;
 }
 
 .events-row-summary {
   margin-top: 6px;
-  font-size: 0.88rem;
-  line-height: 1.5;
-  color: rgba(15, 27, 51, 0.72);
+  font-size: 0.90rem;
+  line-height: 1.55;
+  color: rgba(15, 27, 51, 0.74);
 }
 
 /* =========================================================
-   INLINE CALENDAR BUTTONS IN ROW (NEW)
+   INLINE CALENDAR BUTTONS IN ROW (same classes)
 ========================================================= */
 
 .events-row-cal {
@@ -380,9 +451,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
+  padding: 9px 14px;
   border-radius: 999px;
-  font-weight: 900;
+  font-weight: 950;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 0.74rem;
@@ -390,7 +461,7 @@
   text-decoration: none;
   color: #0f1b33;
   border: 1px solid rgba(15, 23, 42, 0.14);
-  background: rgba(255,255,255,0.90);
+  background: rgba(255,255,255,0.92);
   box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
   transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
 }
@@ -399,6 +470,11 @@
   transform: translateY(-1px);
   border-color: rgba(242, 181, 68, 0.55);
   box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+}
+
+.events-row-calbtn:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.10);
 }
 
 /* Actions */
@@ -412,14 +488,14 @@
 
 .events-row-link {
   font-size: 0.84rem;
-  font-weight: 900;
+  font-weight: 950;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;
   color: #2f68b5;
   position: relative;
-  padding: 6px 10px;
-  border-radius: 12px;
+  padding: 8px 12px;
+  border-radius: 999px;
   border: 1px solid rgba(47, 104, 181, 0.22);
   background: rgba(47, 104, 181, 0.06);
   transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
@@ -433,11 +509,11 @@
 
 .events-row-share {
   font-size: 0.84rem;
-  font-weight: 900;
+  font-weight: 950;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  padding: 8px 12px;
-  border-radius: 12px;
+  padding: 9px 14px;
+  border-radius: 999px;
   border: none;
   cursor: pointer;
   color: #0f1b33;
@@ -457,7 +533,7 @@
 }
 
 /* =========================================================
-   INLINE DROPDOWN (Quick details)
+   INLINE DROPDOWN (Quick details) — FIXED layout + glam image
 ========================================================= */
 
 .events-row-details {
@@ -468,14 +544,18 @@
   list-style: none;
   cursor: pointer;
   user-select: none;
-  font-weight: 900;
-  letter-spacing: 0.08em;
+  font-weight: 950;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
   font-size: 0.78rem;
   color: #2f68b5;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(47,104,181,0.16);
+  background: rgba(47,104,181,0.06);
 }
 
 .events-row-details > summary::-webkit-details-marker {
@@ -494,16 +574,17 @@
 
 .events-row-details-body {
   margin-top: 10px;
-  padding: 12px;
-  border-radius: 16px;
+  padding: 14px;
+  border-radius: 18px;
   background: rgba(15, 27, 51, 0.04);
   border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
+/* Key fix: keep the quick details content aligned and not ugly */
 .events-row-details-top {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px;
+  grid-template-columns: 108px 1fr;
+  gap: 14px;
   align-items: start;
 }
 
@@ -513,8 +594,9 @@
 
 .events-row-desc {
   margin: 0 0 10px 0;
-  color: rgba(15, 27, 51, 0.78);
-  line-height: 1.55;
+  color: rgba(15, 27, 51, 0.80);
+  line-height: 1.6;
+  font-weight: 650;
 }
 
 .events-row-address {
@@ -522,9 +604,14 @@
   color: rgba(15, 27, 51, 0.78);
 }
 
+.events-row-address strong {
+  color: #0f1b33;
+  font-weight: 950;
+}
+
 .events-row-map {
   display: inline-flex;
-  font-weight: 900;
+  font-weight: 950;
   letter-spacing: 0.10em;
   text-transform: uppercase;
   font-size: 0.78rem;
@@ -551,7 +638,7 @@
   border-radius: 999px;
   border: none;
   cursor: pointer;
-  font-weight: 900;
+  font-weight: 950;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 0.82rem;
@@ -593,9 +680,9 @@
   height: 34px;
   border-radius: 12px;
   border: 1px solid rgba(15, 23, 42, 0.12);
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.92);
   cursor: pointer;
-  font-weight: 900;
+  font-weight: 950;
 }
 
 .event-reminder-badge {
@@ -603,7 +690,7 @@
   padding: 5px 12px;
   border-radius: 999px;
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: 950;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   background: rgba(242, 181, 68, 0.16);
@@ -613,7 +700,7 @@
 
 .event-reminder-title {
   font-size: 1.25rem;
-  font-weight: 900;
+  font-weight: 950;
   color: #0f1b33;
   margin-bottom: 6px;
 }
@@ -629,7 +716,7 @@
   display: inline-flex;
   padding: 6px 10px;
   border-radius: 999px;
-  font-weight: 800;
+  font-weight: 850;
   font-size: 0.85rem;
   background: rgba(15, 27, 51, 0.06);
   border: 1px solid rgba(15, 23, 42, 0.08);
@@ -638,7 +725,7 @@
 
 .event-reminder-summary {
   color: rgba(15, 27, 51, 0.78);
-  font-weight: 700;
+  font-weight: 750;
   line-height: 1.45;
   margin-bottom: 12px;
 }
@@ -653,7 +740,7 @@
 .event-reminder-btn {
   border-radius: 14px;
   padding: 10px 14px;
-  font-weight: 900;
+  font-weight: 950;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 0.82rem;
@@ -672,6 +759,7 @@
 
 /* =========================================================
    EVENT DETAILS MODAL (single-page invitation card)
+   ✅ FIX: Close is ALWAYS clickable on iPhone
 ========================================================= */
 
 .event-modal-backdrop {
@@ -696,19 +784,28 @@
   position: relative;
 }
 
+/* ✅ THIS is the fix you need: fixed close, huge z-index, safe-area aware */
 .event-modal-close {
-  position: absolute;
-  top: calc(12px + env(safe-area-inset-top));
+  position: fixed; /* not absolute */
+  top: calc(env(safe-area-inset-top) + 12px);
   right: 12px;
-  width: 44px;
-  height: 44px;
-  border-radius: 16px;
-  border: 1px solid rgba(15, 23, 42, 0.16);
-  background: rgba(255,255,255,0.92);
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  background: rgba(255,255,255,0.96);
   cursor: pointer;
-  font-weight: 900;
-  z-index: 5;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  font-weight: 950;
+  z-index: 99999; /* above navbar and everything */
+  box-shadow:
+    0 18px 44px rgba(15, 23, 42, 0.22),
+    0 0 0 4px rgba(242, 181, 68, 0.14) inset;
+}
+
+/* make the X bigger */
+.event-modal-close {
+  font-size: 20px;
+  line-height: 1;
 }
 
 .event-modal-hero {
@@ -722,6 +819,7 @@
   height: 300px;
   object-fit: cover;
   display: block;
+  filter: saturate(1.06) contrast(1.04);
 }
 
 .event-modal-hero-fallback {
@@ -743,7 +841,7 @@
   padding: 5px 12px;
   border-radius: 999px;
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: 950;
   text-transform: uppercase;
   letter-spacing: 0.16em;
   background: rgba(242, 181, 68, 0.16);
@@ -755,6 +853,7 @@
   font-size: 1.9rem;
   margin: 0 0 14px;
   color: #0f1b33;
+  font-weight: 950;
 }
 
 .event-modal-grid {
@@ -778,7 +877,7 @@
 
 .event-modal-item strong {
   color: #0f1b33;
-  font-weight: 900;
+  font-weight: 950;
 }
 
 .event-modal-address {
@@ -853,20 +952,20 @@
 }
 
 .event-modal-maptitle {
-  font-weight: 900;
+  font-weight: 950;
   color: #0f1b33;
   letter-spacing: 0.02em;
 }
 
 .event-modal-mapsub {
   color: rgba(15, 27, 51, 0.70);
-  font-weight: 700;
+  font-weight: 750;
   font-size: 0.92rem;
 }
 
 .event-modal-mapcta {
   margin-top: 2px;
-  font-weight: 900;
+  font-weight: 950;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 0.78rem;
@@ -887,7 +986,7 @@
   justify-content: center;
   border-radius: 14px;
   padding: 10px 14px;
-  font-weight: 900;
+  font-weight: 950;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 0.82rem;
@@ -906,7 +1005,7 @@
 
 .event-modal-summary {
   font-size: 1.05rem;
-  font-weight: 800;
+  font-weight: 850;
   color: rgba(15, 27, 51, 0.84);
   margin: 0 0 10px;
 }
@@ -918,7 +1017,9 @@
   margin: 0;
 }
 
-/* ---------- Responsive ---------- */
+/* =========================================================
+   RESPONSIVE (mobile)
+========================================================= */
 
 @media (max-width: 768px) {
   .events-calendar-wrap {
@@ -953,6 +1054,7 @@
     justify-content: flex-start;
   }
 
+  /* Quick details: stack */
   .events-row-details-top {
     grid-template-columns: 1fr;
   }
@@ -965,7 +1067,7 @@
 
   .events-thumb--lg {
     width: 100%;
-    height: 180px;
+    height: 190px;
     border-radius: 18px;
   }
 
@@ -973,6 +1075,7 @@
     transform: none;
   }
 
+  /* Modal adjustments */
   .event-modal-hero img {
     height: 220px;
   }
@@ -983,5 +1086,13 @@
 
   .event-modal-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Make sure close is not under the iOS top UI */
+  .event-modal-close {
+    top: calc(env(safe-area-inset-top) + 10px);
+    right: 10px;
+    width: 56px;
+    height: 56px;
   }
 }
