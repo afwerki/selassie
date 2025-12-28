@@ -1,3 +1,4 @@
+// src/components/Events.jsx (or wherever your Events component lives)
 import React, { useEffect, useMemo, useState } from "react";
 import "../styling/events.css";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -73,7 +74,7 @@ function daysBetween(a, b) {
   return Math.round((end - start) / ms);
 }
 
-/* ---------------- calendar export helpers ---------------- */
+/* ---------------- calendar export helpers (ICS + reminders) ---------------- */
 function toICSDateUTC(date) {
   // YYYYMMDDTHHMMSSZ
   const pad = (n) => String(n).padStart(2, "0");
@@ -95,17 +96,26 @@ function escapeICS(text = "") {
     .replace(/,/g, "\\,")
     .replace(/;/g, "\\;");
 }
+
+/**
+ * ✅ Adds reminders:
+ * - 1 day before  (TRIGGER:-P1D)
+ * - 2 hours before (TRIGGER:-PT2H)
+ */
 function buildICS(ev) {
   const start = ev.startDateTime ? new Date(ev.startDateTime) : null;
   const end = ev.endDateTime ? new Date(ev.endDateTime) : null;
 
   // If no end time, add 1 hour default for calendar convenience
   const safeEnd =
-    end ||
-    (start ? new Date(start.getTime() + 60 * 60 * 1000) : null);
+    end || (start ? new Date(start.getTime() + 60 * 60 * 1000) : null);
 
   const uid = `${ev.id || ev.slug || "event"}@dght.uk`;
   const now = new Date();
+
+  const desc = [ev.shortSummary, ev.description, ev.address, ev.mapLink]
+    .filter(Boolean)
+    .join("\n\n");
 
   const lines = [
     "BEGIN:VCALENDAR",
@@ -120,17 +130,29 @@ function buildICS(ev) {
     safeEnd ? `DTEND:${toICSDateUTC(new Date(safeEnd.toISOString()))}` : "",
     `SUMMARY:${escapeICS(ev.title || "Church Event")}`,
     ev.location ? `LOCATION:${escapeICS(ev.location)}` : "",
-    `DESCRIPTION:${escapeICS(
-      [ev.shortSummary, ev.description, ev.address, ev.mapLink]
-        .filter(Boolean)
-        .join("\n\n")
-    )}`,
+    desc ? `DESCRIPTION:${escapeICS(desc)}` : "",
+
+    // ✅ Reminder 1: 1 day before
+    "BEGIN:VALARM",
+    "TRIGGER:-P1D",
+    "ACTION:DISPLAY",
+    `DESCRIPTION:${escapeICS(`Reminder: ${ev.title || "Church Event"} (tomorrow)`)}`,
+    "END:VALARM",
+
+    // ✅ Reminder 2: 2 hours before
+    "BEGIN:VALARM",
+    "TRIGGER:-PT2H",
+    "ACTION:DISPLAY",
+    `DESCRIPTION:${escapeICS(`Reminder: ${ev.title || "Church Event"} (in 2 hours)`)}`,
+    "END:VALARM",
+
     "END:VEVENT",
     "END:VCALENDAR",
   ].filter(Boolean);
 
   return lines.join("\r\n");
 }
+
 function downloadICS(ev) {
   const ics = buildICS(ev);
   const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
@@ -144,32 +166,6 @@ function downloadICS(ev) {
   a.remove();
 
   setTimeout(() => URL.revokeObjectURL(url), 800);
-}
-function googleCalendarUrl(ev) {
-  if (!ev.startDateTime) return "";
-  const start = new Date(ev.startDateTime);
-  const end = ev.endDateTime ? new Date(ev.endDateTime) : new Date(start.getTime() + 60 * 60 * 1000);
-
-  // Google expects YYYYMMDDTHHMMSSZ/YYYY...
-  const fmt = (d) => toICSDateUTC(new Date(d.toISOString()));
-  const dates = `${fmt(start)}/${fmt(end)}`;
-
-  const details = [
-    ev.shortSummary,
-    ev.description,
-    ev.address,
-    ev.mapLink ? `Map: ${ev.mapLink}` : "",
-  ]
-    .filter(Boolean)
-    .join("\n\n");
-
-  const url = new URL("https://calendar.google.com/calendar/render");
-  url.searchParams.set("action", "TEMPLATE");
-  url.searchParams.set("text", ev.title || "Church Event");
-  url.searchParams.set("dates", dates);
-  if (ev.location) url.searchParams.set("location", ev.location);
-  if (details) url.searchParams.set("details", details);
-  return url.toString();
 }
 
 /* ---------------- main component ---------------- */
@@ -502,7 +498,12 @@ function Events() {
             aria-label="Upcoming event reminder"
             onClick={(e) => e.stopPropagation()}
           >
-            <button type="button" className="event-reminder-close" onClick={closeReminder} aria-label="Close">
+            <button
+              type="button"
+              className="event-reminder-close"
+              onClick={closeReminder}
+              aria-label="Close"
+            >
               ✕
             </button>
 
@@ -662,7 +663,12 @@ function Events() {
                           )}
 
                           {ev.mapLink && (
-                            <a className="events-row-map" href={ev.mapLink} target="_blank" rel="noopener noreferrer">
+                            <a
+                              className="events-row-map"
+                              href={ev.mapLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               Open map →
                             </a>
                           )}
@@ -727,7 +733,9 @@ function Events() {
                             </span>
                           )}
                           {ev.location && <span className="events-row-loc">{ev.location}</span>}
-                          {ev.startDateTime && <span className="events-row-fulldate">{formatFullDate(ev.startDateTime)}</span>}
+                          {ev.startDateTime && (
+                            <span className="events-row-fulldate">{formatFullDate(ev.startDateTime)}</span>
+                          )}
                         </div>
 
                         {ev.shortSummary && <div className="events-row-summary">{ev.shortSummary}</div>}
@@ -750,7 +758,12 @@ function Events() {
                             )}
 
                             {ev.mapLink && (
-                              <a className="events-row-map" href={ev.mapLink} target="_blank" rel="noopener noreferrer">
+                              <a
+                                className="events-row-map"
+                                href={ev.mapLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
                                 Open map →
                               </a>
                             )}
@@ -799,7 +812,12 @@ function Events() {
       {/* ✅ Single-page Event Details Modal */}
       {openEvent && (
         <div className="event-modal-backdrop" role="presentation" onClick={closeEventModal}>
-          <div className="event-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="event-modal"
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button className="event-modal-close" type="button" onClick={closeEventModal} aria-label="Close">
               ✕
             </button>
@@ -855,24 +873,25 @@ function Events() {
                   </div>
                   <div className="event-modal-mapmeta">
                     <div className="event-modal-maptitle">View on Map</div>
-                    <div className="event-modal-mapsub">{openEvent.location || "Debre-Genet Holy Trinity Church"}</div>
+                    <div className="event-modal-mapsub">
+                      {openEvent.location || "Debre-Genet Holy Trinity Church"}
+                    </div>
                     <div className="event-modal-mapcta">Open directions →</div>
                   </div>
                 </a>
               )}
 
               <div className="event-modal-actions">
+                {/* ✅ ONLY Add to Calendar (downloads .ics with reminders) */}
                 <button className="event-modal-btn" type="button" onClick={() => downloadICS(openEvent)}>
                   {addToCalLabel}
                 </button>
 
-                {googleCalendarUrl(openEvent) && (
-                  <a className="event-modal-btn" href={googleCalendarUrl(openEvent)} target="_blank" rel="noopener noreferrer">
-                    Google Calendar
-                  </a>
-                )}
-
-                <button className="event-modal-btn event-modal-btn--primary" type="button" onClick={() => handleShare(openEvent)}>
+                <button
+                  className="event-modal-btn event-modal-btn--primary"
+                  type="button"
+                  onClick={() => handleShare(openEvent)}
+                >
                   {shareLabel}
                 </button>
               </div>

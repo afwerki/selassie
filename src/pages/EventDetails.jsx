@@ -8,6 +8,92 @@ import ContributionButton from "../components/ContributionButton";
 import { client } from "../sanityClient";
 import "../styling/eventDetails.css";
 
+/* -------- ICS helpers with reminders (same as Events modal) -------- */
+function toICSDateUTC(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return (
+    date.getUTCFullYear() +
+    pad(date.getUTCMonth() + 1) +
+    pad(date.getUTCDate()) +
+    "T" +
+    pad(date.getUTCHours()) +
+    pad(date.getUTCMinutes()) +
+    pad(date.getUTCSeconds()) +
+    "Z"
+  );
+}
+function escapeICS(text = "") {
+  return String(text)
+    .replace(/\\/g, "\\\\")
+    .replace(/\n/g, "\\n")
+    .replace(/,/g, "\\,")
+    .replace(/;/g, "\\;");
+}
+function buildICS(ev) {
+  const start = ev?.startDateTime ? new Date(ev.startDateTime) : null;
+  const end = ev?.endDateTime ? new Date(ev.endDateTime) : null;
+
+  const safeEnd =
+    end || (start ? new Date(start.getTime() + 60 * 60 * 1000) : null);
+
+  const uid = `${ev?._id || ev?.slug || "event"}@dght.uk`;
+  const now = new Date();
+
+  const desc = [ev?.shortSummary, ev?.description, ev?.address, ev?.mapLink]
+    .filter(Boolean)
+    .join("\n\n");
+
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Debre-Genet Holy Trinity//Events//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:${escapeICS(uid)}`,
+    `DTSTAMP:${toICSDateUTC(now)}`,
+    start ? `DTSTART:${toICSDateUTC(new Date(start.toISOString()))}` : "",
+    safeEnd ? `DTEND:${toICSDateUTC(new Date(safeEnd.toISOString()))}` : "",
+    `SUMMARY:${escapeICS(ev?.title || "Church Event")}`,
+    ev?.location ? `LOCATION:${escapeICS(ev.location)}` : "",
+    desc ? `DESCRIPTION:${escapeICS(desc)}` : "",
+
+    // ✅ Reminder 1: 1 day before
+    "BEGIN:VALARM",
+    "TRIGGER:-P1D",
+    "ACTION:DISPLAY",
+    `DESCRIPTION:${escapeICS(`Reminder: ${ev?.title || "Church Event"} (tomorrow)`)}`,
+    "END:VALARM",
+
+    // ✅ Reminder 2: 2 hours before
+    "BEGIN:VALARM",
+    "TRIGGER:-PT2H",
+    "ACTION:DISPLAY",
+    `DESCRIPTION:${escapeICS(`Reminder: ${ev?.title || "Church Event"} (in 2 hours)`)}`,
+    "END:VALARM",
+
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].filter(Boolean);
+
+  return lines.join("\r\n");
+}
+function downloadICS(ev) {
+  const ics = buildICS(ev);
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${(ev?.title || "event").replace(/[^\w]+/g, "-").toLowerCase()}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 800);
+}
+
+/* -------- date formatting -------- */
 function formatFullDate(iso) {
   if (!iso) return "";
   try {
@@ -21,7 +107,6 @@ function formatFullDate(iso) {
     return "";
   }
 }
-
 function formatTimeRange(startIso, endIso) {
   if (!startIso) return "";
   try {
@@ -130,7 +215,6 @@ export default function EventDetails() {
 
       <main className="event-details-page">
         <div className="event-details-wrap">
-          {/* Back to homepage (top). We can later add “Back to Events” if you want */}
           <Link className="event-details-back" to="/#events">
             ← Back to events
           </Link>
@@ -154,7 +238,6 @@ export default function EventDetails() {
 
           {!loading && !error && event && (
             <>
-              {/* Banner */}
               <div className="event-details-hero">
                 {event.imageUrl ? (
                   <img src={event.imageUrl} alt={event.title} />
@@ -163,7 +246,6 @@ export default function EventDetails() {
                 )}
               </div>
 
-              {/* Invitation Card */}
               <div className="event-details-card">
                 <div className="event-details-card-inner">
                   <div className="event-details-badge">Church Calendar</div>
@@ -203,14 +285,8 @@ export default function EventDetails() {
                     )}
                   </div>
 
-                  {/* Map preview */}
                   {event.mapLink && (
-                    <a
-                      className="event-map-card"
-                      href={event.mapLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <a className="event-map-card" href={event.mapLink} target="_blank" rel="noopener noreferrer">
                       <div className="event-map-thumb" aria-hidden="true">
                         <div className="event-map-icon">⛪</div>
                         <div className="event-map-glow" />
@@ -228,15 +304,19 @@ export default function EventDetails() {
 
                   <div className="event-details-actions">
                     {event.mapLink && (
-                      <a
-                        className="event-details-btn"
-                        href={event.mapLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                      <a className="event-details-btn" href={event.mapLink} target="_blank" rel="noopener noreferrer">
                         Directions
                       </a>
                     )}
+
+                    {/* ✅ Add to calendar (downloads ICS with reminders) */}
+                    <button
+                      type="button"
+                      className="event-details-btn"
+                      onClick={() => downloadICS(event)}
+                    >
+                      Add to calendar
+                    </button>
 
                     <button
                       type="button"
