@@ -510,40 +510,254 @@
    UPCOMING EVENT REMINDER POPUP
 ========================================================= */
 
+
 .event-reminder-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 999998;
   display: grid;
   place-items: center;
-  padding: 18px;
+
+  /* ✅ keep it away from the top browser UI on iPhone */
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 18px)
+    calc(env(safe-area-inset-right, 0px) + 16px)
+    calc(env(safe-area-inset-bottom, 0px) + 18px)
+    calc(env(safe-area-inset-left, 0px) + 16px);
+
+  overscroll-behavior: contain;
 }
 
 .event-reminder {
-  width: min(560px, 100%);
-  border-radius: 22px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.84));
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  box-shadow: 0 26px 70px rgba(15, 23, 42, 0.28);
-  padding: 16px 16px 14px;
+  width: min(680px, 100%);
+  border-radius: 26px;
   position: relative;
+  overflow: hidden;
+
+  border: 1px solid rgba(255,255,255,0.22);
+  background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.82));
+  box-shadow:
+    0 34px 90px rgba(15, 23, 42, 0.36),
+    0 1px 0 rgba(255,255,255,0.65) inset;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  padding: 16px 16px 14px;
+}
+.event-reminder::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(242,181,68,0.22), transparent 55%),
+    radial-gradient(circle at 85% 30%, rgba(47,104,181,0.14), transparent 60%),
+    radial-gradient(circle at 40% 95%, rgba(242,181,68,0.14), transparent 60%);
+  filter: blur(26px);
+  opacity: 0.9;
+  pointer-events: none;
+}
+/* header layout: icon + text */
+.event-reminder-header {
+  display: grid;
+  grid-template-columns: 66px 1fr;
+  gap: 12px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  padding-right: 54px; /* room for close */
+}
+.event-reminder-icon {
+  width: 66px;
+  height: 66px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  position: relative;
+
+  background:
+    radial-gradient(circle at top left, rgba(242,181,68,0.28), rgba(255,255,255,0.80) 62%);
+  border: 1px solid rgba(242, 181, 68, 0.34);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+  overflow: hidden;
 }
 
+/* subtle “cross” shine */
+.event-reminder-icon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.38), transparent 45%, rgba(15,27,51,0.08));
+  pointer-events: none;
+}
+/* Calendar + church glyphs */
+.event-reminder-icon-glyph {
+  font-size: 28px;
+  line-height: 1;
+  z-index: 2;
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,0.16));
+}
+/* Close button: glass + always clean */
 .event-reminder-close {
   position: absolute;
-  right: 10px;
-  top: 10px;
-  width: 34px;
-  height: 34px;
-  border-radius: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  background: rgba(255,255,255,0.92);
+  top: 12px;
+  right: 12px;
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.40);
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   cursor: pointer;
   font-weight: 950;
+  font-size: 18px;
+  line-height: 1;
+  color: rgba(15, 27, 51, 0.88);
+  display: grid;
+  place-items: center;
+  z-index: 3;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.22);
+}
+.event-reminder-close:hover {
+  background: rgba(255,255,255,0.26);
+}
+.event-reminder-close:focus-visible {
+  outline: 3px solid rgba(242, 181, 68, 0.34);
+  outline-offset: 3px;
+}
+/* Badge */
+.event-reminder-badge {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: rgba(242, 181, 68, 0.16);
+  color: #b45309;
+  border: 1px solid rgba(242, 181, 68, 0.24);
+  margin-bottom: 6px;
 }
 
+/* Title */
+.event-reminder-title {
+  font-size: 1.25rem;
+  font-weight: 950;
+  color: #0f1b33;
+  margin: 0;
+}
+/* chips row */
+.event-reminder-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.event-reminder-chip {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-weight: 850;
+  font-size: 0.86rem;
+  background: rgba(15, 27, 51, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  color: rgba(15, 27, 51, 0.86);
+}
+
+.event-reminder-chip strong {
+  font-weight: 950;
+  color: #0f1b33;
+}
+
+/* Summary */
+.event-reminder-summary {
+  position: relative;
+  z-index: 1;
+  color: rgba(15, 27, 51, 0.78);
+  font-weight: 760;
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+/* actions */
+.event-reminder-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* buttons */
+.event-reminder-btn {
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  cursor: pointer;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: rgba(255,255,255,0.88);
+  color: #0f1b33;
+  text-decoration: none;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.10);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.event-reminder-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
+  border-color: rgba(242, 181, 68, 0.40);
+}
+
+.event-reminder-btn--primary {
+  border: none;
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  box-shadow: 0 16px 34px rgba(249, 115, 22, 0.22);
+}
+
+.event-reminder-btn--primary:hover {
+  box-shadow: 0 20px 44px rgba(249, 115, 22, 0.28);
+}
+
+/* Mobile tightening */
+@media (max-width: 520px) {
+  .event-reminder {
+    padding: 14px 14px 12px;
+    border-radius: 22px;
+  }
+
+  .event-reminder-header {
+    grid-template-columns: 60px 1fr;
+    gap: 10px;
+    padding-right: 50px;
+  }
+
+  .event-reminder-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+  }
+
+  .event-reminder-title {
+    font-size: 1.12rem;
+  }
+
+  .event-reminder-actions {
+    justify-content: flex-start;
+  }
+}
 /* =========================================================
    EVENT DETAILS MODAL
    ✅ MAIN FIX: z-index above navbar + safe-area padding

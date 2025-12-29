@@ -701,336 +701,376 @@ function Events() {
     );
   };
 
-  return (
-    <main className="page events-page" id="events">
-      <section className="section-header events-header animate-fade-up">
-        <div className="events-header-badge">Church Calendar</div>
-        <h2>{t.sectionTitle}</h2>
-        <p>{t.sectionIntro}</p>
-      </section>
+return (
+  <main className="page events-page" id="events">
+    <section className="section-header events-header animate-fade-up">
+      <div className="events-header-badge">Church Calendar</div>
+      <h2>{t.sectionTitle}</h2>
+      <p>{t.sectionIntro}</p>
+    </section>
 
-      {loading && (
-        <p className="event-loading" style={{ textAlign: "center" }}>
-          Loading events from the church calendar…
-        </p>
-      )}
+    {loading && (
+      <p className="event-loading" style={{ textAlign: "center" }}>
+        Loading events from the church calendar…
+      </p>
+    )}
 
-      {!loading && events.length === 0 && (
-        <p className="event-empty" style={{ textAlign: "center" }}>
-          No upcoming events are scheduled at the moment. Please check back soon.
-        </p>
-      )}
+    {!loading && events.length === 0 && (
+      <p className="event-empty" style={{ textAlign: "center" }}>
+        No upcoming events are scheduled at the moment. Please check back soon.
+      </p>
+    )}
 
-      {/* ✅ Reminder Popup */}
-      {reminderOpen && reminderEvent && (
+    {/* ✅ Reminder Popup (first visit) */}
+    {reminderOpen && reminderEvent && (
+      <div
+        className="event-reminder-backdrop"
+        role="presentation"
+        onPointerDown={closeReminder}
+      >
         <div
-          className="event-reminder-backdrop"
-          role="presentation"
-          onPointerDown={closeReminder}
+          className="event-reminder"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Upcoming event"
+          onPointerDown={(e) => e.stopPropagation()} // ✅ click outside closes, inside doesn't
         >
-          <div
-            className="event-reminder"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Upcoming event reminder"
-            onPointerDown={(e) => e.stopPropagation()}
+          <button
+            className="event-reminder-close"
+            onClick={closeReminder}
+            aria-label="Close"
+            title="Close"
+            type="button"
           >
-            <button
-              type="button"
-              className="event-reminder-close"
-              onClick={closeReminder}
-              aria-label="Close"
-            >
-              ✕
-            </button>
+            ✕
+          </button>
 
-            <div className="event-reminder-badge">Upcoming</div>
-            <div className="event-reminder-title">{reminderEvent.title}</div>
-
-            <div className="event-reminder-meta">
-              {reminderEvent.startDateTime && (
-                <span className="event-reminder-chip">
-                  {formatFullDate(reminderEvent.startDateTime)} •{" "}
-                  {formatTimeRange(
-                    reminderEvent.startDateTime,
-                    reminderEvent.endDateTime
-                  )}
-                </span>
-              )}
-              {reminderEvent.location && (
-                <span className="event-reminder-chip">
-                  {reminderEvent.location}
-                </span>
-              )}
+          <div className="event-reminder-header">
+            <div className="event-reminder-icon" aria-hidden="true">
+              <div className="event-reminder-icon-glyph">📅</div>
             </div>
 
-            {reminderEvent.shortSummary && (
-              <div className="event-reminder-summary">
-                {reminderEvent.shortSummary}
+            <div>
+              <div className="event-reminder-badge">Upcoming</div>
+              <div className="event-reminder-title">{reminderEvent.title}</div>
+            </div>
+          </div>
+
+          <div className="event-reminder-meta">
+            {reminderEvent.startDateTime && (
+              <div className="event-reminder-chip">
+                <strong>Date</strong>&nbsp;
+                {formatFullDate(reminderEvent.startDateTime)}
               </div>
             )}
 
-            <div className="event-reminder-actions">
+            {reminderEvent.startDateTime && (
+              <div className="event-reminder-chip">
+                <strong>Time</strong>&nbsp;
+                {formatTimeRange(
+                  reminderEvent.startDateTime,
+                  reminderEvent.endDateTime
+                )}
+              </div>
+            )}
+
+            {(reminderEvent.location || reminderEvent.address) && (
+              <div className="event-reminder-chip">
+                <strong>Place</strong>&nbsp;
+                {reminderEvent.location ||
+                  reminderEvent.address?.split("\n")?.[0]}
+              </div>
+            )}
+          </div>
+
+          {reminderEvent.shortSummary && (
+            <p className="event-reminder-summary">{reminderEvent.shortSummary}</p>
+          )}
+
+          <div className="event-reminder-actions">
+            <button
+              type="button"
+              className="event-reminder-btn"
+              onClick={() => {
+                closeReminder();
+                openEventModal(reminderEvent);
+              }}
+            >
+              View details
+            </button>
+
+            <button
+              type="button"
+              className="event-reminder-btn event-reminder-btn--primary"
+              onClick={() => handleShare(reminderEvent)}
+            >
+              Share
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {!loading && events.length > 0 && (
+      <section className="events-calendar-wrap animate-fade-up">
+        {/* Calendar Header */}
+        <div className="events-calendar-header">
+          <button
+            type="button"
+            className="events-cal-nav"
+            onClick={() => setMonthCursor((d) => addMonths(d, -1))}
+            aria-label="Previous month"
+          >
+            ←
+          </button>
+
+          <div className="events-cal-title">{formatMonthTitle(monthCursor)}</div>
+
+          <button
+            type="button"
+            className="events-cal-nav"
+            onClick={() => setMonthCursor((d) => addMonths(d, 1))}
+            aria-label="Next month"
+          >
+            →
+          </button>
+        </div>
+
+        {/* Weekday labels */}
+        <div className="events-cal-weekdays">
+          {weekdayLabels.map((w) => (
+            <div key={w} className="events-cal-weekday">
+              {w}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar grid */}
+        <div className="events-cal-grid">
+          {calendarCells.map((cell) => {
+            if (cell.type === "blank") {
+              return (
+                <div
+                  key={cell.key}
+                  className="events-cal-cell events-cal-cell--blank"
+                />
+              );
+            }
+
+            return (
               <button
+                key={cell.key}
                 type="button"
-                className="event-reminder-btn"
-                onClick={() => {
-                  closeReminder();
-                  openEventModal(reminderEvent);
-                }}
+                className={[
+                  "events-cal-cell",
+                  cell.isSelected ? "is-selected" : "",
+                  cell.isToday ? "is-today" : "",
+                  cell.hasEvents ? "has-events" : "",
+                ].join(" ")}
+                onClick={() => setSelectedDate(cell.date)}
               >
-                {viewDetailsLabel}
+                <span className="events-cal-daynum">{cell.label}</span>
+                {cell.hasEvents && (
+                  <span className="events-cal-dot" aria-hidden="true" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Selected day events */}
+        <div className="events-selected-day">
+          <div className="events-selected-day-title">
+            {selectedDayLabel}:{" "}
+            <strong>
+              {selectedDate.toLocaleDateString("en-GB", {
+                weekday: "long",
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </strong>
+          </div>
+
+          {selectedDayEvents.length === 0 ? (
+            <div className="events-selected-day-empty">{noEventsDayLabel}</div>
+          ) : (
+            <div className="events-list">
+              {selectedDayEvents.map((ev) => (
+                <EventRow key={ev.id} ev={ev} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* This month list (future only, newest first) */}
+        <div className="events-month-section">
+          <div className="events-month-title">{thisMonthLabel}</div>
+
+          {monthEvents.length === 0 ? (
+            <div className="events-month-empty">No upcoming events for this month.</div>
+          ) : (
+            <>
+              <div className="events-list">
+                {visibleMonthEvents.map((ev) => (
+                  <EventRow key={ev.id} ev={ev} showDateBlock />
+                ))}
+              </div>
+
+              {monthEvents.length > monthLimit && (
+                <div className="events-month-more">
+                  <button
+                    type="button"
+                    className="events-month-more-btn"
+                    onClick={() => setShowAllMonth((p) => !p)}
+                  >
+                    {showAllMonth ? viewLessLabel : viewMoreLabel}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </section>
+    )}
+
+    {/* ✅ Single-page Event Details Modal */}
+    {openEvent && (
+      <div
+        className="event-modal-backdrop"
+        role="presentation"
+        onClick={closeEventModal}
+        onDoubleClick={closeEventModal} // ✅ double click closes (outside)
+      >
+        <div
+          className="event-modal"
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => e.stopPropagation()}
+          onDoubleClick={closeEventModal} // ✅ double click closes (inside too)
+        >
+          <div className="event-modal-hero">
+            {openEvent.imageUrl ? (
+              <img src={openEvent.imageUrl} alt={openEvent.title} />
+            ) : (
+              <div className="event-modal-hero-fallback">Church Calendar</div>
+            )}
+
+            {/* ✅ X button ALWAYS on top-right of the image */}
+            <button
+              className="event-modal-close"
+              type="button"
+              onClick={closeEventModal}
+              aria-label="Close"
+              title="Close"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="event-modal-card">
+            <div className="event-modal-badge">Church Calendar</div>
+            <h3 className="event-modal-title">{openEvent.title}</h3>
+
+            <div className="event-modal-grid">
+              {openEvent.startDateTime && (
+                <div className="event-modal-item">
+                  <strong>Date</strong>
+                  <span>{formatFullDate(openEvent.startDateTime)}</span>
+                </div>
+              )}
+
+              {openEvent.startDateTime && (
+                <div className="event-modal-item">
+                  <strong>Time</strong>
+                  <span>
+                    {formatTimeRange(openEvent.startDateTime, openEvent.endDateTime)}
+                  </span>
+                </div>
+              )}
+
+              {openEvent.location && (
+                <div className="event-modal-item">
+                  <strong>Location</strong>
+                  <span>{openEvent.location}</span>
+                </div>
+              )}
+
+              {openEvent.address && (
+                <div className="event-modal-item event-modal-address">
+                  <strong>Address</strong>
+                  <div className="event-modal-address-lines">
+                    {openEvent.address.split("\n").map((line, idx) => (
+                      <div key={idx}>{line}</div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {openEvent.mapLink && (
+              <a
+                className="event-modal-mapcard"
+                href={openEvent.mapLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div className="event-modal-mapthumb" aria-hidden="true">
+                  <div className="event-modal-mapicon">⛪</div>
+                  <div className="event-modal-mapglow" />
+                </div>
+                <div className="event-modal-mapmeta">
+                  <div className="event-modal-maptitle">View on Map</div>
+                  <div className="event-modal-mapsub">
+                    {openEvent.location || "Debre-Genet Holy Trinity Church"}
+                  </div>
+                  <div className="event-modal-mapcta">Open directions →</div>
+                </div>
+              </a>
+            )}
+
+            <div className="event-modal-actions">
+              <button
+                className="event-modal-btn"
+                type="button"
+                onClick={() => downloadICS(openEvent)}
+              >
+                {addToCalLabel}
               </button>
 
+              {googleCalendarUrl(openEvent) && (
+                <a
+                  className="event-modal-btn"
+                  href={googleCalendarUrl(openEvent)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {gcalLabel}
+                </a>
+              )}
+
               <button
+                className="event-modal-btn event-modal-btn--primary"
                 type="button"
-                className="event-reminder-btn event-reminder-btn--primary"
-                onClick={() => handleShare(reminderEvent)}
+                onClick={() => handleShare(openEvent)}
               >
                 {shareLabel}
               </button>
             </div>
-          </div>
-        </div>
-      )}
 
-      {!loading && events.length > 0 && (
-        <section className="events-calendar-wrap animate-fade-up">
-          {/* Calendar Header */}
-          <div className="events-calendar-header">
-            <button
-              type="button"
-              className="events-cal-nav"
-              onClick={() => setMonthCursor((d) => addMonths(d, -1))}
-              aria-label="Previous month"
-            >
-              ←
-            </button>
-
-            <div className="events-cal-title">{formatMonthTitle(monthCursor)}</div>
-
-            <button
-              type="button"
-              className="events-cal-nav"
-              onClick={() => setMonthCursor((d) => addMonths(d, 1))}
-              aria-label="Next month"
-            >
-              →
-            </button>
-          </div>
-
-          {/* Weekday labels */}
-          <div className="events-cal-weekdays">
-            {weekdayLabels.map((w) => (
-              <div key={w} className="events-cal-weekday">
-                {w}
-              </div>
-            ))}
-          </div>
-
-          {/* Calendar grid */}
-          <div className="events-cal-grid">
-            {calendarCells.map((cell) => {
-              if (cell.type === "blank") {
-                return (
-                  <div
-                    key={cell.key}
-                    className="events-cal-cell events-cal-cell--blank"
-                  />
-                );
-              }
-
-              return (
-                <button
-                  key={cell.key}
-                  type="button"
-                  className={[
-                    "events-cal-cell",
-                    cell.isSelected ? "is-selected" : "",
-                    cell.isToday ? "is-today" : "",
-                    cell.hasEvents ? "has-events" : "",
-                  ].join(" ")}
-                  onClick={() => setSelectedDate(cell.date)}
-                >
-                  <span className="events-cal-daynum">{cell.label}</span>
-                  {cell.hasEvents && (
-                    <span className="events-cal-dot" aria-hidden="true" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Selected day events */}
-          <div className="events-selected-day">
-            <div className="events-selected-day-title">
-              {selectedDayLabel}:{" "}
-              <strong>
-                {selectedDate.toLocaleDateString("en-GB", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
-              </strong>
-            </div>
-
-            {selectedDayEvents.length === 0 ? (
-              <div className="events-selected-day-empty">{noEventsDayLabel}</div>
-            ) : (
-              <div className="events-list">
-                {selectedDayEvents.map((ev) => (
-                  <EventRow key={ev.id} ev={ev} />
-                ))}
-              </div>
+            {openEvent.shortSummary && (
+              <p className="event-modal-summary">{openEvent.shortSummary}</p>
+            )}
+            {openEvent.description && (
+              <p className="event-modal-desc">{openEvent.description}</p>
             )}
           </div>
-
-          {/* This month list (future only, newest first) */}
-          <div className="events-month-section">
-            <div className="events-month-title">{thisMonthLabel}</div>
-
-            {monthEvents.length === 0 ? (
-              <div className="events-month-empty">
-                No upcoming events for this month.
-              </div>
-            ) : (
-              <>
-                <div className="events-list">
-                  {visibleMonthEvents.map((ev) => (
-                    <EventRow key={ev.id} ev={ev} showDateBlock />
-                  ))}
-                </div>
-
-                {monthEvents.length > monthLimit && (
-                  <div className="events-month-more">
-                    <button
-                      type="button"
-                      className="events-month-more-btn"
-                      onClick={() => setShowAllMonth((p) => !p)}
-                    >
-                      {showAllMonth ? viewLessLabel : viewMoreLabel}
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* ✅ Single-page Event Details Modal */}
-{/* ✅ Single-page Event Details Modal */}
-{openEvent && (
-  <div
-    className="event-modal-backdrop"
-    role="presentation"
-    onClick={closeEventModal}
-    onDoubleClick={closeEventModal}  // ✅ double click closes
-  >
-    <div
-      className="event-modal"
-      role="dialog"
-      aria-modal="true"
-      onClick={(e) => e.stopPropagation()}
-      onDoubleClick={closeEventModal} // ✅ double click closes (inside too)
-    >
-      <div className="event-modal-hero">
-        {openEvent.imageUrl ? (
-          <img src={openEvent.imageUrl} alt={openEvent.title} />
-        ) : (
-          <div className="event-modal-hero-fallback">Church Calendar</div>
-        )}
-
-        {/* ✅ X button ALWAYS on top-right of the image */}
-        <button
-          className="event-modal-close"
-          type="button"
-          onClick={closeEventModal}
-          aria-label="Close"
-          title="Close"
-        >
-          ✕
-        </button>
-      </div>
-
-      <div className="event-modal-card">
-        <div className="event-modal-badge">Church Calendar</div>
-        <h3 className="event-modal-title">{openEvent.title}</h3>
-
-        <div className="event-modal-grid">
-          {openEvent.startDateTime && (
-            <div className="event-modal-item">
-              <strong>Date</strong>
-              <span>{formatFullDate(openEvent.startDateTime)}</span>
-            </div>
-          )}
-          {openEvent.startDateTime && (
-            <div className="event-modal-item">
-              <strong>Time</strong>
-              <span>{formatTimeRange(openEvent.startDateTime, openEvent.endDateTime)}</span>
-            </div>
-          )}
-          {openEvent.location && (
-            <div className="event-modal-item">
-              <strong>Location</strong>
-              <span>{openEvent.location}</span>
-            </div>
-          )}
-          {openEvent.address && (
-            <div className="event-modal-item event-modal-address">
-              <strong>Address</strong>
-              <div className="event-modal-address-lines">
-                {openEvent.address.split("\n").map((line, idx) => (
-                  <div key={idx}>{line}</div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
-
-        {openEvent.mapLink && (
-          <a className="event-modal-mapcard" href={openEvent.mapLink} target="_blank" rel="noopener noreferrer">
-            <div className="event-modal-mapthumb" aria-hidden="true">
-              <div className="event-modal-mapicon">⛪</div>
-              <div className="event-modal-mapglow" />
-            </div>
-            <div className="event-modal-mapmeta">
-              <div className="event-modal-maptitle">View on Map</div>
-              <div className="event-modal-mapsub">{openEvent.location || "Debre-Genet Holy Trinity Church"}</div>
-              <div className="event-modal-mapcta">Open directions →</div>
-            </div>
-          </a>
-        )}
-
-        <div className="event-modal-actions">
-          <button className="event-modal-btn" type="button" onClick={() => downloadICS(openEvent)}>
-            {addToCalLabel}
-          </button>
-
-          {googleCalendarUrl(openEvent) && (
-            <a className="event-modal-btn" href={googleCalendarUrl(openEvent)} target="_blank" rel="noopener noreferrer">
-              {gcalLabel}
-            </a>
-          )}
-
-          <button className="event-modal-btn event-modal-btn--primary" type="button" onClick={() => handleShare(openEvent)}>
-            {shareLabel}
-          </button>
-        </div>
-
-        {openEvent.shortSummary && <p className="event-modal-summary">{openEvent.shortSummary}</p>}
-        {openEvent.description && <p className="event-modal-desc">{openEvent.description}</p>}
       </div>
-    </div>
-  </div>
-)}
+    )}
+  </main>
+);
 
-
-
-
-    </main>
-  );
 }
 
 export default Events;
