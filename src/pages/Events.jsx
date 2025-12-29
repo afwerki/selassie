@@ -925,18 +925,24 @@ function Events() {
   <div
     className="event-modal-backdrop"
     role="presentation"
-    onClick={closeEventModal}          // tap outside closes
-    onDoubleClick={closeEventModal}    // ✅ double click/tap closes outside too
+    onClick={closeEventModal}
+    onDoubleClick={closeEventModal}  // ✅ double click closes
   >
     <div
       className="event-modal"
       role="dialog"
       aria-modal="true"
       onClick={(e) => e.stopPropagation()}
-      onDoubleClick={closeEventModal}  // ✅ double click/tap closes inside too
+      onDoubleClick={closeEventModal} // ✅ double click closes (inside too)
     >
-      {/* ✅ ZERO-SPACE overlay wrapper (sticky but height:0 => NO GAP) */}
-      <div className="event-modal-close-wrap" aria-hidden="false">
+      <div className="event-modal-hero">
+        {openEvent.imageUrl ? (
+          <img src={openEvent.imageUrl} alt={openEvent.title} />
+        ) : (
+          <div className="event-modal-hero-fallback">Church Calendar</div>
+        )}
+
+        {/* ✅ X button ALWAYS on top-right of the image */}
         <button
           className="event-modal-close"
           type="button"
@@ -946,14 +952,6 @@ function Events() {
         >
           ✕
         </button>
-      </div>
-
-      <div className="event-modal-hero">
-        {openEvent.imageUrl ? (
-          <img src={openEvent.imageUrl} alt={openEvent.title} />
-        ) : (
-          <div className="event-modal-hero-fallback">Church Calendar</div>
-        )}
       </div>
 
       <div className="event-modal-card">
@@ -1016,11 +1014,7 @@ function Events() {
             </a>
           )}
 
-          <button
-            className="event-modal-btn event-modal-btn--primary"
-            type="button"
-            onClick={() => handleShare(openEvent)}
-          >
+          <button className="event-modal-btn event-modal-btn--primary" type="button" onClick={() => handleShare(openEvent)}>
             {shareLabel}
           </button>
         </div>
@@ -1031,6 +1025,8 @@ function Events() {
     </div>
   </div>
 )}
+
+
 
 
     </main>

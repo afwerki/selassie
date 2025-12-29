@@ -1,9 +1,10 @@
 /* =========================================================
    EVENTS.CSS (FULL) — UPDATED
    Upgrades:
-   - ✅ Modal close ALWAYS visible on iPhone (fixed + safe area)
-   - ✅ Rows are tappable cards (tap anywhere opens modal)
-   - ✅ Quick details REMOVED (cleaner UI)
+   - ✅ Modal is ABOVE navbar (fixes iPhone + desktop overlap)
+   - ✅ X close button on hero image corner (no gap)
+   - ✅ Glass close button (visible, not blocking photo)
+   - ✅ Double click closes modal (JSX)
    - ✅ Mobile-friendly layout preserved
 ========================================================= */
 
@@ -251,7 +252,7 @@
 }
 
 /* =========================================================
-   GLAM IMAGE THUMB (UPGRADED but same classes)
+   GLAM IMAGE THUMB
 ========================================================= */
 
 .events-thumb {
@@ -273,7 +274,6 @@
   flex: 0 0 auto;
 }
 
-/* IMPORTANT: make image always fill & look premium */
 .events-thumb img {
   width: 100%;
   height: 100%;
@@ -283,7 +283,6 @@
   filter: saturate(1.08) contrast(1.05);
 }
 
-/* glossy overlay */
 .events-thumb::after {
   content: "";
   position: absolute;
@@ -293,7 +292,6 @@
   pointer-events: none;
 }
 
-/* the glow element you already add */
 .events-thumb-glow {
   position: absolute;
   inset: -40%;
@@ -318,7 +316,7 @@
 }
 
 /* =========================================================
-   EVENT ROWS (tappable cards) + prettier text + spacing
+   EVENT ROWS
 ========================================================= */
 
 .events-list {
@@ -337,8 +335,6 @@
   border: 1px solid rgba(15, 23, 42, 0.10);
   box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-
-  /* ✅ Make it feel tappable */
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -349,13 +345,11 @@
   border-color: rgba(242, 181, 68, 0.35);
 }
 
-/* ✅ Keyboard accessibility if you add tabIndex=0 in JSX */
 .events-row:focus-visible {
   outline: 4px solid rgba(47, 104, 181, 0.22);
   outline-offset: 3px;
 }
 
-/* Date block (left) */
 .events-row-date {
   width: 58px;
   min-width: 58px;
@@ -384,7 +378,6 @@
   margin-top: 2px;
 }
 
-/* Main text */
 .events-row-main {
   min-width: 0;
   cursor: default;
@@ -439,7 +432,7 @@
 }
 
 /* =========================================================
-   INLINE CALENDAR BUTTONS IN ROW (same classes)
+   INLINE CALENDAR BUTTONS IN ROW
 ========================================================= */
 
 .events-row-cal {
@@ -474,20 +467,12 @@
   box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
 }
 
-.events-row-calbtn:active {
-  transform: translateY(0);
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.10);
-}
-
-/* Actions */
 .events-row-actions {
   display: flex;
   gap: 10px;
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
-
-  /* keep buttons from looking like part of the card click */
   cursor: default;
 }
 
@@ -507,12 +492,6 @@
   cursor: pointer;
 }
 
-.events-row-link:hover {
-  transform: translateY(-1px);
-  border-color: rgba(47, 104, 181, 0.35);
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.10);
-}
-
 .events-row-share {
   font-size: 0.84rem;
   font-weight: 950;
@@ -525,41 +504,6 @@
   color: #0f1b33;
   background: linear-gradient(135deg, #fbbf24, #f97316);
   box-shadow: 0 12px 26px rgba(249, 115, 22, 0.22);
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
-}
-
-.events-row-share:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 34px rgba(249, 115, 22, 0.28);
-}
-
-.events-row-share:active {
-  transform: translateY(0);
-  box-shadow: 0 10px 20px rgba(249, 115, 22, 0.20);
-}
-
-/* =========================================================
-   VIEW MORE (This month)
-========================================================= */
-
-.events-month-more {
-  display: flex;
-  justify-content: center;
-  margin-top: 14px;
-}
-
-.events-month-more-btn {
-  padding: 10px 22px;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  font-weight: 950;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-size: 0.82rem;
-  background: linear-gradient(135deg, #fbbf24, #f97316);
-  color: #0f1b33;
-  box-shadow: 0 16px 34px rgba(249, 115, 22, 0.22);
 }
 
 /* =========================================================
@@ -571,7 +515,7 @@
   inset: 0;
   background: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(4px);
-  z-index: 20000;
+  z-index: 999998;
   display: grid;
   place-items: center;
   padding: 18px;
@@ -600,94 +544,31 @@
   font-weight: 950;
 }
 
-.event-reminder-badge {
-  display: inline-flex;
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 950;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  background: rgba(242, 181, 68, 0.16);
-  color: #b45309;
-  margin-bottom: 8px;
-}
-
-.event-reminder-title {
-  font-size: 1.25rem;
-  font-weight: 950;
-  color: #0f1b33;
-  margin-bottom: 6px;
-}
-
-.event-reminder-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.event-reminder-chip {
-  display: inline-flex;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 850;
-  font-size: 0.85rem;
-  background: rgba(15, 27, 51, 0.06);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  color: rgba(15, 27, 51, 0.80);
-}
-
-.event-reminder-summary {
-  color: rgba(15, 27, 51, 0.78);
-  font-weight: 750;
-  line-height: 1.45;
-  margin-bottom: 12px;
-}
-
-.event-reminder-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.event-reminder-btn {
-  border-radius: 14px;
-  padding: 10px 14px;
-  font-weight: 950;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-size: 0.82rem;
-  cursor: pointer;
-  border: 1px solid rgba(15, 23, 42, 0.14);
-  background: rgba(255,255,255,0.90);
-  color: #0f1b33;
-  text-decoration: none;
-}
-
-.event-reminder-btn--primary {
-  border: none;
-  background: linear-gradient(135deg, #fbbf24, #f97316);
-  box-shadow: 0 16px 34px rgba(249, 115, 22, 0.22);
-}
-
 /* =========================================================
-   EVENT DETAILS MODAL (single-page invitation card)
-   ✅ FIX: Close is ALWAYS clickable on iPhone
+   EVENT DETAILS MODAL
+   ✅ MAIN FIX: z-index above navbar + safe-area padding
 ========================================================= */
 
 .event-modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(6px);
-  z-index: 20000;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  /* ✅ ABOVE NAVBAR ALWAYS */
+  z-index: 999999;
+
   display: grid;
   place-items: center;
-  padding: 18px;
 
-  /* prevent weird iOS scroll chaining */
+  /* ✅ prevents “modal jammed into top” on iPhone */
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 18px)
+    calc(env(safe-area-inset-right, 0px) + 16px)
+    calc(env(safe-area-inset-bottom, 0px) + 18px)
+    calc(env(safe-area-inset-left, 0px) + 16px);
+
   overscroll-behavior: contain;
 }
 
@@ -701,74 +582,24 @@
   background: radial-gradient(circle at top left, rgba(242,181,68,0.14), rgba(255,255,255,0.92) 56%);
   box-shadow: 0 30px 90px rgba(15, 23, 42, 0.35);
 }
-.event-modal-close-wrap {
-  position: sticky;
-  top: 0;
-  height: 0;                 /* ✅ KEY: no layout space */
-  z-index: 99999;
-  pointer-events: none;      /* allow clicks only on button */
-}
 
-
-
-/* ✅ fixed close, huge z-index, safe-area aware */
-.event-modal-close {
-  pointer-events: auto;
-  position: absolute;
-
-  /* ✅ Truly on top of the image corner */
-  top: calc(env(safe-area-inset-top, 0px) + 10px);
-  right: calc(env(safe-area-inset-right, 0px) + 10px);
-
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
-
-  /* ✅ GLASS effect */
-  background: rgba(255, 255, 255, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.38);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  /* ✅ Make it readable on any photo */
-  color: rgba(15, 27, 51, 0.92);
-  font-weight: 950;
-  font-size: 22px;
-  line-height: 1;
-
-  display: grid;
-  place-items: center;
-
-  cursor: pointer;
-
-  /* ✅ soft shadow + subtle inner highlight */
-  box-shadow:
-    0 18px 44px rgba(15, 23, 42, 0.22),
-    0 1px 0 rgba(255,255,255,0.35) inset;
-}
-
-
-/* Hero needs to be positioning context for the button */
+/* Hero */
 .event-modal-hero {
   position: relative;
   border-radius: 26px 26px 18px 18px;
   overflow: hidden;
   border-bottom: 1px solid rgba(15, 23, 42, 0.10);
 }
-/* Hover/active for desktop */
-.event-modal-close:hover {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.30);
-  border-color: rgba(255, 255, 255, 0.50);
+
+/* subtle readability layer */
+.event-modal-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 70% 20%, rgba(0,0,0,0.10), transparent 55%);
+  pointer-events: none;
 }
-.event-modal-close:active {
-  transform: translateY(0);
-  background: rgba(255, 255, 255, 0.26);
-}
-.event-modal-close:focus-visible {
-  outline: 3px solid rgba(242, 181, 68, 0.35);
-  outline-offset: 3px;
-}
+
 .event-modal-hero img {
   width: 100%;
   height: 300px;
@@ -785,6 +616,53 @@
   font-weight: 900;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+/* ✅ X close ON image corner (no space) */
+.event-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+
+  /* glass */
+  background: rgba(255, 255, 255, 0.20);
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: rgba(15, 27, 51, 0.92);
+  font-weight: 950;
+  font-size: 22px;
+  line-height: 1;
+
+  display: grid;
+  place-items: center;
+
+  cursor: pointer;
+  z-index: 5;
+
+  box-shadow:
+    0 18px 44px rgba(15, 23, 42, 0.22),
+    0 1px 0 rgba(255,255,255,0.35) inset;
+}
+
+.event-modal-close:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.event-modal-close:active {
+  transform: translateY(0);
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.event-modal-close:focus-visible {
+  outline: 3px solid rgba(242, 181, 68, 0.35);
+  outline-offset: 3px;
 }
 
 .event-modal-card {
@@ -975,13 +853,7 @@
 /* =========================================================
    RESPONSIVE (mobile)
 ========================================================= */
-
-/* Mobile adjustments */
 @media (max-width: 768px) {
-  .event-modal-hero img {
-    height: 220px;
-  }
-
   .events-cal-grid {
     gap: 8px;
   }
@@ -1015,7 +887,6 @@
     border-radius: 20px;
   }
 
-  /* Modal adjustments */
   .event-modal-hero img {
     height: 220px;
   }
@@ -1028,39 +899,19 @@
     grid-template-columns: 1fr;
   }
 
- .event-modal-close {
-  position: sticky; /* ✅ stays visible while scrolling inside modal */
-  top: calc(env(safe-area-inset-top) + 12px);
-  margin-left: auto;
-  margin-right: 12px;
-  margin-top: 12px;
-  z-index: 99999;
-
-  width: 54px;
-  height: 54px;
-  border-radius: 18px;
-  border: 1px solid rgba(15, 23, 42, 0.18);
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(8px);
-
-  display: grid;
-  place-items: center;
-
-  cursor: pointer;
-  font-weight: 950;
-  font-size: 22px;
-  line-height: 1;
-
-  box-shadow:
-    0 18px 44px rgba(15, 23, 42, 0.22),
-    0 0 0 4px rgba(242, 181, 68, 0.14) inset;
-}
- .event-modal-close {
-    width: 48px;
-    height: 48px;
+  /* slightly tighter button spacing */
+  .event-modal-close {
+    top: 10px;
+    right: 10px;
+    width: 44px;
+    height: 44px;
     border-radius: 16px;
-    top: calc(env(safe-area-inset-top, 0px) + 8px);
-    right: calc(env(safe-area-inset-right, 0px) + 8px);
   }
+}
 
+/* ✅ DESKTOP-ONLY safety: ensure close never hides behind anything */
+@media (min-width: 769px) {
+  .event-modal-close {
+    z-index: 999999;
+  }
 }
