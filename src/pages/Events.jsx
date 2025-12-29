@@ -920,153 +920,119 @@ function Events() {
       )}
 
       {/* ✅ Single-page Event Details Modal */}
-      {openEvent && (
-        <div
-          className="event-modal-backdrop"
-          role="presentation"
-          onPointerDown={closeEventModal}
+{/* ✅ Single-page Event Details Modal */}
+{openEvent && (
+  <div
+    className="event-modal-backdrop"
+    role="presentation"
+    onClick={closeEventModal}          // tap outside closes
+    onDoubleClick={closeEventModal}    // ✅ double click/tap closes outside too
+  >
+    <div
+      className="event-modal"
+      role="dialog"
+      aria-modal="true"
+      onClick={(e) => e.stopPropagation()}
+      onDoubleClick={closeEventModal}  // ✅ double click/tap closes inside too
+    >
+      {/* ✅ ZERO-SPACE overlay wrapper (sticky but height:0 => NO GAP) */}
+      <div className="event-modal-close-wrap" aria-hidden="false">
+        <button
+          className="event-modal-close"
+          type="button"
+          onClick={closeEventModal}
+          aria-label="Close"
+          title="Close"
         >
-          <div
-            className="event-modal"
-            role="dialog"
-            aria-modal="true"
-            onPointerDown={(e) => e.stopPropagation()}
-          >
-            {/* ✅ Always visible close button (CSS handles fixed + z-index) */}
-            <button
-              className="event-modal-close"
-              type="button"
-              onClick={closeEventModal}
-              aria-label="Close"
-            >
-              ✕
-            </button>
+          ✕
+        </button>
+      </div>
 
-            <div className="event-modal-hero">
-              {openEvent.imageUrl ? (
-                <img src={openEvent.imageUrl} alt={openEvent.title} />
-              ) : (
-                <div className="event-modal-hero-fallback">Church Calendar</div>
-              )}
+      <div className="event-modal-hero">
+        {openEvent.imageUrl ? (
+          <img src={openEvent.imageUrl} alt={openEvent.title} />
+        ) : (
+          <div className="event-modal-hero-fallback">Church Calendar</div>
+        )}
+      </div>
+
+      <div className="event-modal-card">
+        <div className="event-modal-badge">Church Calendar</div>
+        <h3 className="event-modal-title">{openEvent.title}</h3>
+
+        <div className="event-modal-grid">
+          {openEvent.startDateTime && (
+            <div className="event-modal-item">
+              <strong>Date</strong>
+              <span>{formatFullDate(openEvent.startDateTime)}</span>
             </div>
-
-            <div className="event-modal-card">
-              <div className="event-modal-badge">Church Calendar</div>
-              <h3 className="event-modal-title">{openEvent.title}</h3>
-
-              <div className="event-modal-grid">
-                {openEvent.startDateTime && (
-                  <div className="event-modal-item">
-                    <strong>Date</strong>
-                    <span>{formatFullDate(openEvent.startDateTime)}</span>
-                  </div>
-                )}
-                {openEvent.startDateTime && (
-                  <div className="event-modal-item">
-                    <strong>Time</strong>
-                    <span>
-                      {formatTimeRange(
-                        openEvent.startDateTime,
-                        openEvent.endDateTime
-                      )}
-                    </span>
-                  </div>
-                )}
-                {openEvent.location && (
-                  <div className="event-modal-item">
-                    <strong>Location</strong>
-                    <span>{openEvent.location}</span>
-                  </div>
-                )}
-                {openEvent.address && (
-                  <div className="event-modal-item event-modal-address">
-                    <strong>Address</strong>
-                    <div className="event-modal-address-lines">
-                      {openEvent.address.split("\n").map((line, idx) => (
-                        <div key={idx}>{line}</div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {openEvent.mapLink && (
-                <a
-                  className="event-modal-mapcard"
-                  href={openEvent.mapLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  onPointerDown={(e) => e.stopPropagation()}
-                >
-                  <div className="event-modal-mapthumb" aria-hidden="true">
-                    <div className="event-modal-mapicon">⛪</div>
-                    <div className="event-modal-mapglow" />
-                  </div>
-                  <div className="event-modal-mapmeta">
-                    <div className="event-modal-maptitle">View on Map</div>
-                    <div className="event-modal-mapsub">
-                      {openEvent.location || "Debre-Genet Holy Trinity Church"}
-                    </div>
-                    <div className="event-modal-mapcta">Open directions →</div>
-                  </div>
-                </a>
-              )}
-
-              <div
-                className="event-modal-actions"
-                onClick={(e) => e.stopPropagation()}
-                onPointerDown={(e) => e.stopPropagation()}
-              >
-                {/* ✅ Extra “Close” button inside actions (better UX on mobile) */}
-                <button
-                  className="event-modal-btn"
-                  type="button"
-                  onClick={closeEventModal}
-                >
-                  Close
-                </button>
-
-                <button
-                  className="event-modal-btn"
-                  type="button"
-                  onClick={() => downloadICS(openEvent)}
-                >
-                  {addToCalLabel}
-                </button>
-
-                {googleCalendarUrl(openEvent) && (
-                  <a
-                    className="event-modal-btn"
-                    href={googleCalendarUrl(openEvent)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    onPointerDown={(e) => e.stopPropagation()}
-                  >
-                    {gcalLabel}
-                  </a>
-                )}
-
-                <button
-                  className="event-modal-btn event-modal-btn--primary"
-                  type="button"
-                  onClick={() => handleShare(openEvent)}
-                >
-                  {shareLabel}
-                </button>
-              </div>
-
-              {openEvent.shortSummary && (
-                <p className="event-modal-summary">{openEvent.shortSummary}</p>
-              )}
-              {openEvent.description && (
-                <p className="event-modal-desc">{openEvent.description}</p>
-              )}
+          )}
+          {openEvent.startDateTime && (
+            <div className="event-modal-item">
+              <strong>Time</strong>
+              <span>{formatTimeRange(openEvent.startDateTime, openEvent.endDateTime)}</span>
             </div>
-          </div>
+          )}
+          {openEvent.location && (
+            <div className="event-modal-item">
+              <strong>Location</strong>
+              <span>{openEvent.location}</span>
+            </div>
+          )}
+          {openEvent.address && (
+            <div className="event-modal-item event-modal-address">
+              <strong>Address</strong>
+              <div className="event-modal-address-lines">
+                {openEvent.address.split("\n").map((line, idx) => (
+                  <div key={idx}>{line}</div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      )}
+
+        {openEvent.mapLink && (
+          <a className="event-modal-mapcard" href={openEvent.mapLink} target="_blank" rel="noopener noreferrer">
+            <div className="event-modal-mapthumb" aria-hidden="true">
+              <div className="event-modal-mapicon">⛪</div>
+              <div className="event-modal-mapglow" />
+            </div>
+            <div className="event-modal-mapmeta">
+              <div className="event-modal-maptitle">View on Map</div>
+              <div className="event-modal-mapsub">{openEvent.location || "Debre-Genet Holy Trinity Church"}</div>
+              <div className="event-modal-mapcta">Open directions →</div>
+            </div>
+          </a>
+        )}
+
+        <div className="event-modal-actions">
+          <button className="event-modal-btn" type="button" onClick={() => downloadICS(openEvent)}>
+            {addToCalLabel}
+          </button>
+
+          {googleCalendarUrl(openEvent) && (
+            <a className="event-modal-btn" href={googleCalendarUrl(openEvent)} target="_blank" rel="noopener noreferrer">
+              {gcalLabel}
+            </a>
+          )}
+
+          <button
+            className="event-modal-btn event-modal-btn--primary"
+            type="button"
+            onClick={() => handleShare(openEvent)}
+          >
+            {shareLabel}
+          </button>
+        </div>
+
+        {openEvent.shortSummary && <p className="event-modal-summary">{openEvent.shortSummary}</p>}
+        {openEvent.description && <p className="event-modal-desc">{openEvent.description}</p>}
+      </div>
+    </div>
+  </div>
+)}
+
+
     </main>
   );
 }

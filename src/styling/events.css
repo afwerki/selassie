@@ -692,44 +692,83 @@
 }
 
 .event-modal {
+  position: relative;
   width: min(980px, 100%);
   max-height: min(92vh, 860px);
   overflow: auto;
-  -webkit-overflow-scrolling: touch;
   border-radius: 26px;
   border: 1px solid rgba(15, 23, 42, 0.14);
   background: radial-gradient(circle at top left, rgba(242,181,68,0.14), rgba(255,255,255,0.92) 56%);
   box-shadow: 0 30px 90px rgba(15, 23, 42, 0.35);
-  position: relative;
 }
+.event-modal-close-wrap {
+  position: sticky;
+  top: 0;
+  height: 0;                 /* ✅ KEY: no layout space */
+  z-index: 99999;
+  pointer-events: none;      /* allow clicks only on button */
+}
+
+
 
 /* ✅ fixed close, huge z-index, safe-area aware */
 .event-modal-close {
-  position: fixed; /* not absolute */
-  top: calc(env(safe-area-inset-top, 0px) + 12px);
-  right: calc(env(safe-area-inset-right, 0px) + 12px);
-  width: 54px;
-  height: 54px;
-  border-radius: 18px;
-  border: 1px solid rgba(15, 23, 42, 0.18);
-  background: rgba(255,255,255,0.96);
-  cursor: pointer;
+  pointer-events: auto;
+  position: absolute;
+
+  /* ✅ Truly on top of the image corner */
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+  right: calc(env(safe-area-inset-right, 0px) + 10px);
+
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+
+  /* ✅ GLASS effect */
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  /* ✅ Make it readable on any photo */
+  color: rgba(15, 27, 51, 0.92);
   font-weight: 950;
-  z-index: 99999; /* above everything */
+  font-size: 22px;
+  line-height: 1;
+
+  display: grid;
+  place-items: center;
+
+  cursor: pointer;
+
+  /* ✅ soft shadow + subtle inner highlight */
   box-shadow:
     0 18px 44px rgba(15, 23, 42, 0.22),
-    0 0 0 4px rgba(242, 181, 68, 0.14) inset;
-
-  font-size: 20px;
-  line-height: 1;
+    0 1px 0 rgba(255,255,255,0.35) inset;
 }
 
+
+/* Hero needs to be positioning context for the button */
 .event-modal-hero {
+  position: relative;
   border-radius: 26px 26px 18px 18px;
   overflow: hidden;
   border-bottom: 1px solid rgba(15, 23, 42, 0.10);
 }
-
+/* Hover/active for desktop */
+.event-modal-close:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.30);
+  border-color: rgba(255, 255, 255, 0.50);
+}
+.event-modal-close:active {
+  transform: translateY(0);
+  background: rgba(255, 255, 255, 0.26);
+}
+.event-modal-close:focus-visible {
+  outline: 3px solid rgba(242, 181, 68, 0.35);
+  outline-offset: 3px;
+}
 .event-modal-hero img {
   width: 100%;
   height: 300px;
@@ -937,10 +976,10 @@
    RESPONSIVE (mobile)
 ========================================================= */
 
+/* Mobile adjustments */
 @media (max-width: 768px) {
-  .events-calendar-wrap {
-    padding: 14px;
-    border-radius: 22px;
+  .event-modal-hero img {
+    height: 220px;
   }
 
   .events-cal-grid {
@@ -989,11 +1028,39 @@
     grid-template-columns: 1fr;
   }
 
-  /* Make sure close is not under the iOS top UI */
-  .event-modal-close {
-    top: calc(env(safe-area-inset-top, 0px) + 10px);
-    right: calc(env(safe-area-inset-right, 0px) + 10px);
-    width: 56px;
-    height: 56px;
+ .event-modal-close {
+  position: sticky; /* ✅ stays visible while scrolling inside modal */
+  top: calc(env(safe-area-inset-top) + 12px);
+  margin-left: auto;
+  margin-right: 12px;
+  margin-top: 12px;
+  z-index: 99999;
+
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(8px);
+
+  display: grid;
+  place-items: center;
+
+  cursor: pointer;
+  font-weight: 950;
+  font-size: 22px;
+  line-height: 1;
+
+  box-shadow:
+    0 18px 44px rgba(15, 23, 42, 0.22),
+    0 0 0 4px rgba(242, 181, 68, 0.14) inset;
+}
+ .event-modal-close {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    top: calc(env(safe-area-inset-top, 0px) + 8px);
+    right: calc(env(safe-area-inset-right, 0px) + 8px);
   }
+
 }
