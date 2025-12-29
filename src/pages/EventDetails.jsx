@@ -1,6 +1,6 @@
 // src/pages/EventDetails.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import MembershipForm from "../components/MembershipForm";
@@ -33,8 +33,7 @@ function buildICS(ev) {
   const start = ev?.startDateTime ? new Date(ev.startDateTime) : null;
   const end = ev?.endDateTime ? new Date(ev.endDateTime) : null;
 
-  const safeEnd =
-    end || (start ? new Date(start.getTime() + 60 * 60 * 1000) : null);
+  const safeEnd = end || (start ? new Date(start.getTime() + 60 * 60 * 1000) : null);
 
   const uid = `${ev?._id || ev?.slug || "event"}@dght.uk`;
   const now = new Date();
@@ -133,6 +132,7 @@ function formatTimeRange(startIso, endIso) {
 
 export default function EventDetails() {
   const { slug } = useParams();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState(null);
@@ -144,6 +144,22 @@ export default function EventDetails() {
     () => formatTimeRange(event?.startDateTime, event?.endDateTime),
     [event?.startDateTime, event?.endDateTime]
   );
+
+  // ✅ Close/Exit handler: back if possible, else go to events section
+  const closePage = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/#events");
+  };
+
+  // ✅ ESC closes (desktop)
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") closePage();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -214,25 +230,44 @@ export default function EventDetails() {
       <Navbar />
 
       <main className="event-details-page">
+        {/* ✅ ALWAYS VISIBLE CLOSE BUTTON */}
+        <button
+          type="button"
+          className="event-details-close"
+          onClick={closePage}
+          aria-label="Close"
+        >
+          ✕
+        </button>
+
         <div className="event-details-wrap">
           <Link className="event-details-back" to="/#events">
             ← Back to events
           </Link>
 
-          {loading && <p>Loading event…</p>}
+          {loading && (
+            <div className="event-details-state">
+              <p>Loading event…</p>
+            </div>
+          )}
 
           {!loading && error && (
-            <div className="event-details-card-inner">
-              <strong>{error}</strong>
+            <div className="event-details-state">
+              <div className="event-details-state-card">
+                <h3 className="event-details-state-title">Something went wrong</h3>
+                <p className="event-details-state-text">{error}</p>
+              </div>
             </div>
           )}
 
           {!loading && !error && !event && (
-            <div className="event-details-card-inner">
-              <h2 style={{ marginTop: 0 }}>Event not found</h2>
-              <p style={{ marginBottom: 0 }}>
-                This event may have been removed or is not active.
-              </p>
+            <div className="event-details-state">
+              <div className="event-details-state-card">
+                <h3 className="event-details-state-title">Event not found</h3>
+                <p className="event-details-state-text">
+                  This event may have been removed or is not active.
+                </p>
+              </div>
             </div>
           )}
 
@@ -288,7 +323,11 @@ export default function EventDetails() {
                   {event.mapLink && (
                     <a className="event-map-card" href={event.mapLink} target="_blank" rel="noopener noreferrer">
                       <div className="event-map-thumb" aria-hidden="true">
-                        <div className="event-map-icon">⛪</div>
+                        {/* ✅ Matches your CSS (pin + cross overlay) */}
+                        <div className="event-map-icon">
+                          <span className="event-map-pin" aria-hidden="true" />
+                          <span className="event-map-cross" aria-hidden="true">✚</span>
+                        </div>
                         <div className="event-map-glow" />
                       </div>
 
@@ -303,13 +342,17 @@ export default function EventDetails() {
                   )}
 
                   <div className="event-details-actions">
+                    {/* ✅ Extra close inside the action area (very clear on mobile) */}
+                    <button type="button" className="event-details-btn" onClick={closePage}>
+                      Close
+                    </button>
+
                     {event.mapLink && (
                       <a className="event-details-btn" href={event.mapLink} target="_blank" rel="noopener noreferrer">
                         Directions
                       </a>
                     )}
 
-                    {/* ✅ Add to calendar (downloads ICS with reminders) */}
                     <button
                       type="button"
                       className="event-details-btn"

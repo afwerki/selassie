@@ -1,9 +1,10 @@
 /* =========================================================
-   EVENTS.CSS (FULL)
-   Based on your existing working code + upgrades:
-   - Glam image styling (row + quick details)
-   - Better typography + spacing
-   - Modal close ALWAYS visible on iPhone (fixed + safe area)
+   EVENTS.CSS (FULL) — UPDATED
+   Upgrades:
+   - ✅ Modal close ALWAYS visible on iPhone (fixed + safe area)
+   - ✅ Rows are tappable cards (tap anywhere opens modal)
+   - ✅ Quick details REMOVED (cleaner UI)
+   - ✅ Mobile-friendly layout preserved
 ========================================================= */
 
 /* ---------- Base helpers (safe defaults) ---------- */
@@ -316,19 +317,8 @@
   z-index: 2;
 }
 
-/* Larger image used inside Quick details */
-.events-thumb--lg {
-  width: 108px;
-  height: 108px;
-  border-radius: 22px;
-  border-color: rgba(242, 181, 68, 0.45);
-  box-shadow:
-    0 18px 40px rgba(15, 23, 42, 0.14),
-    0 1px 0 rgba(255,255,255,0.6) inset;
-}
-
 /* =========================================================
-   EVENT ROWS (keep your grid) + prettier text + spacing
+   EVENT ROWS (tappable cards) + prettier text + spacing
 ========================================================= */
 
 .events-list {
@@ -347,12 +337,22 @@
   border: 1px solid rgba(15, 23, 42, 0.10);
   box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+
+  /* ✅ Make it feel tappable */
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .events-row:hover {
   transform: translateY(-1px);
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
   border-color: rgba(242, 181, 68, 0.35);
+}
+
+/* ✅ Keyboard accessibility if you add tabIndex=0 in JSX */
+.events-row:focus-visible {
+  outline: 4px solid rgba(47, 104, 181, 0.22);
+  outline-offset: 3px;
 }
 
 /* Date block (left) */
@@ -365,6 +365,7 @@
   background: radial-gradient(circle at top left, rgba(242,181,68,0.18), rgba(255,255,255,0.84) 70%);
   border: 1px solid rgba(242, 181, 68, 0.35);
   box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+  cursor: default;
 }
 
 .events-row-day {
@@ -386,6 +387,7 @@
 /* Main text */
 .events-row-main {
   min-width: 0;
+  cursor: default;
 }
 
 .events-row-title {
@@ -484,6 +486,9 @@
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
+
+  /* keep buttons from looking like part of the card click */
+  cursor: default;
 }
 
 .events-row-link {
@@ -499,6 +504,7 @@
   border: 1px solid rgba(47, 104, 181, 0.22);
   background: rgba(47, 104, 181, 0.06);
   transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+  cursor: pointer;
 }
 
 .events-row-link:hover {
@@ -530,97 +536,6 @@
 .events-row-share:active {
   transform: translateY(0);
   box-shadow: 0 10px 20px rgba(249, 115, 22, 0.20);
-}
-
-/* =========================================================
-   INLINE DROPDOWN (Quick details) — FIXED layout + glam image
-========================================================= */
-
-.events-row-details {
-  margin-top: 10px;
-}
-
-.events-row-details > summary {
-  list-style: none;
-  cursor: pointer;
-  user-select: none;
-  font-weight: 950;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  font-size: 0.78rem;
-  color: #2f68b5;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(47,104,181,0.16);
-  background: rgba(47,104,181,0.06);
-}
-
-.events-row-details > summary::-webkit-details-marker {
-  display: none;
-}
-
-.events-row-details > summary::after {
-  content: "▾";
-  font-size: 0.9rem;
-  opacity: 0.8;
-}
-
-.events-row-details[open] > summary::after {
-  content: "▴";
-}
-
-.events-row-details-body {
-  margin-top: 10px;
-  padding: 14px;
-  border-radius: 18px;
-  background: rgba(15, 27, 51, 0.04);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-}
-
-/* Key fix: keep the quick details content aligned and not ugly */
-.events-row-details-top {
-  display: grid;
-  grid-template-columns: 108px 1fr;
-  gap: 14px;
-  align-items: start;
-}
-
-.events-row-details-text {
-  min-width: 0;
-}
-
-.events-row-desc {
-  margin: 0 0 10px 0;
-  color: rgba(15, 27, 51, 0.80);
-  line-height: 1.6;
-  font-weight: 650;
-}
-
-.events-row-address {
-  margin-bottom: 10px;
-  color: rgba(15, 27, 51, 0.78);
-}
-
-.events-row-address strong {
-  color: #0f1b33;
-  font-weight: 950;
-}
-
-.events-row-map {
-  display: inline-flex;
-  font-weight: 950;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  font-size: 0.78rem;
-  color: #0f766e;
-  text-decoration: none;
-}
-
-.events-row-map:hover {
-  text-decoration: underline;
 }
 
 /* =========================================================
@@ -771,12 +686,16 @@
   display: grid;
   place-items: center;
   padding: 18px;
+
+  /* prevent weird iOS scroll chaining */
+  overscroll-behavior: contain;
 }
 
 .event-modal {
   width: min(980px, 100%);
   max-height: min(92vh, 860px);
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: 26px;
   border: 1px solid rgba(15, 23, 42, 0.14);
   background: radial-gradient(circle at top left, rgba(242,181,68,0.14), rgba(255,255,255,0.92) 56%);
@@ -784,11 +703,11 @@
   position: relative;
 }
 
-/* ✅ THIS is the fix you need: fixed close, huge z-index, safe-area aware */
+/* ✅ fixed close, huge z-index, safe-area aware */
 .event-modal-close {
   position: fixed; /* not absolute */
-  top: calc(env(safe-area-inset-top) + 12px);
-  right: 12px;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  right: calc(env(safe-area-inset-right, 0px) + 12px);
   width: 54px;
   height: 54px;
   border-radius: 18px;
@@ -796,14 +715,11 @@
   background: rgba(255,255,255,0.96);
   cursor: pointer;
   font-weight: 950;
-  z-index: 99999; /* above navbar and everything */
+  z-index: 99999; /* above everything */
   box-shadow:
     0 18px 44px rgba(15, 23, 42, 0.22),
     0 0 0 4px rgba(242, 181, 68, 0.14) inset;
-}
 
-/* make the X bigger */
-.event-modal-close {
   font-size: 20px;
   line-height: 1;
 }
@@ -1054,25 +970,10 @@
     justify-content: flex-start;
   }
 
-  /* Quick details: stack */
-  .events-row-details-top {
-    grid-template-columns: 1fr;
-  }
-
   .events-thumb {
     width: 72px;
     height: 72px;
     border-radius: 20px;
-  }
-
-  .events-thumb--lg {
-    width: 100%;
-    height: 190px;
-    border-radius: 18px;
-  }
-
-  .events-thumb--lg img {
-    transform: none;
   }
 
   /* Modal adjustments */
@@ -1090,8 +991,8 @@
 
   /* Make sure close is not under the iOS top UI */
   .event-modal-close {
-    top: calc(env(safe-area-inset-top) + 10px);
-    right: 10px;
+    top: calc(env(safe-area-inset-top, 0px) + 10px);
+    right: calc(env(safe-area-inset-right, 0px) + 10px);
     width: 56px;
     height: 56px;
   }
