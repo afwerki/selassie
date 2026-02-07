@@ -1,3 +1,4 @@
+// src/main.jsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -5,7 +6,7 @@ import App from "./App.jsx";
 import "./index.css";
 
 import { LanguageProvider } from "./contexts/LanguageContext.jsx";
-import HashScroll from "./components/HashScroll"; // ✅ your component
+import HashScroll from "./components/HashScroll";
 
 // Service Worker + Notification permission (keep your existing code)
 async function registerServiceWorker() {
@@ -30,8 +31,8 @@ requestNotificationPermission();
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <HashScroll />
       <LanguageProvider>
+        <HashScroll />
         <App />
       </LanguageProvider>
     </BrowserRouter>

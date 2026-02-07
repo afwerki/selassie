@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../styling/home.css";
 
-import PriestImage from "../assets/images/prist.jpeg";
+import Theodros from "../assets/images/Theodros.jpg";
+import kefeyalew from "../assets/images/Kefeyalew.jpg";
+import yohannes from "../assets/images/Yohannes.jpg";
 import MissionImage from "../assets/images/eotc.jpg";
 import { client } from "../sanityClient";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -10,50 +12,30 @@ import { texts } from "../i18n/texts";
 const clergyMembers = [
   {
     id: "priest1",
-    name: "Kesis Fesha",
+    name: "Kesis Kefyalew ",
     title: "Parish Priest",
     roleTag: "Shepherd of the parish",
-    image: PriestImage,
+    image: kefeyalew,
     verse: "“The Lord is my shepherd; I shall not want.”",
     reference: "Psalm 23:1",
   },
   {
     id: "priest2",
-    name: "Kesis Damit",
-    title: "Assistant Priest",
+    name: "Kesis Theodros",
+    title: "Priest",
     roleTag: "Supporting liturgy & teaching",
-    image: PriestImage,
+    image: Theodros,
     verse: "“Let all that you do be done in love.”",
     reference: "1 Corinthians 16:14",
   },
   {
     id: "priest3",
-    name: "Kesis Abayneh",
-    title: "Senior Priest",
-    roleTag: "Wisdom & spiritual counsel",
-    image: PriestImage,
-    verse: "“Stand firm in the faith; be courageous; be strong.”",
-    reference: "1 Corinthians 16:13",
-  },
-  {
-    id: "deacon1",
-    name: "Kesis Tesfahun",
+    name: "Deacon Yohannes",
     title: "Deacon",
-    roleTag: "Serving at the Holy Altar",
-    image: PriestImage,
-    verse:
-      "“Serve the Lord with gladness; come before His presence with singing.”",
-    reference: "Psalm 100:2",
-  },
-  {
-    id: "leader1",
-    name: "Kesis Dagim",
-    title: "Sunday School Leader",
-    roleTag: "Guiding our children in faith",
-    image: PriestImage,
-    verse:
-      "“Let the little children come to Me… for of such is the kingdom of heaven.”",
-    reference: "Matthew 19:14",
+    roleTag: "Supporting liturgy & teaching",
+    image: yohannes,
+    verse: "“Let all that you do be done in love.”",
+    reference: "1 Corinthians 16:14",
   },
 ];
 

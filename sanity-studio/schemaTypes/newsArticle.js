@@ -23,6 +23,7 @@ export const newsArticle = defineType({
       options: {
         source: "title",
         maxLength: 96,
+        isUnique: (value, context) => context.defaultIsUnique(value, context),
       },
       validation: (Rule) => Rule.required(),
     }),
@@ -98,7 +99,6 @@ export const newsArticle = defineType({
       initialValue: true,
     }),
 
-    // 🔔 Web Push Notification Controls
     defineField({
       name: "sendPush",
       title: "Send Web Push Notification",

@@ -1,43 +1,25 @@
+// src/App.jsx
 import "./App.css";
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Footer from "./components/Footer";
-import MembershipForm from "./components/MembershipForm";
-import ContributionButton from "./components/ContributionButton";
-import PushSubscribe from "./components/PushSubscribe";
+import { Routes, Route } from "react-router-dom";
 
-import Home from "./pages/Home";
-import Sermons from "./pages/Sermons";
-import Events from "./pages/Events";
-import News from "./pages/News";
-import Contact from "./pages/Contact";
-import About from "./pages/About";
-import Projects from "./pages/Projects";
+import HomePage from "./pages/HomePage";
+import NewsArticle from "./pages/NewsArticle"; // you said you created it
 
 function App() {
   return (
-    <>
-      <Navbar />
-      <Hero />
+    <Routes>
+      {/* Your normal site */}
+      <Route path="/" element={<HomePage />} />
 
-      <div style={{ textAlign: "center", margin: "1rem 0" }}>
-        <PushSubscribe />
-      </div>
+      {/* News details page */}
+      <Route path="/news/:slug" element={<NewsArticle />} />
 
-      <main className="page">
-        <Home />
-        <Sermons />
-        <Events />
-        <News />
-        <About />
-        <Projects />
-        <Contact />
-      </main>
+      {/* Optional: if someone goes /news, just show homepage and scroll to news */}
+      <Route path="/news" element={<HomePage />} />
 
-      <MembershipForm />
-      <ContributionButton />
-      <Footer />
-    </>
+      {/* Optional fallback */}
+      <Route path="*" element={<HomePage />} />
+    </Routes>
   );
 }
 

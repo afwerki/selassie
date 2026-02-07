@@ -11,9 +11,6 @@ const ukPostcodeRegex = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
 
 function MembershipForm() {
   const { lang } = useLanguage();
-
-  // ✅ IMPORTANT: membershipForm already contains the language object
-  // so do NOT do t.membershipForm
   const m = membershipForm[lang] || membershipForm.en;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -104,18 +101,28 @@ function MembershipForm() {
     formData.set("county", county);
     formData.set("country", country);
 
-    // ✅ IMPORTANT: also send a single combined address field (fallback)
+    // ✅ Also send a single combined address field (fallback)
     const combinedAddress = [address1, address2, city, county, postcode, country]
       .filter(Boolean)
       .join(", ");
-
     formData.set("address", combinedAddress);
 
+    // ✅ Convert FormData -> URLSearchParams (so Apps Script gets e.parameter reliably)
+    const params = new URLSearchParams();
+    for (const [key, value] of formData.entries()) {
+      params.append(key, String(value));
+    }
+
     try {
+      // ✅ Keep no-cors so the browser doesn’t block cross-origin to Apps Script
+      // The request will still be delivered and logged in Sheets.
       await fetch(SCRIPT_URL, {
         method: "POST",
-        body: formData,
         mode: "no-cors",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        },
+        body: params.toString(),
       });
 
       setMessage({ type: "success", text: m.messages.success });
@@ -282,7 +289,7 @@ function MembershipForm() {
                 </div>
               </div>
 
-              {/* Address (separate fields) */}
+              {/* Address */}
               <div className="member-section">
                 <div className="member-section__title amharic-fix">
                   {m.sections.address}
