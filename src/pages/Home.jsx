@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "../styling/home.css";
 
-import Theodros from "../assets/images/Theodros.jpg";
-import kefeyalew from "../assets/images/Kefeyalew.jpg";
-import yohannes from "../assets/images/Yohannes.jpg";
+import Theodros from "../assets/images/Theodros.JPG";
+import kefeyalew from "../assets/images/kefeyalew.JPG";
+import yohannes from "../assets/images/yohannes.JPG";
+
 import MissionImage from "../assets/images/eotc.jpg";
 import { client } from "../sanityClient";
 import { useLanguage } from "../contexts/LanguageContext";
