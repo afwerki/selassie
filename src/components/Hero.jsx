@@ -11,9 +11,9 @@ import slide3 from "../assets/images/church9.JPG";
 /**
  * ✅ Change these filenames to your real video filenames inside assets/videos
  */
-import heroVideo1 from "../assets/videos/selassie_inside.mp4";
-import heroVideo2 from "../assets/videos/selassie_inside.mp4";
-import heroVideo3 from "../assets/videos/selassie_inside.mp4";
+import heroVideo1 from "../assets/videos/selassie_inside.MP4";
+import heroVideo2 from "../assets/videos/selassie_inside.MP4";
+import heroVideo3 from "../assets/videos/selassie_inside.MP4";
 
 const heroImages = [slide1, slide2, slide3];
 const heroVideos = [heroVideo1, heroVideo2, heroVideo3];
