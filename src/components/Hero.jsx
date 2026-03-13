@@ -4,18 +4,19 @@ import "./Hero.css";
 import { useLanguage } from "../contexts/LanguageContext";
 import { texts } from "../i18n/texts";
 
-import slide1 from "../assets/images/church_inside.png";
-import slide2 from "../assets/images/jesus.png";
-import slide3 from "../assets/images/mission.jpg";
+import slide1 from "../assets/images/churchAtendes.JPG";
+import slide2 from "../assets/images/church7.JPG";
+import slide3 from "../assets/images/church9.JPG";
 
-// ✅ TEMP: duplicate same mp4 4 times for now (replace later)
-import heroVideo1 from "../assets/videos/church-hero.mp4";
-import heroVideo2 from "../assets/videos/church-hero.mp4";
-import heroVideo3 from "../assets/videos/church-hero.mp4";
-import heroVideo4 from "../assets/videos/church-hero.mp4";
+/**
+ * ✅ Change these filenames to your real video filenames inside assets/videos
+ */
+import heroVideo1 from "../assets/videos/selassie_inside.mp4";
+import heroVideo2 from "../assets/videos/selassie_inside.mp4";
+import heroVideo3 from "../assets/videos/selassie_inside.mp4";
 
 const heroImages = [slide1, slide2, slide3];
-const heroVideos = [heroVideo1, heroVideo2, heroVideo3, heroVideo4];
+const heroVideos = [heroVideo1, heroVideo2, heroVideo3];
 
 function Hero() {
   const { lang } = useLanguage();
@@ -23,117 +24,122 @@ function Hero() {
 
   const slides = useMemo(() => {
     const fromI18n = t.heroSlides || [];
-    return fromI18n.map((s, i) => ({
-      ...s,
-      image: heroImages[i] || heroImages[0],
+
+    if (!fromI18n.length) {
+      return [
+        {
+          eyebrow: "Debre-Genet Holy Trinity",
+          title: "DEBRE-GENET HOLY TRINITY ETHIOPIAN ORTHODOX TEWAHEDO CHURCH",
+          subtitle:
+            "A spiritual home for the Ethiopian Orthodox community in London. Join us in worship, prayer, and fellowship.",
+          cta: "Learn More",
+          href: "/#about",
+          image: heroImages[0],
+          video: heroVideos[0],
+          position: "center center",
+        },
+        {
+          eyebrow: "Faith • Community • Tradition",
+          title: "Rooted in Ancient Wisdom",
+          subtitle:
+            "Preserving the timeless teachings of the Orthodox faith through worship, fellowship, and spiritual growth.",
+          cta: "Watch Sermons",
+          href: "/#sermons",
+          image: heroImages[1],
+          video: heroVideos[1],
+          position: "center center",
+        },
+        {
+          eyebrow: "Visit • Worship • Connect",
+          title: "Join Us in Prayer and Fellowship",
+          subtitle:
+            "Explore church life, service times, ministries, and ways to stay connected with the community.",
+          cta: "Upcoming Events",
+          href: "/#events",
+          image: heroImages[2],
+          video: heroVideos[2],
+          position: "center center",
+        },
+      ];
+    }
+
+    return fromI18n.map((slide, index) => ({
+      ...slide,
+      image: heroImages[index] || heroImages[0],
+      video: heroVideos[index] || null,
+      eyebrow: slide.eyebrow || slide.badge || "Debre-Genet Holy Trinity",
+      position: slide.position || "center center",
     }));
   }, [t]);
 
   const [active, setActive] = useState(0);
-
-  // ✅ Crossfade system: only 2 video tags
-  const [videoIndex, setVideoIndex] = useState(0);
-  const [videoSlot, setVideoSlot] = useState(0); // 0 or 1 (which is visible)
-
-  const videoARef = useRef(null);
-  const videoBRef = useRef(null);
-
-  // ✅ Use explicit <source> for desktop reliability
-  const [srcA, setSrcA] = useState(heroVideos[0]);
-  const [srcB, setSrcB] = useState(heroVideos[1] || heroVideos[0]);
-
   const [isPaused, setIsPaused] = useState(false);
   const [touchStartX, setTouchStartX] = useState(null);
 
-  const goTo = (idx) => setActive((idx + slides.length) % slides.length);
-  const goNext = () => goTo(active + 1);
-  const goPrev = () => goTo(active - 1);
+  const videoRefs = useRef([]);
 
-  // ✅ single timer for both slide text + video
+  const total = slides.length;
+  const activeSlide = slides[active] || slides[0];
+
+  const goTo = (index) => setActive((index + total) % total);
+  const goNext = () => setActive((prev) => (prev + 1) % total);
+  const goPrev = () => setActive((prev) => (prev - 1 + total) % total);
+
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || total <= 1) return;
 
     const timer = setInterval(() => {
-      setActive((a) => (a + 1) % slides.length);
-      setVideoIndex((v) => (v + 1) % heroVideos.length);
-    }, 7000);
+      setActive((prev) => (prev + 1) % total);
+    }, 6500);
 
     return () => clearInterval(timer);
-  }, [isPaused, slides.length]);
+  }, [isPaused, total]);
 
-  // ✅ Load next src into hidden slot, swap only when "playing"
   useEffect(() => {
-    const nextSrc = heroVideos[videoIndex];
+    videoRefs.current.forEach((videoEl, index) => {
+      if (!videoEl) return;
 
-    // hidden/incoming slot = opposite of current visible slot
-    const incomingIsB = videoSlot === 0;
-
-    // Set incoming source
-    if (incomingIsB) setSrcB(nextSrc);
-    else setSrcA(nextSrc);
-
-    const incomingRef = incomingIsB ? videoBRef : videoARef;
-    const incoming = incomingRef.current;
-    if (!incoming) return;
-
-    const tryPlay = async () => {
-      try {
-        await incoming.play();
-      } catch {
-        // ignore autoplay failures (muted should allow it)
+      if (index === active) {
+        const playPromise = videoEl.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => {});
+        }
+      } else {
+        videoEl.pause();
+        try {
+          videoEl.currentTime = 0;
+        } catch {
+          // ignore reset errors
+        }
       }
-    };
+    });
+  }, [active]);
 
-    const onPlaying = () => {
-      // ✅ swap only when video is truly playing (prevents blink on desktop)
-      setVideoSlot((s) => (s === 0 ? 1 : 0));
-    };
-
-    incoming.addEventListener("playing", onPlaying, { once: true });
-    tryPlay();
-
-    // fallback if playing doesn't fire
-    const fallback = setTimeout(() => {
-      setVideoSlot((s) => (s === 0 ? 1 : 0));
-    }, 1200);
-
-    return () => {
-      clearTimeout(fallback);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoIndex]);
-
-  // Keyboard navigation
   const handleKeyDown = (e) => {
     if (e.key === "ArrowRight") goNext();
     if (e.key === "ArrowLeft") goPrev();
   };
 
-  // Touch swipe
   const handleTouchStart = (e) => {
     setTouchStartX(e.touches[0].clientX);
-    setIsPaused(true);
   };
 
   const handleTouchEnd = (e) => {
-    if (touchStartX == null) return setIsPaused(false);
+    if (touchStartX == null) return;
 
     const diff = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(diff) > 50) (diff < 0 ? goNext() : goPrev());
-
+    if (Math.abs(diff) > 50) {
+      diff < 0 ? goNext() : goPrev();
+    }
     setTouchStartX(null);
-    setIsPaused(false);
   };
 
-  const activeSlide = slides[active] || slides[0];
-
-  // ✅ Normalize hrefs: always route to homepage hash (works from /events/:slug too)
-  const primaryTo = activeSlide?.href || "/#events";
+  const primaryTo = activeSlide?.href || "/#about";
   const secondaryTo = "/#contact";
 
   return (
     <section
-      className="hero hero--video"
+      className="hero"
       id="home"
       tabIndex={0}
       onKeyDown={handleKeyDown}
@@ -141,95 +147,124 @@ function Hero() {
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      aria-label="Church hero section"
     >
-      {/* ✅ Background video crossfade */}
-      <div className="hero__videoWrap" aria-hidden="true">
-        <video
-          ref={videoARef}
-          className={`hero__video ${videoSlot === 0 ? "is-on" : "is-off"}`}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster={activeSlide?.image}
-        >
-          <source src={srcA} type="video/mp4" />
-        </video>
+      <div className="hero__bg" aria-hidden="true">
+        {slides.map((slide, index) => {
+          const isActive = index === active;
 
-        <video
-          ref={videoBRef}
-          className={`hero__video ${videoSlot === 1 ? "is-on" : "is-off"}`}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster={activeSlide?.image}
-        >
-          <source src={srcB} type="video/mp4" />
-        </video>
+          return (
+            <div
+              key={`${slide.title}-${index}`}
+              className={`hero__bgSlide ${isActive ? "is-active" : ""}`}
+            >
+              {slide.video ? (
+                <video
+                  ref={(el) => {
+                    videoRefs.current[index] = el;
+                  }}
+                  className="hero__video"
+                  muted
+                  playsInline
+                  loop
+                  preload="metadata"
+                  poster={slide.image}
+                >
+                  <source src={slide.video} type="video/mp4" />
+                </video>
+              ) : (
+                <div
+                  className="hero__imageFallback"
+                  style={{
+                    backgroundImage: `url(${slide.image})`,
+                    backgroundPosition: slide.position || "center center",
+                  }}
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      {/* ✅ subtle photo wash */}
-      <div
-        className="hero__photoWash"
-        style={{ backgroundImage: `url(${activeSlide?.image})` }}
-        aria-hidden="true"
-      />
-
-      {/* overlays */}
-      <div className="hero__overlay" aria-hidden="true" />
+      <div className="hero__overlay hero__overlay--base" aria-hidden="true" />
+      <div className="hero__overlay hero__overlay--left" aria-hidden="true" />
+      <div className="hero__overlay hero__overlay--glow" aria-hidden="true" />
       <div className="hero__noise" aria-hidden="true" />
 
-      {/* accents */}
-      <div className="hero__shape hero__shape--cross" aria-hidden="true" />
-      <div className="hero__shape hero__shape--orb" aria-hidden="true" />
+      <div className="hero__inner">
+        <div className="hero__content">
+          <div className="heroText" key={`${lang}-${active}`}>
+            <div className="heroText__eyebrow heroAnim heroAnim--1 amharic-fix">
+              {activeSlide?.eyebrow}
+            </div>
 
-      {/* content */}
-      <div className="hero__content">
-        <div className="heroCard" key={`heroCard-${lang}-${active}`}>
-          <h1 className="heroCard__title heroAnim heroAnim--1 amharic-fix">
-            {activeSlide?.title}
-          </h1>
+            <h1 className="heroText__title heroAnim heroAnim--2 amharic-fix">
+              {activeSlide?.title}
+            </h1>
 
-          <p className="heroCard__subtitle heroAnim heroAnim--2 amharic-fix">
-            {activeSlide?.subtitle}
-          </p>
+            <p className="heroText__subtitle heroAnim heroAnim--3 amharic-fix">
+              {activeSlide?.subtitle}
+            </p>
 
-          <div className="heroCard__actions heroAnim heroAnim--3">
-            <Link to={primaryTo} className="heroBtn heroBtn--primary">
-              {activeSlide?.cta} <span aria-hidden="true">→</span>
-            </Link>
+            <div className="heroText__actions heroAnim heroAnim--4">
+              <Link to={primaryTo} className="heroBtn heroBtn--primary">
+                {activeSlide?.cta}
+                <span aria-hidden="true">→</span>
+              </Link>
 
-            <Link to={secondaryTo} className="heroBtn heroBtn--ghost">
-              {t.hero?.btnSecondary}
-            </Link>
-          </div>
+              <Link to={secondaryTo} className="heroBtn heroBtn--ghost">
+                {t.hero?.btnSecondary || "Plan Your Visit"}
+              </Link>
+            </div>
 
-          <div className="heroCard__counter" aria-label="Slide counter">
-            <span>{String(active + 1).padStart(2, "0")}</span>
-            <span className="heroCard__sep">/</span>
-            <span>{String(slides.length).padStart(2, "0")}</span>
+            <div className="heroText__meta heroAnim heroAnim--5">
+              <div className="heroText__counter" aria-label="Slide counter">
+                <span>{String(active + 1).padStart(2, "0")}</span>
+                <span className="heroText__sep">/</span>
+                <span>{String(total).padStart(2, "0")}</span>
+              </div>
+            </div>
           </div>
         </div>
+
+        {total > 1 && (
+          <div className="hero__controls" aria-label="Hero carousel controls">
+            <button
+              type="button"
+              className="heroArrow"
+              onClick={goPrev}
+              aria-label="Previous slide"
+            >
+              <span aria-hidden="true">‹</span>
+            </button>
+
+            <button
+              type="button"
+              className="heroArrow"
+              onClick={goNext}
+              aria-label="Next slide"
+            >
+              <span aria-hidden="true">›</span>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* dots */}
-      <div className="heroDots" aria-label="Hero slide navigation">
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            className={`heroDot ${i === active ? "is-active" : ""}`}
-            onClick={() => {
-              setIsPaused(true);
-              setVideoIndex(i % heroVideos.length);
-              goTo(i);
-            }}
-            aria-label={`Go to slide ${i + 1}`}
-          />
-        ))}
-      </div>
+      {total > 1 && (
+        <div className="heroDots" aria-label="Hero slide navigation">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              className={`heroDot ${index === active ? "is-active" : ""}`}
+              onClick={() => goTo(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            >
+              <span className="heroDot__line" />
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

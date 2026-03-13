@@ -1,7 +1,7 @@
 /* MembershipForm.css */
 /* =========================
    MEMBERSHIP — PREMIUM MODAL
-   Fix: close button always visible on mobile
+   For ChurchSuite embedded iframe form
    ========================= */
 
 :root {
@@ -18,7 +18,6 @@
   --m-shadow: 0 28px 80px rgba(2, 6, 23, 0.35);
   --m-radius: 22px;
 
-  /* safe areas */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -87,7 +86,8 @@
 
 .floating-member-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.22),
+  box-shadow:
+    0 0 0 4px rgba(245, 158, 11, 0.22),
     0 18px 44px rgba(2, 6, 23, 0.35);
 }
 
@@ -98,6 +98,7 @@
     padding: 10px 14px;
     font-size: 0.88rem;
   }
+
   .floating-member-btn::after {
     left: 28px;
   }
@@ -117,29 +118,23 @@
   justify-content: center;
   padding: 16px;
   animation: memberFadeIn 180ms ease-out;
-
-  /* prevent body-like scroll issues on iOS */
   overscroll-behavior: contain;
   touch-action: manipulation;
 }
 
 /* =========================================
    Modal container
-   IMPORTANT FIX:
-   - modal becomes scroll container
-   - header is sticky inside it
 ========================================= */
 
 .member-modal {
   width: 100%;
   max-width: 760px;
-
-  /* better on mobile than vh */
   max-height: 90vh;
   max-height: 90svh;
   max-height: 90dvh;
 
-  background: radial-gradient(
+  background:
+    radial-gradient(
       900px 420px at 20% 0%,
       rgba(245, 158, 11, 0.13),
       transparent 55%
@@ -158,16 +153,16 @@
 
   display: flex;
   flex-direction: column;
-
-  /* ✅ modal scroll container */
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-
-  /* ensures sticky behaves predictably */
   position: relative;
 }
 
-/* Top accent line */
+.member-modal-large {
+  max-width: 980px;
+  width: min(980px, 100%);
+}
+
 .member-modal::before {
   content: "";
   height: 4px;
@@ -182,7 +177,7 @@
 }
 
 /* =========================================
-   Header (STICKY) — close button always visible
+   Header
 ========================================= */
 
 .member-modal-header {
@@ -195,18 +190,18 @@
   justify-content: space-between;
   gap: 12px;
 
-  /* include safe area top so notch never covers it */
-  padding: calc(18px + var(--safe-top)) calc(18px + var(--safe-right)) 10px
+  padding:
+    calc(18px + var(--safe-top))
+    calc(18px + var(--safe-right))
+    10px
     calc(18px + var(--safe-left));
 
-  /* give it a background so it doesn’t look transparent while sticky */
   background: linear-gradient(
     180deg,
     rgba(247, 248, 251, 0.98),
     rgba(247, 248, 251, 0.92)
   );
   backdrop-filter: blur(10px);
-
   border-bottom: 1px solid rgba(15, 23, 42, 0.06);
 }
 
@@ -214,6 +209,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .member-badge {
@@ -240,7 +236,6 @@
   line-height: 1.1;
 }
 
-/* ✅ Close button stays clickable and above everything */
 .member-close-btn {
   flex: 0 0 auto;
   width: 42px;
@@ -256,11 +251,7 @@
 
   transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
   -webkit-tap-highlight-color: transparent;
-
-  /* prevent weird “tap selects” and keep icon crisp */
   user-select: none;
-
-  /* if something overlaps, this wins */
   z-index: 60;
 }
 
@@ -286,6 +277,7 @@
 .member-close-icon::before {
   transform: translate(-50%, -50%) rotate(45deg);
 }
+
 .member-close-icon::after {
   transform: translate(-50%, -50%) rotate(-45deg);
 }
@@ -304,236 +296,108 @@
 
 .member-close-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.18),
+  box-shadow:
+    0 0 0 4px rgba(245, 158, 11, 0.18),
     0 10px 22px rgba(2, 6, 23, 0.12);
 }
 
-/* Intro sits under sticky header */
 .member-intro {
   margin: 0;
-  padding: 0 18px 10px;
+  padding: 0 18px 12px;
   font-size: 0.96rem;
   color: var(--m-muted);
   line-height: 1.6;
 }
 
 /* =========================================
-   Form scroll behavior
-   IMPORTANT FIX:
-   - remove scroll from .member-form
-   - let .member-modal scroll instead
+   Embedded ChurchSuite form wrapper
 ========================================= */
 
-.member-form {
-  overflow: visible; /* ✅ not scroll container anymore */
-  padding: 16px 18px 14px;
+.churchsuite-form-shell {
+  padding: 0 18px 18px;
 }
 
-/* remove scrollbar styles (no longer needed) */
-.member-form::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-/* =========================================
-   Sections
-========================================= */
-
-.member-section {
-  background: var(--m-card);
+.churchsuite-form-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 620px;
+  height: 70vh;
+  max-height: 980px;
+  overflow: hidden;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.95));
   border: 1px solid var(--m-border);
-  border-radius: 18px;
-  padding: 14px 14px 12px;
   box-shadow:
     0 18px 45px rgba(2, 6, 23, 0.08),
     0 1px 0 rgba(255, 255, 255, 0.7) inset;
 }
 
-.member-section + .member-section {
-  margin-top: 12px;
-}
-
-.member-section__title {
-  font-weight: 900;
-  color: var(--m-ink);
-  letter-spacing: -0.01em;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.member-section__title::before {
+.churchsuite-form-wrapper::before {
   content: "";
-  width: 28px;
-  height: 28px;
-  border-radius: 11px;
-  background:
-    radial-gradient(circle at 50% 40%, rgba(29, 78, 216, 0.18), transparent 60%),
-    rgba(245, 158, 11, 0.14);
-  border: 1px solid rgba(245, 158, 11, 0.18);
-  box-shadow: 0 10px 18px rgba(245, 158, 11, 0.10);
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 56px;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.38),
+    rgba(255, 255, 255, 0)
+  );
+  z-index: 1;
 }
 
-/* =========================================
-   Form layout
-========================================= */
+.churchsuite-form-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 20px;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(247, 248, 251, 0),
+    rgba(247, 248, 251, 0.72)
+  );
+  z-index: 1;
+}
 
-.member-row {
+.churchsuite-form {
+  position: relative;
+  z-index: 0;
   width: 100%;
-}
-
-.member-row + .member-row {
-  margin-top: 10px;
-}
-
-.member-row-two {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.member-form label {
-  font-size: 0.92rem;
-  font-weight: 800;
-  color: rgba(15, 23, 42, 0.86);
-  display: block;
-}
-
-.req {
-  color: #ef4444;
-  font-weight: 900;
-  margin-left: 3px;
-}
-
-/* Inputs */
-.member-form input,
-.member-form select,
-.member-form textarea {
-  width: 100%;
-  margin-top: 6px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--m-border-2);
-  font: inherit;
-  background: rgba(248, 250, 252, 0.92);
-  transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
-}
-
-.member-form textarea {
-  resize: vertical;
-  min-height: 92px;
-}
-
-.member-form input::placeholder,
-.member-form textarea::placeholder {
-  color: rgba(100, 116, 139, 0.85);
-  font-size: 0.9rem;
-}
-
-/* Improve selects */
-.member-form select {
-  appearance: none;
-  background-image:
-    linear-gradient(45deg, transparent 50%, rgba(15, 23, 42, 0.55) 50%),
-    linear-gradient(135deg, rgba(15, 23, 42, 0.55) 50%, transparent 50%);
-  background-position:
-    calc(100% - 18px) calc(1em + 2px),
-    calc(100% - 13px) calc(1em + 2px);
-  background-size: 5px 5px, 5px 5px;
-  background-repeat: no-repeat;
-  padding-right: 34px;
-}
-
-.member-form input:focus,
-.member-form select:focus,
-.member-form textarea:focus {
-  outline: none;
-  border-color: rgba(245, 158, 11, 0.78);
-  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.16);
-  background: #ffffff;
-}
-
-.member-form input[readonly] {
-  background: rgba(15, 23, 42, 0.04);
-  color: rgba(15, 23, 42, 0.72);
-}
-
-/* =========================================
-   Footer
-========================================= */
-
-.member-footer {
-  margin-top: 14px;
-  display: grid;
-  gap: 10px;
-}
-
-.member-submit-btn {
-  width: 100%;
+  height: 100%;
   border: 0;
-  border-radius: 999px;
-  padding: 0.98rem 1rem;
-  font-weight: 950;
-  font-size: 1rem;
-  cursor: pointer;
-  letter-spacing: -0.01em;
-  background: linear-gradient(135deg, var(--m-gold-1), var(--m-gold-2));
-  color: #111827;
-  box-shadow: 0 18px 40px rgba(245, 158, 11, 0.28);
-  transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+  display: block;
+  background: #ffffff;
+  border-radius: 20px;
 }
 
-@media (hover: hover) {
-  .member-submit-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 22px 50px rgba(245, 158, 11, 0.34);
-  }
-}
-
-.member-submit-btn:active {
-  transform: translateY(0px);
-}
-
-.member-submit-btn:disabled {
-  opacity: 0.68;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.member-note {
-  font-size: 0.92rem;
-  line-height: 1.45;
+/* optional small helper text area above iframe if needed */
+.member-embed-note {
+  margin: 0 0 10px;
   padding: 10px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(15, 23, 42, 0.10);
-  background: rgba(255, 255, 255, 0.85);
-  color: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.66);
+  color: var(--m-subtle);
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
-.member-note.is-success {
-  border-color: rgba(16, 185, 129, 0.25);
-  background: rgba(16, 185, 129, 0.10);
-  color: rgba(15, 23, 42, 0.86);
-}
-
-.member-note.is-error {
-  border-color: rgba(239, 68, 68, 0.25);
-  background: rgba(239, 68, 68, 0.10);
-  color: rgba(15, 23, 42, 0.86);
-}
+/* =========================================
+   Optional footer note below iframe
+========================================= */
 
 .member-legal {
-  margin: 10px 2px 0;
+  margin: 12px 20px 18px;
   color: rgba(100, 116, 139, 0.95);
   font-size: 0.88rem;
   line-height: 1.55;
 }
 
-/* =========================
-   MOBILE — bottom sheet + sticky submit
-   ========================= */
+/* =========================================
+   Mobile — bottom sheet
+========================================= */
 
 @media (max-width: 720px) {
   .member-modal-backdrop {
@@ -541,14 +405,13 @@
     align-items: flex-end;
   }
 
-  .member-modal {
+  .member-modal,
+  .member-modal-large {
     max-width: 100%;
-
-    /* more mobile-friendly */
+    width: 100%;
     max-height: 92vh;
     max-height: 92svh;
     max-height: 92dvh;
-
     border-radius: 18px 18px 0 0;
   }
 
@@ -565,28 +428,22 @@
     font-size: 0.93rem;
   }
 
-  /* add bottom padding so sticky submit never covers last inputs */
-  .member-form {
-    padding: 12px 12px calc(90px + var(--safe-bottom));
+  .churchsuite-form-shell {
+    padding: 0 12px 12px;
   }
 
-  .member-row-two {
-    grid-template-columns: minmax(0, 1fr);
+  .churchsuite-form-wrapper {
+    min-height: 58vh;
+    height: 62vh;
+    border-radius: 16px;
   }
 
-  /* Sticky submit button within modal scroll */
-  .member-footer {
-    position: sticky;
-    bottom: calc(10px + var(--safe-bottom));
-    z-index: 20;
-    background: transparent;
+  .churchsuite-form {
+    border-radius: 16px;
   }
 
-  .member-submit-btn {
-    box-shadow:
-      0 18px 44px rgba(2, 6, 23, 0.18),
-      0 0 0 10px rgba(247, 248, 251, 0.86);
-    backdrop-filter: blur(6px);
+  .member-legal {
+    margin: 10px 14px 16px;
   }
 }
 
@@ -595,16 +452,33 @@
     font-size: 1.4rem;
   }
 
-  .member-section {
-    padding: 12px 12px 10px;
-    border-radius: 16px;
+  .member-badge {
+    font-size: 0.72rem;
+    padding: 5px 9px;
   }
 
-  .member-form input,
-  .member-form select,
-  .member-form textarea {
-    padding: 9px 11px;
-    border-radius: 12px;
+  .churchsuite-form-wrapper {
+    min-height: 56vh;
+    height: 60vh;
+    border-radius: 14px;
+  }
+
+  .churchsuite-form {
+    border-radius: 14px;
+  }
+}
+
+/* =========================================
+   Large screens
+========================================= */
+
+@media (min-width: 1100px) {
+  .member-modal-large {
+    max-width: 1040px;
+  }
+
+  .churchsuite-form-wrapper {
+    height: 72vh;
   }
 }
 
@@ -613,8 +487,12 @@
 ========================================= */
 
 @keyframes memberFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes memberScaleIn {
@@ -631,11 +509,11 @@
 /* =========================================
    Reduced motion
 ========================================= */
+
 @media (prefers-reduced-motion: reduce) {
   .member-modal-backdrop,
   .member-modal,
   .floating-member-btn,
-  .member-submit-btn,
   .member-close-btn {
     animation: none !important;
     transition: none !important;
