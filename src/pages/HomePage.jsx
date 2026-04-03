@@ -9,7 +9,6 @@ import ChurchGallery from "../components/ChurchGallery";
 import Home from "./Home";
 import Sermons from "./Sermons";
 import Events from "./Events";
-import News from "./News";
 import Contact from "./Contact";
 import About from "./About";
 import Projects from "./Projects";

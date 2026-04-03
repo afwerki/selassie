@@ -4,7 +4,6 @@ import React from "react";
 import Home from "./Home";
 import Sermons from "./Sermons";
 import Events from "./Events";
-import News from "./News";
 import About from "./About";
 import Projects from "./Projects";
 import Contact from "./Contact";
@@ -19,7 +18,6 @@ export default function HomeSections({ hideEvents = false, hideHeroAnchor = fals
           but if you want it visible, set hideEvents={false} */}
       {!hideEvents && <Events />}
 
-      <News />
       <About />
       <Projects />
       <Contact />
