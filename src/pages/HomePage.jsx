@@ -22,11 +22,10 @@ export default function HomePage() {
 
       <main className="page">
         <Home />
-        <Sermons />
-        <Events />
-        <News />
         <About />
         <Projects />
+        <Sermons />
+        <Events />
         <Contact />
       </main>
 

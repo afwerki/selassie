@@ -11,9 +11,6 @@ function App() {
       {/* Your normal site */}
       <Route path="/" element={<HomePage />} />
 
-      {/* News details page */}
-      <Route path="/news/:slug" element={<NewsArticle />} />
-
       {/* Optional: if someone goes /news, just show homepage and scroll to news */}
       <Route path="/news" element={<HomePage />} />
 

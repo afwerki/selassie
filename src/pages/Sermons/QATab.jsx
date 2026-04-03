@@ -1,40 +1,48 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 
-export default function QATab({ items = [], loading = false, trackEvent }) {
+export default function QATab({ t, items = [], loading = false, trackEvent }) {
+  const allLabel = t?.qa?.allCategoriesLabel || "All";
   const [openId, setOpenId] = useState(null);
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState(allLabel);
+
+  const sourceItems = items.length > 0 ? items : t?.qa?.items || [];
 
   const safeItems = useMemo(() => {
-    return Array.isArray(items)
-      ? items.map((item, index) => ({
-          id: item.id || item._id || `qa-${index}`,
-          question: item.question || "Untitled question",
-          answer:
-            item.answer || "Please contact the church office for more information.",
-          category: item.category || "General",
-        }))
-      : [];
-  }, [items]);
+    return sourceItems.map((item, index) => ({
+      id: item.id || item._id || `qa-${index}`,
+      question: item.question || "",
+      answer:
+        item.answer || "Please contact the church office for more information.",
+      category: item.category || (t?.qa?.defaultCategoryLabel || "General"),
+    }));
+  }, [sourceItems, t]);
+
+  useEffect(() => {
+    setActiveCategory(allLabel);
+    setOpenId(null);
+  }, [allLabel]);
 
   const categories = useMemo(() => {
     const set = new Set();
+
     safeItems.forEach((item) => {
       if (item.category) set.add(item.category);
     });
-    return ["All", ...Array.from(set)];
-  }, [safeItems]);
+
+    return [allLabel, ...Array.from(set)];
+  }, [safeItems, allLabel]);
 
   const visibleItems = useMemo(() => {
-    if (activeCategory === "All") return safeItems;
+    if (activeCategory === allLabel) return safeItems;
     return safeItems.filter((item) => item.category === activeCategory);
-  }, [safeItems, activeCategory]);
+  }, [safeItems, activeCategory, allLabel]);
 
   const handleToggle = (item) => {
     const nextId = openId === item.id ? null : item.id;
     setOpenId(nextId);
 
     if (nextId) {
-      trackEvent?.("church_qa_opened", {
+      trackEvent?.("qa_opened", {
         qa_id: item.id,
         question: item.question,
         category: item.category,
@@ -46,20 +54,22 @@ export default function QATab({ items = [], loading = false, trackEvent }) {
     <div className="tab-panel active">
       <div className="qa-shell">
         <div className="qa-header">
-          <h3>Questions & Answers</h3>
+          <h3>{t?.qa?.title || "Questions & Answers"}</h3>
           <p>
-            Find quick answers to common church questions. For anything more
-            specific, please contact the church office or speak with the priest.
+            {t?.qa?.intro ||
+              "Find quick answers to common church questions."}
           </p>
         </div>
 
         {!loading && categories.length > 1 && (
-          <div className="qa-categories" role="tablist" aria-label="Q&A categories">
+          <div className="qa-categories" role="tablist" aria-label={t?.qa?.title || "Questions & Answers"}>
             {categories.map((category) => (
               <button
                 key={category}
                 type="button"
-                className={`qa-category-pill ${activeCategory === category ? "active" : ""}`}
+                className={`qa-category-pill ${
+                  activeCategory === category ? "active" : ""
+                }`}
                 onClick={() => {
                   setActiveCategory(category);
                   setOpenId(null);
@@ -71,11 +81,15 @@ export default function QATab({ items = [], loading = false, trackEvent }) {
           </div>
         )}
 
-        {loading && <p className="qa-loading">Loading questions…</p>}
+        {loading && (
+          <p className="qa-loading">
+            {t?.qa?.loadingLabel || "Loading questions…"}
+          </p>
+        )}
 
         {!loading && visibleItems.length === 0 && (
           <div className="qa-empty">
-            No questions have been added yet. Please check back soon.
+            {t?.qa?.emptyLabel || "No questions available yet."}
           </div>
         )}
 
@@ -102,7 +116,10 @@ export default function QATab({ items = [], loading = false, trackEvent }) {
                       <h4>{item.question}</h4>
                     </div>
 
-                    <span className={`qa-caret ${isOpen ? "is-open" : ""}`} aria-hidden="true">
+                    <span
+                      className={`qa-caret ${isOpen ? "is-open" : ""}`}
+                      aria-hidden="true"
+                    >
                       ▾
                     </span>
                   </button>

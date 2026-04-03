@@ -6,9 +6,8 @@ import { sectionTexts } from "../i18n/sectionTexts";
 
 import VideosTab from "./Sermons/VideosTab";
 import TeachingsTab from "./Sermons/TeachingsTab";
-import QuizTab from "./Sermons/QuizTab";
+import QATab from "./Sermons/QATab";
 
-// GA4 helper
 const trackEvent = (action, params = {}) => {
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
     window.gtag("event", action, params);
@@ -18,39 +17,33 @@ const trackEvent = (action, params = {}) => {
 const YT_EMBED = (id) =>
   `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
 
+const DEFAULT_LATEST_VIDEOS = 6;
+const DEFAULT_LATEST_READING = 6;
+
 export default function Sermons() {
   const { lang } = useLanguage();
   const tRoot = sectionTexts[lang] || sectionTexts.en;
-  const t = tRoot.sermons;
+  const t = tRoot.sermons || {};
 
-  const [activeTab, setActiveTab] = useState("videos"); // videos | teachings | qa
+  const [activeTab, setActiveTab] = useState("videos");
   const [mobileTabOpen, setMobileTabOpen] = useState(false);
   const mobileMenuRef = useRef(null);
 
-  // content
   const [videos, setVideos] = useState([]);
   const [teachings, setTeachings] = useState([]);
+  const [qaItems, setQaItems] = useState([]);
   const [loadingContent, setLoadingContent] = useState(true);
 
-  // quiz sets
-  const [quizSets, setQuizSets] = useState([]);
-  const [loadingQuizSets, setLoadingQuizSets] = useState(true);
-
-  // search/filter/sort (videos + teachings)
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTag, setActiveTag] = useState("All");
-  const [sortMode, setSortMode] = useState("newest"); // newest | oldest
+  const [sortMode, setSortMode] = useState("newest");
 
-  const DEFAULT_LATEST_VIDEOS = 3;
-  const DEFAULT_LATEST_TEACHINGS = 6;
-
-  // video modal
   const [openVideo, setOpenVideo] = useState(null);
 
   const formatDate = (iso) => {
     if (!iso) return "";
     try {
-      return new Date(iso).toLocaleDateString("en-GB", {
+      return new Date(iso).toLocaleDateString(lang === "am" ? "am-ET" : "en-GB", {
         year: "numeric",
         month: "short",
         day: "numeric",
@@ -60,117 +53,148 @@ export default function Sermons() {
     }
   };
 
-  // Fetch videos + teachings
   useEffect(() => {
+    let isMounted = true;
+
     const query = `
       {
         "videos": *[_type == "sermonVideo"] | order(coalesce(publishedAt, _createdAt) desc) {
-          _id, _createdAt, title, description, series, speaker, topicTags, publishedAt, isFeatured, youtubeId,
+          _id,
+          _createdAt,
+          title,
+          description,
+          series,
+          speaker,
+          topicTags,
+          publishedAt,
+          isFeatured,
+          youtubeId,
           "thumbnailUrl": thumbnail.asset->url
         },
         "teachings": *[_type == "writtenTeaching"] | order(coalesce(publishedAt, _createdAt) desc) {
-          _id, _createdAt, title, excerpt, series, author, topicTags, publishedAt, isFeatured,
+          _id,
+          _createdAt,
+          title,
+          excerpt,
+          series,
+          author,
+          topicTags,
+          publishedAt,
+          isFeatured,
           "pdfUrl": pdfFile.asset->url,
           "heroImageUrl": heroImage.asset->url
+        },
+        "qaItems": *[_type == "sermonQa" || _type == "churchQa"] | order(coalesce(orderRank, _createdAt) asc) {
+          _id,
+          question,
+          answer,
+          category,
+          topicTags
         }
       }
     `;
+
     setLoadingContent(true);
+
     client
       .fetch(query)
       .then((res) => {
-        setVideos(Array.isArray(res?.videos) ? res.videos : []);
-        setTeachings(Array.isArray(res?.teachings) ? res.teachings : []);
+        if (!isMounted) return;
+
+        const safeVideos = Array.isArray(res?.videos) ? res.videos : [];
+        const safeTeachings = Array.isArray(res?.teachings) ? res.teachings : [];
+
+        const safeQa =
+          Array.isArray(res?.qaItems) && res.qaItems.length > 0
+            ? res.qaItems.map((item, index) => ({
+                id: item._id || `qa-${index}`,
+                question: item.question || "",
+                answer: item.answer || "",
+                category: item.category || "",
+                topicTags: Array.isArray(item.topicTags) ? item.topicTags : [],
+              }))
+            : [];
+
+        setVideos(safeVideos);
+        setTeachings(safeTeachings);
+        setQaItems(safeQa);
       })
-      .catch((err) => console.error("Error fetching sermons content:", err))
-      .finally(() => setLoadingContent(false));
+      .catch((err) => {
+        console.error("Error fetching sermons content:", err);
+        if (!isMounted) return;
+        setVideos([]);
+        setTeachings([]);
+        setQaItems([]);
+      })
+      .finally(() => {
+        if (isMounted) setLoadingContent(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  // Fetch quiz sets
-  useEffect(() => {
-    const query = `
-      *[_type == "quizSet" && isActive == true]
-        | order(coalesce(createdAt, _createdAt) desc) {
-        _id, title, slug, description, createdAt,
-        "heroImageUrl": heroImage.asset->url,
-        questions[]{
-          _key, questionText, difficulty, explanation,
-          options[]{ _key, label, isCorrect }
-        }
-      }
-    `;
-    client
-      .fetch(query)
-      .then((data) => {
-        if (!Array.isArray(data)) return setQuizSets([]);
-
-        const mapped = data.map((set, index) => ({
-          id: set._id,
-          slug: set.slug?.current || `quiz-${index}`,
-          title: set.title || "Untitled quiz",
-          description: set.description || "",
-          createdAt: set.createdAt || new Date().toISOString(),
-          heroImageUrl: set.heroImageUrl || "",
-          questions:
-            set.questions?.map((q, qIndex) => ({
-              id: q._key || `${set._id}-q-${qIndex}`,
-              question: q.questionText || "Untitled question",
-              difficulty: q.difficulty || "Beginner",
-              explanation:
-                q.explanation ||
-                "Explanation not provided yet. Please speak with a priest for more details.",
-              options:
-                q.options?.map((opt, optIdx) => ({
-                  id: opt._key || `${set._id}-q-${qIndex}-opt-${optIdx}`,
-                  label: opt.label || "Answer",
-                  isCorrect: !!opt.isCorrect,
-                })) || [],
-            })) || [],
-        }));
-
-        setQuizSets(mapped);
-      })
-      .catch((err) => console.error("Error fetching quiz sets:", err))
-      .finally(() => setLoadingQuizSets(false));
-  }, [t.quiz.fallbackQuestions, t.quiz.fallbackTitle]);
-
-  // Escape closes modal
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === "Escape") setOpenVideo(null);
+      if (e.key === "Escape") {
+        setOpenVideo(null);
+        setMobileTabOpen(false);
+      }
     };
+
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // ✅ Bulletproof outside click for mobile menu
   useEffect(() => {
     const onDown = (e) => {
       if (!mobileTabOpen) return;
       if (!mobileMenuRef.current) return;
-      if (!mobileMenuRef.current.contains(e.target)) setMobileTabOpen(false);
+      if (!mobileMenuRef.current.contains(e.target)) {
+        setMobileTabOpen(false);
+      }
     };
+
     document.addEventListener("pointerdown", onDown);
     return () => document.removeEventListener("pointerdown", onDown);
   }, [mobileTabOpen]);
 
-  useEffect(() => setMobileTabOpen(false), [activeTab]);
+  useEffect(() => {
+    setMobileTabOpen(false);
+  }, [activeTab, lang]);
 
-  // tags
+  const normalize = (value) => (value || "").toString().toLowerCase().trim();
+
+  const allLabel = lang === "am" ? "ሁሉም" : "All";
+
   const allTags = useMemo(() => {
     const tags = new Set();
-    (videos || []).forEach((v) => (v.topicTags || []).forEach((x) => tags.add(x)));
-    (teachings || []).forEach((d) => (d.topicTags || []).forEach((x) => tags.add(x)));
-    return ["All", ...Array.from(tags).sort((a, b) => a.localeCompare(b))];
-  }, [videos, teachings]);
 
-  // filter/sort
-  const normalize = (s) => (s || "").toString().toLowerCase().trim();
+    (videos || []).forEach((v) => {
+      (v.topicTags || []).forEach((tag) => {
+        if (tag) tags.add(tag);
+      });
+    });
+
+    (teachings || []).forEach((d) => {
+      (d.topicTags || []).forEach((tag) => {
+        if (tag) tags.add(tag);
+      });
+    });
+
+    return [allLabel, ...Array.from(tags).sort((a, b) => a.localeCompare(b))];
+  }, [videos, teachings, allLabel]);
+
+  useEffect(() => {
+    setActiveTag(allLabel);
+  }, [allLabel]);
 
   const matchesQuery = (item) => {
     const q = normalize(searchQuery);
     if (!q) return true;
-    const hay = [
+
+    const haystack = [
       item.title,
       item.description,
       item.excerpt,
@@ -182,11 +206,12 @@ export default function Sermons() {
       .filter(Boolean)
       .map(normalize)
       .join(" ");
-    return hay.includes(q);
+
+    return haystack.includes(q);
   };
 
   const matchesTag = (item) => {
-    if (!activeTag || activeTag === "All") return true;
+    if (!activeTag || activeTag === allLabel) return true;
     return (item.topicTags || []).includes(activeTag);
   };
 
@@ -197,17 +222,15 @@ export default function Sermons() {
   };
 
   const searchIsActive =
-    normalize(searchQuery).length > 0 || (activeTag && activeTag !== "All");
+    normalize(searchQuery).length > 0 || (activeTag && activeTag !== allLabel);
 
-  const filteredVideos = useMemo(
-    () => (videos || []).filter(matchesQuery).filter(matchesTag).slice().sort(sortByDate),
-    [videos, searchQuery, activeTag, sortMode]
-  );
+  const filteredVideos = useMemo(() => {
+    return (videos || []).filter(matchesQuery).filter(matchesTag).slice().sort(sortByDate);
+  }, [videos, searchQuery, activeTag, sortMode, allLabel]);
 
-  const filteredTeachings = useMemo(
-    () => (teachings || []).filter(matchesQuery).filter(matchesTag).slice().sort(sortByDate),
-    [teachings, searchQuery, activeTag, sortMode]
-  );
+  const filteredTeachings = useMemo(() => {
+    return (teachings || []).filter(matchesQuery).filter(matchesTag).slice().sort(sortByDate);
+  }, [teachings, searchQuery, activeTag, sortMode, allLabel]);
 
   const visibleVideos = useMemo(() => {
     if (searchIsActive) return filteredVideos;
@@ -216,32 +239,65 @@ export default function Sermons() {
 
   const visibleTeachings = useMemo(() => {
     if (searchIsActive) return filteredTeachings;
-    return filteredTeachings.slice(0, DEFAULT_LATEST_TEACHINGS);
+    return filteredTeachings.slice(0, DEFAULT_LATEST_READING);
   }, [filteredTeachings, searchIsActive]);
 
-  const openVideoModal = (v) => {
-    if (!v?.youtubeId) return;
-    setOpenVideo({ youtubeId: v.youtubeId, title: v.title || "Sermon video" });
-    trackEvent("sermon_video_opened", { youtube_id: v.youtubeId, title: v.title });
+  const fallbackQaItems = Array.isArray(t?.qa?.items) ? t.qa.items : [];
+  const displayedQaItems = qaItems.length > 0 ? qaItems : fallbackQaItems;
+
+  const openVideoModal = (video) => {
+    if (!video?.youtubeId) return;
+
+    setOpenVideo({
+      youtubeId: video.youtubeId,
+      title: video.title || (lang === "am" ? "የቤተክርስቲያን ቪዲዮ" : "Church video"),
+    });
+
+    trackEvent("sermon_video_opened", {
+      youtube_id: video.youtubeId,
+      title: video.title,
+      language: lang,
+    });
   };
 
   const clearSearch = () => setSearchQuery("");
+
   const resetFilters = () => {
     setSearchQuery("");
-    setActiveTag("All");
+    setActiveTag(allLabel);
     setSortMode("newest");
   };
 
   const tabVideoCount = videos.length;
   const tabTeachCount = teachings.length;
-  const tabQuizCount = quizSets.length;
+  const tabQaCount = displayedQaItems.length;
 
-  const mobileTabLabel =
-    activeTab === "videos"
-      ? t.tabs.videos
-      : activeTab === "teachings"
-      ? t.tabs.teachings
-      : t.tabs.quiz;
+  const desktopLabels = {
+    videos: t?.tabs?.videos || "Videos",
+    teachings: t?.tabs?.teachings || "Reading Materials",
+    qa: t?.tabs?.qa || "Q&A",
+  };
+
+  const mobileTabLabel = desktopLabels[activeTab] || desktopLabels.videos;
+
+  const searchPlaceholder =
+    activeTab === "teachings"
+      ? lang === "am"
+        ? "የንባብ ትምህርቶችን፣ ደራሲዎችን፣ ተከታታዮችን፣ መለያዎችን ይፈልጉ…"
+        : "Search reading materials, authors, series, tags…"
+      : lang === "am"
+      ? "ስብከቶችን፣ አስተማሪዎችን፣ ተከታታዮችን፣ መለያዎችን ይፈልጉ…"
+      : "Search sermons, speakers, series, tags…";
+
+  const sortNewestLabel = lang === "am" ? "አዲስ በፊት" : "Newest";
+  const sortOldestLabel = lang === "am" ? "አሮጌ በፊት" : "Oldest";
+  const resetLabel = lang === "am" ? "እንደገና አስጀምር" : "Reset";
+  const clearLabel = lang === "am" ? "ፈልግን አጥፋ" : "Clear search";
+  const sortAria = lang === "am" ? "መደርደሪያ" : "Sort";
+  const searchAria =
+    lang === "am" ? "ስብከቶችን እና የንባብ ትምህርቶችን ፈልግ" : "Search sermons and reading materials";
+  const tabsAria = lang === "am" ? "የስብከት ታቦች" : "Sermons tabs";
+  const closeMenuLabel = lang === "am" ? "ሜኑን ዝጋ" : "Close menu";
 
   const changeTab = (tab) => {
     setActiveTab(tab);
@@ -249,16 +305,25 @@ export default function Sermons() {
   };
 
   return (
-    <section className={`sermons-section ${mobileTabOpen ? "is-menu-open" : ""}`} id="sermons">
+    <section
+      className={`sermons-section ${mobileTabOpen ? "is-menu-open" : ""}`}
+      id="sermons"
+    >
       <div className="sermons-header">
         <div className="section-header">
-          <h2>{t.sectionTitle}</h2>
-          <p>{t.sectionIntro}</p>
+          <h2>{t.sectionTitle || "Teachings & Sermons"}</h2>
+          <p>
+            {t.sectionIntro ||
+              "Watch sermons, explore reading materials, and find helpful answers to common church questions."}
+          </p>
         </div>
       </div>
 
-      {/* Desktop tabs */}
-      <div className="sermons-tabs sermons-tabs--desktop" role="tablist" aria-label="Sermons tabs">
+      <div
+        className="sermons-tabs sermons-tabs--desktop"
+        role="tablist"
+        aria-label={tabsAria}
+      >
         <button
           type="button"
           className={`sermons-tab ${activeTab === "videos" ? "active" : ""}`}
@@ -266,7 +331,7 @@ export default function Sermons() {
           role="tab"
           aria-selected={activeTab === "videos"}
         >
-          {t.tabs.videos} <span className="tab-count">({tabVideoCount})</span>
+          {desktopLabels.videos} <span className="tab-count">({tabVideoCount})</span>
         </button>
 
         <button
@@ -276,7 +341,7 @@ export default function Sermons() {
           role="tab"
           aria-selected={activeTab === "teachings"}
         >
-          {t.tabs.teachings} <span className="tab-count">({tabTeachCount})</span>
+          {desktopLabels.teachings} <span className="tab-count">({tabTeachCount})</span>
         </button>
 
         <button
@@ -286,39 +351,47 @@ export default function Sermons() {
           role="tab"
           aria-selected={activeTab === "qa"}
         >
-          {t.tabs.quiz} <span className="tab-count">({tabQuizCount})</span>
+          {desktopLabels.qa} <span className="tab-count">({tabQaCount})</span>
         </button>
       </div>
 
-      {/* Toolbar */}
       <div className="sermons-toolbar">
         <div className="sermons-search">
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search sermons, teachings, series, tags…"
-            aria-label="Search sermons and teachings"
+            placeholder={searchPlaceholder}
+            aria-label={searchAria}
             disabled={activeTab === "qa"}
           />
+
           {!!searchQuery && activeTab !== "qa" && (
-            <button className="sermons-clear" onClick={clearSearch} aria-label="Clear search" type="button">
+            <button
+              className="sermons-clear"
+              onClick={clearSearch}
+              aria-label={clearLabel}
+              type="button"
+            >
               ✕
             </button>
           )}
         </div>
 
-        {/* Mobile dropdown */}
         <div className="sermons-mobile-menu-wrap" ref={mobileMenuRef}>
           <button
             type="button"
             className="sermons-burger"
-            onClick={() => setMobileTabOpen((s) => !s)}
+            onClick={() => setMobileTabOpen((prev) => !prev)}
             aria-expanded={mobileTabOpen}
             aria-controls="sermons-mobile-menu"
           >
-            <span className="sermons-burger-icon" aria-hidden="true">☰</span>
+            <span className="sermons-burger-icon" aria-hidden="true">
+              ☰
+            </span>
             <span className="sermons-burger-label">{mobileTabLabel}</span>
-            <span className="sermons-burger-caret" aria-hidden="true">▾</span>
+            <span className="sermons-burger-caret" aria-hidden="true">
+              ▾
+            </span>
           </button>
 
           {mobileTabOpen && (
@@ -329,7 +402,7 @@ export default function Sermons() {
                 role="menuitem"
                 onClick={() => changeTab("videos")}
               >
-                {t.tabs.videos} <span className="tab-count">({tabVideoCount})</span>
+                {desktopLabels.videos} <span className="tab-count">({tabVideoCount})</span>
               </button>
 
               <button
@@ -338,7 +411,7 @@ export default function Sermons() {
                 role="menuitem"
                 onClick={() => changeTab("teachings")}
               >
-                {t.tabs.teachings} <span className="tab-count">({tabTeachCount})</span>
+                {desktopLabels.teachings} <span className="tab-count">({tabTeachCount})</span>
               </button>
 
               <button
@@ -347,7 +420,7 @@ export default function Sermons() {
                 role="menuitem"
                 onClick={() => changeTab("qa")}
               >
-                {t.tabs.quiz} <span className="tab-count">({tabQuizCount})</span>
+                {desktopLabels.qa} <span className="tab-count">({tabQaCount})</span>
               </button>
             </div>
           )}
@@ -358,31 +431,29 @@ export default function Sermons() {
             value={sortMode}
             onChange={(e) => setSortMode(e.target.value)}
             disabled={activeTab === "qa"}
-            aria-label="Sort"
+            aria-label={sortAria}
           >
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
+            <option value="newest">{sortNewestLabel}</option>
+            <option value="oldest">{sortOldestLabel}</option>
           </select>
         </div>
 
         {(searchIsActive || sortMode !== "newest") && activeTab !== "qa" && (
           <button className="sermons-reset" onClick={resetFilters} type="button">
-            Reset
+            {resetLabel}
           </button>
         )}
       </div>
 
-      {/* Scrim */}
       {mobileTabOpen && (
         <button
           type="button"
           className="sermons-menu-scrim"
-          aria-label="Close menu"
+          aria-label={closeMenuLabel}
           onClick={() => setMobileTabOpen(false)}
         />
       )}
 
-      {/* ✅ content wrapper (important for mobile click issue) */}
       <div className="sermons-content">
         {activeTab !== "qa" && (
           <div className="sermons-tags">
@@ -409,37 +480,51 @@ export default function Sermons() {
             defaultLatest={DEFAULT_LATEST_VIDEOS}
             formatDate={formatDate}
             onOpenVideo={openVideoModal}
+            trackEvent={trackEvent}
           />
         )}
 
         {activeTab === "teachings" && (
           <TeachingsTab
+            t={t}
             loading={loadingContent}
             visibleTeachings={visibleTeachings}
             filteredTeachings={filteredTeachings}
             searchIsActive={searchIsActive}
-            defaultLatest={DEFAULT_LATEST_TEACHINGS}
+            defaultLatest={DEFAULT_LATEST_READING}
             formatDate={formatDate}
           />
         )}
 
         {activeTab === "qa" && (
-          <QuizTab
+          <QATab
             t={t}
-            quizSets={quizSets}
-            loadingQuizSets={loadingQuizSets}
+            items={qaItems}
+            loading={loadingContent}
             trackEvent={trackEvent}
           />
         )}
       </div>
 
-      {/* Video modal */}
       {openVideo?.youtubeId && (
-        <div className="sermons-modal" role="dialog" aria-modal="true" onMouseDown={() => setOpenVideo(null)}>
-          <div className="sermons-modal-card" onMouseDown={(e) => e.stopPropagation()}>
+        <div
+          className="sermons-modal"
+          role="dialog"
+          aria-modal="true"
+          onMouseDown={() => setOpenVideo(null)}
+        >
+          <div
+            className="sermons-modal-card"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
             <div className="sermons-modal-top">
               <h3 className="sermons-modal-title">{openVideo.title}</h3>
-              <button className="sermons-modal-close" onClick={() => setOpenVideo(null)} aria-label="Close video" type="button">
+              <button
+                className="sermons-modal-close"
+                onClick={() => setOpenVideo(null)}
+                aria-label={lang === "am" ? "ቪዲዮን ዝጋ" : "Close video"}
+                type="button"
+              >
                 ✕
               </button>
             </div>

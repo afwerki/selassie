@@ -1,12 +1,12 @@
 :root {
   --ser-ink: #0f1b33;
   --ser-muted: rgba(15, 27, 51, 0.72);
-  --ser-soft: rgba(15, 27, 51, 0.10);
+  --ser-soft: rgba(15, 27, 51, 0.1);
 
   --ser-card: rgba(255, 255, 255, 0.92);
-  --ser-card2: rgba(255, 255, 255, 0.86);
+  --ser-card2: rgba(255, 255, 255, 0.88);
 
-  --ser-shadow: 0 16px 40px rgba(15, 23, 42, 0.10);
+  --ser-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
   --ser-shadowHover: 0 26px 70px rgba(15, 23, 42, 0.16);
 
   --ser-gold: #f2b544;
@@ -47,12 +47,10 @@
   overflow: visible;
 }
 
-/* when menu open, create predictable stacking context */
 .sermons-section.is-menu-open {
   isolation: isolate;
 }
 
-/* background glow */
 .sermons-section::before {
   content: "";
   position: absolute;
@@ -91,7 +89,7 @@
 }
 
 /* ============================================================
-   WOW STAGGER (cards enter nicely)
+   WOW STAGGER
 ============================================================ */
 .wow-stagger {
   opacity: 0;
@@ -101,11 +99,14 @@
 }
 
 @keyframes wowIn {
-  to { opacity: 1; transform: translateY(0); }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ============================================================
-   TABS (DESKTOP) + ANIMATED INDICATOR
+   TABS
 ============================================================ */
 .sermons-tabs {
   position: relative;
@@ -114,7 +115,7 @@
   padding: 7px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(15, 27, 51, 0.10);
+  border: 1px solid rgba(15, 27, 51, 0.1);
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(10px);
   margin: 16px 0 14px;
@@ -129,9 +130,13 @@
   font-size: 0.93rem;
   font-weight: 850;
   letter-spacing: 0.01em;
-  color: rgba(15, 27, 51, 0.80);
+  color: rgba(15, 27, 51, 0.8);
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
   position: relative;
   z-index: 2;
 }
@@ -142,7 +147,7 @@
 }
 
 .sermons-tab:active {
-  transform: translateY(0px) scale(0.99);
+  transform: translateY(0) scale(0.99);
 }
 
 .sermons-tab.active {
@@ -156,33 +161,6 @@
   font-weight: 900;
   opacity: 0.85;
 }
-
-/* ✅ animated pill indicator */
-.sermons-tab-indicator {
-  position: absolute;
-  top: 7px;
-  bottom: 7px;
-  left: 7px;
-  width: calc((100% - 14px - 16px) / 3);
-  border-radius: 999px;
-  background: linear-gradient(135deg, rgba(47, 104, 181, 0.12), rgba(242, 181, 68, 0.14));
-  border: 1px solid rgba(15, 27, 51, 0.08);
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
-  z-index: 1;
-  transform: translateX(0);
-  transition: transform 0.28s cubic-bezier(.2,.85,.2,1);
-  animation: indicatorPulse 2.6s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes indicatorPulse {
-  0%, 100% { transform: translateX(var(--ix, 0)) scale(1); }
-  50% { transform: translateX(var(--ix, 0)) scale(1.01); }
-}
-
-.sermons-tab-indicator--videos { --ix: 0px; }
-.sermons-tab-indicator--teachings { --ix: 33.5%; }
-.sermons-tab-indicator--qa { --ix: 67%; }
 
 /* ============================================================
    TOOLBAR
@@ -230,7 +208,7 @@
   right: 10px;
   border: none;
   background: rgba(15, 27, 51, 0.06);
-  border: 1px solid rgba(15, 27, 51, 0.10);
+  border: 1px solid rgba(15, 27, 51, 0.1);
   width: 30px;
   height: 30px;
   border-radius: 999px;
@@ -239,7 +217,9 @@
   transition: transform 0.16s ease;
 }
 
-.sermons-clear:active { transform: scale(0.96); }
+.sermons-clear:active {
+  transform: scale(0.96);
+}
 
 .sermons-sort select {
   border: 1px solid rgba(15, 27, 51, 0.14);
@@ -290,11 +270,22 @@
   transition: transform 0.16s ease;
 }
 
-.sermons-burger:active { transform: scale(0.99); }
+.sermons-burger:active {
+  transform: scale(0.99);
+}
 
-.sermons-burger-icon { font-size: 1.05rem; }
-.sermons-burger-label { font-size: 0.92rem; white-space: nowrap; }
-.sermons-burger-caret { opacity: 0.75; }
+.sermons-burger-icon {
+  font-size: 1.05rem;
+}
+
+.sermons-burger-label {
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.sermons-burger-caret {
+  opacity: 0.75;
+}
 
 .sermons-mobile-menu {
   position: absolute;
@@ -311,8 +302,14 @@
 }
 
 @keyframes menuDrop {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .sermons-mobile-item {
@@ -320,7 +317,7 @@
   text-align: left;
   border: none;
   background: transparent;
-  padding: 12px 12px;
+  padding: 12px;
   font-weight: 900;
   cursor: pointer;
   display: flex;
@@ -329,7 +326,7 @@
 }
 
 .sermons-mobile-item:hover {
-  background: rgba(242, 181, 68, 0.10);
+  background: rgba(242, 181, 68, 0.1);
 }
 
 .sermons-mobile-item.active {
@@ -346,7 +343,6 @@
   z-index: 90000;
 }
 
-/* when menu open, page content can't steal clicks */
 .sermons-section.is-menu-open .sermons-content {
   pointer-events: none;
 }
@@ -386,22 +382,23 @@
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
-.sermons-tag:active { transform: translateY(0) scale(0.99); }
+.sermons-tag:active {
+  transform: translateY(0) scale(0.99);
+}
 
 .sermons-tag.active {
-  background: rgba(47, 104, 181, 0.10);
-  border-color: rgba(47, 104, 181, 0.20);
+  background: rgba(47, 104, 181, 0.1);
+  border-color: rgba(47, 104, 181, 0.2);
   color: #1f3f72;
 }
 
 /* ============================================================
-   PANELS
+   PANELS / EMPTY / LOADING
 ============================================================ */
-.tab-panel { margin-top: 6px; }
+.tab-panel {
+  margin-top: 6px;
+}
 
-/* ============================================================
-   LOADING / EMPTY
-============================================================ */
 .sermons-skeleton-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -412,7 +409,12 @@
 .sermons-skeleton-card {
   height: 210px;
   border-radius: var(--ser-radius);
-  background: linear-gradient(90deg, rgba(15,27,51,0.06), rgba(15,27,51,0.10), rgba(15,27,51,0.06));
+  background: linear-gradient(
+    90deg,
+    rgba(15, 27, 51, 0.06),
+    rgba(15, 27, 51, 0.1),
+    rgba(15, 27, 51, 0.06)
+  );
   background-size: 200% 100%;
   animation: shimmer 1.2s ease-in-out infinite;
 }
@@ -421,11 +423,17 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.sermons-skeleton-card--t { height: 190px; }
+.sermons-skeleton-card--t {
+  height: 190px;
+}
 
 @keyframes shimmer {
-  0% { background-position: 0% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .sermons-empty {
@@ -445,117 +453,8 @@
 }
 
 /* ============================================================
-   VIDEOS
+   META / BADGES / TAGS
 ============================================================ */
-.video-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.video-card {
-  display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.35fr);
-  gap: 14px;
-  padding: 14px;
-  border-radius: var(--ser-radius);
-  background: var(--ser-card);
-  border: 1px solid rgba(15, 27, 51, 0.07);
-  box-shadow: var(--ser-shadow);
-  backdrop-filter: blur(10px);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.video-card::after {
-  content: "";
-  position: absolute;
-  inset: -30px;
-  background: radial-gradient(circle at 20% 10%, rgba(242,181,68,0.16), transparent 45%),
-              radial-gradient(circle at 90% 30%, rgba(47,104,181,0.12), transparent 48%);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-
-.video-card:hover::after { opacity: 1; }
-
-.video-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--ser-shadowHover);
-  border-color: rgba(242, 181, 68, 0.30);
-}
-
-.video-thumb {
-  border: none;
-  padding: 0;
-  margin: 0;
-  background: transparent;
-  position: relative;
-  border-radius: 18px;
-  overflow: hidden;
-  cursor: pointer;
-  min-height: 160px;
-}
-
-.video-thumb img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  transform: scale(1.02);
-  transition: transform 0.35s ease;
-}
-
-.video-card:hover .video-thumb img {
-  transform: scale(1.06);
-}
-
-.video-thumb-fallback {
-  width: 100%;
-  height: 100%;
-  background: #0b1220;
-}
-
-.video-thumb-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 30% 25%, rgba(242, 181, 68, 0.18), transparent 55%),
-    linear-gradient(to top, rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.10), transparent 55%);
-  pointer-events: none;
-}
-
-.video-play {
-  position: absolute;
-  left: 12px;
-  bottom: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(15, 27, 51, 0.12);
-  border-radius: 999px;
-  padding: 9px 12px;
-  font-weight: 950;
-  transition: transform 0.16s ease;
-}
-
-.video-thumb:active .video-play { transform: scale(0.99); }
-
-.video-play-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--ser-gold), var(--ser-gold2));
-}
-
-.video-info { padding: 2px 4px; }
-
 .sermons-meta {
   margin: 0 0 6px;
   font-size: 0.82rem;
@@ -563,34 +462,6 @@
   color: rgba(15, 27, 51, 0.58);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-}
-
-.video-info h3 {
-  margin: 0 0 8px;
-  font-size: 1.12rem;
-  letter-spacing: -0.01em;
-  color: var(--ser-ink);
-  line-height: 1.25;
-}
-
-.video-desc {
-  margin-top: 8px;
-  color: rgba(15, 27, 51, 0.70);
-  line-height: 1.6;
-  font-size: 0.95rem;
-  max-height: 96px;
-  overflow: auto;
-  padding-right: 6px;
-}
-
-.video-desc::-webkit-scrollbar { width: 8px; }
-.video-desc::-webkit-scrollbar-thumb {
-  background: rgba(15, 27, 51, 0.18);
-  border-radius: 999px;
-}
-.video-desc::-webkit-scrollbar-track {
-  background: rgba(15, 27, 51, 0.06);
-  border-radius: 999px;
 }
 
 .featured-pill {
@@ -604,6 +475,7 @@
   border-radius: 999px;
   font-weight: 1000;
   font-size: 0.76rem;
+  z-index: 3;
 }
 
 .featured-pill--soft {
@@ -623,13 +495,239 @@
   font-weight: 900;
   padding: 5px 10px;
   border-radius: 999px;
-  background: rgba(47, 104, 181, 0.10);
+  background: rgba(47, 104, 181, 0.1);
   border: 1px solid rgba(47, 104, 181, 0.18);
   color: #1f3f72;
 }
 
+.tag-pill {
+  background: rgba(47, 104, 181, 0.1);
+  border: 1px solid rgba(47, 104, 181, 0.18);
+  color: #1f3f72;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag-pill::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--ser-gold), var(--ser-gold2));
+  box-shadow: 0 6px 16px rgba(242, 181, 68, 0.28);
+}
+
 /* ============================================================
-   TEACHINGS
+   VIDEOS
+============================================================ */
+.video-grid,
+.video-grid--youtube {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.video-card,
+.video-card--youtube {
+  border-radius: var(--ser-radius);
+  background: var(--ser-card);
+  border: 1px solid rgba(15, 27, 51, 0.07);
+  box-shadow: var(--ser-shadow);
+  backdrop-filter: blur(10px);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.video-card::after,
+.video-card--youtube::after {
+  content: "";
+  position: absolute;
+  inset: -30px;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(242, 181, 68, 0.16), transparent 45%),
+    radial-gradient(circle at 90% 30%, rgba(47, 104, 181, 0.12), transparent 48%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.video-card:hover::after,
+.video-card--youtube:hover::after {
+  opacity: 1;
+}
+
+.video-card:hover,
+.video-card--youtube:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ser-shadowHover);
+  border-color: rgba(242, 181, 68, 0.3);
+}
+
+.video-frame,
+.video-thumb {
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.video-frame {
+  border-radius: 20px 20px 0 0;
+}
+
+.video-thumb {
+  border-radius: 18px;
+  min-height: 160px;
+}
+
+.video-frame img,
+.video-thumb img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform 0.35s ease;
+}
+
+.video-card:hover .video-frame img,
+.video-card:hover .video-thumb img,
+.video-card--youtube:hover .video-frame img {
+  transform: scale(1.06);
+}
+
+.video-thumb-fallback {
+  width: 100%;
+  height: 100%;
+  background: #0b1220;
+}
+
+.video-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(242, 181, 68, 0.18), transparent 55%),
+    linear-gradient(to top, rgba(15, 23, 42, 0.58), rgba(15, 23, 42, 0.12), transparent 55%);
+  pointer-events: none;
+}
+
+.video-play {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 27, 51, 0.12);
+  border-radius: 999px;
+  padding: 9px 12px;
+  font-weight: 950;
+  transition: transform 0.16s ease;
+  z-index: 2;
+}
+
+.video-play--center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 72px;
+  min-height: 72px;
+  padding: 0;
+  box-shadow: 0 20px 36px rgba(15, 23, 42, 0.22);
+}
+
+.video-thumb:active .video-play,
+.video-frame:active .video-play {
+  transform: translate(-50%, -50%) scale(0.98);
+}
+
+.video-thumb .video-play {
+  left: 12px;
+  bottom: 12px;
+}
+
+.video-thumb .video-play-icon,
+.video-frame .video-play-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--ser-gold), var(--ser-gold2));
+  color: #142645;
+}
+
+.video-play--center .video-play-icon {
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+}
+
+.video-info,
+.video-info--youtube {
+  padding: 14px 16px 16px;
+}
+
+.video-info h3,
+.video-info--youtube h3 {
+  margin: 0 0 8px;
+  font-size: 1.08rem;
+  letter-spacing: -0.01em;
+  color: var(--ser-ink);
+  line-height: 1.3;
+}
+
+.video-desc {
+  margin-top: 8px;
+  color: rgba(15, 27, 51, 0.7);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  max-height: 96px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.video-desc--clamp {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  max-height: none;
+  padding-right: 0;
+}
+
+.video-desc::-webkit-scrollbar {
+  width: 8px;
+}
+
+.video-desc::-webkit-scrollbar-thumb {
+  background: rgba(15, 27, 51, 0.18);
+  border-radius: 999px;
+}
+
+.video-desc::-webkit-scrollbar-track {
+  background: rgba(15, 27, 51, 0.06);
+  border-radius: 999px;
+}
+
+/* ============================================================
+   READING MATERIALS
 ============================================================ */
 .teaching-grid {
   display: grid;
@@ -642,9 +740,12 @@
   border-radius: var(--ser-radius);
   background: var(--ser-card2);
   border: 1px solid rgba(15, 27, 51, 0.07);
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.10);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.1);
   backdrop-filter: blur(10px);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
   overflow: hidden;
   position: relative;
 }
@@ -653,19 +754,22 @@
   content: "";
   position: absolute;
   inset: -30px;
-  background: radial-gradient(circle at 20% 10%, rgba(47,104,181,0.12), transparent 45%),
-              radial-gradient(circle at 90% 30%, rgba(242,181,68,0.14), transparent 48%);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(47, 104, 181, 0.12), transparent 45%),
+    radial-gradient(circle at 90% 30%, rgba(242, 181, 68, 0.14), transparent 48%);
   opacity: 0;
   transition: opacity 0.2s ease;
   pointer-events: none;
 }
 
-.teaching-card:hover::after { opacity: 1; }
+.teaching-card:hover::after {
+  opacity: 1;
+}
 
 .teaching-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 22px 60px rgba(15, 23, 42, 0.16);
-  border-color: rgba(47, 104, 181, 0.20);
+  border-color: rgba(47, 104, 181, 0.2);
 }
 
 .teaching-media {
@@ -708,28 +812,6 @@
   margin-bottom: 8px;
 }
 
-.tag-pill {
-  background: rgba(47, 104, 181, 0.10);
-  border: 1px solid rgba(47, 104, 181, 0.18);
-  color: #1f3f72;
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 0.76rem;
-  font-weight: 1000;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.tag-pill::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--ser-gold), var(--ser-gold2));
-  box-shadow: 0 6px 16px rgba(242, 181, 68, 0.28);
-}
-
 .teaching-card h3 {
   margin: 10px 0 6px;
   font-size: 1.05rem;
@@ -767,10 +849,18 @@
   background: linear-gradient(135deg, rgba(242, 181, 68, 0.95), rgba(246, 207, 119, 0.92));
   color: #142645;
   box-shadow: 0 16px 32px rgba(242, 181, 68, 0.22);
-  transition: transform 0.16s ease;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
-.teaching-btn:active { transform: scale(0.99); }
+.teaching-btn:hover {
+  box-shadow: 0 20px 38px rgba(242, 181, 68, 0.28);
+}
+
+.teaching-btn:active {
+  transform: scale(0.99);
+}
 
 .teaching-btn--disabled {
   opacity: 0.55;
@@ -779,460 +869,172 @@
 }
 
 /* ============================================================
-   QUIZ SETS
+   Q&A
 ============================================================ */
-.quiz-sets-header h3 {
+.qa-shell {
+  max-width: 900px;
+}
+
+.qa-header {
+  margin-bottom: 14px;
+}
+
+.qa-header h3 {
   margin: 0 0 6px;
-  font-size: 1.25rem;
-  letter-spacing: -0.01em;
+  font-size: 1.26rem;
   color: var(--ser-ink);
-}
-
-.quiz-sets-header p {
-  margin: 0 0 10px;
-  color: rgba(15, 27, 51, 0.70);
-  line-height: 1.6;
-}
-
-.quiz-loading {
-  margin-top: 10px;
-  color: rgba(15, 27, 51, 0.72);
-  font-weight: 800;
-}
-
-.quiz-sets-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 12px;
-}
-
-.quiz-set-card {
-  cursor: pointer;
-  border-radius: var(--ser-radius);
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(15, 27, 51, 0.10);
-  box-shadow: 0 18px 55px rgba(15, 23, 42, 0.12);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-  display: flex;
-  flex-direction: column;
-  min-height: 320px;
-  position: relative;
-}
-
-.quiz-set-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 26px 80px rgba(15, 23, 42, 0.16);
-  border-color: rgba(242, 181, 68, 0.22);
-}
-
-.quiz-set-image {
-  position: relative;
-  width: 100%;
-  height: 170px;
-  overflow: hidden;
-  flex: 0 0 auto;
-  background: rgba(15, 23, 42, 0.06);
-}
-
-.quiz-set-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transform: scale(1.02);
-  transition: transform 0.35s ease;
-}
-
-.quiz-set-card:hover .quiz-set-image img {
-  transform: scale(1.06);
-}
-
-.quiz-set-image::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(15, 23, 42, 0.55),
-    rgba(15, 23, 42, 0.10),
-    transparent 60%
-  );
-  pointer-events: none;
-}
-
-.quiz-set-body { padding: 12px 14px 14px; }
-
-.quiz-set-topline {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.quiz-set-status {
-  font-size: 0.75rem;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-weight: 1000;
-  white-space: nowrap;
-}
-
-.quiz-set-status--done {
-  background: rgba(22, 163, 74, 0.10);
-  border: 1px solid rgba(22, 163, 74, 0.18);
-  color: #166534;
-}
-
-.quiz-set-status--pending {
-  background: rgba(242, 181, 68, 0.12);
-  border: 1px solid rgba(242, 181, 68, 0.20);
-  color: #92400e;
-}
-
-.quiz-set-title {
-  margin: 6px 0 8px;
-  font-size: 1rem;
-  font-weight: 1000;
-  color: rgba(15, 27, 51, 0.92);
-}
-
-.quiz-set-description {
-  margin: 0;
-  font-size: 0.88rem;
-  color: rgba(15, 27, 51, 0.72);
-  line-height: 1.55;
-}
-
-.quiz-set-meta {
-  margin-top: 10px;
-  font-size: 0.82rem;
-  color: rgba(15, 27, 51, 0.62);
-  font-weight: 900;
-}
-
-.quiz-sets-show-more-wrapper {
-  margin-top: 14px;
-  display: flex;
-  justify-content: center;
-}
-
-.quiz-sets-show-more {
-  border: none;
-  border-radius: 999px;
-  padding: 9px 18px;
-  font-size: 0.9rem;
-  font-weight: 1000;
-  background: linear-gradient(135deg, rgba(47, 104, 181, 0.14), rgba(242, 181, 68, 0.16));
-  color: #14335f;
-  cursor: pointer;
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.10);
-  transition: transform 0.16s ease;
-}
-
-.quiz-sets-show-more:active { transform: scale(0.99); }
-
-/* ============================================================
-   QUIZ — base
-============================================================ */
-.quiz-shell {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 6px 2px 2px;
-  animation: quizFadeUp 320ms ease;
-}
-
-@keyframes quizFadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.quiz-back-link {
-  border: none;
-  background: rgba(255,255,255,0.8);
-  border: 1px solid rgba(15,27,51,0.12);
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-weight: 900;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.quiz-back-link--top { margin-bottom: 12px; }
-
-.quiz-header {
-  padding: 12px 14px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.82);
-  border: 1px solid rgba(15,27,51,0.10);
-  box-shadow: 0 14px 44px rgba(15,23,42,0.08);
-  margin-bottom: 12px;
-}
-
-.quiz-header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.quiz-progress-label {
-  font-weight: 1000;
-  color: rgba(15,27,51,0.66);
-}
-
-.quiz-progress {
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(15,27,51,0.08);
-  overflow: hidden;
-  margin-top: 10px;
-}
-
-.quiz-progress-bar {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(135deg, rgba(47,104,181,0.55), rgba(242,181,68,0.55));
-  transition: width 240ms ease;
-}
-
-.quiz-card {
-  border-radius: 22px;
-  background: rgba(255,255,255,0.92);
-  border: 1px solid rgba(15, 27, 51, 0.10);
-  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.12);
-  padding: 14px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* ============================================================
-   ✅ QUIZ ANIMATIONS (you already toggle these classes in JSX)
-============================================================ */
-.quiz-card--enter {
-  animation: quizCardEnter 280ms cubic-bezier(.2,.85,.2,1) both;
-}
-@keyframes quizCardEnter {
-  from { opacity: 0; transform: translateY(10px) scale(0.99); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* Correct: pop + glow + burst */
-.quiz-card--correct-animate {
-  border-color: rgba(22,163,74,0.28);
-  box-shadow: 0 22px 70px rgba(22,163,74,0.16), 0 18px 60px rgba(15, 23, 42, 0.12);
-  animation: correctPop 520ms cubic-bezier(.2,.9,.2,1) both;
-}
-
-@keyframes correctPop {
-  0%   { transform: scale(0.98); }
-  35%  { transform: scale(1.02); }
-  70%  { transform: scale(0.995); }
-  100% { transform: scale(1); }
-}
-
-/* Burst overlay */
-.quiz-card--correct-animate::before {
-  content: "";
-  position: absolute;
-  inset: -40px;
-  background:
-    radial-gradient(circle at 30% 25%, rgba(34,197,94,0.22), transparent 52%),
-    radial-gradient(circle at 75% 35%, rgba(242,181,68,0.18), transparent 56%),
-    radial-gradient(circle at 55% 80%, rgba(47,104,181,0.14), transparent 58%);
-  opacity: 0;
-  animation: burstIn 520ms ease both;
-  pointer-events: none;
-}
-
-@keyframes burstIn {
-  0% { opacity: 0; transform: scale(0.96); }
-  35% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0.55; transform: scale(1.01); }
-}
-
-/* Confetti dots (CSS-only, no JS) */
-.quiz-card--correct-animate::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle, rgba(34,197,94,0.9) 0 3px, transparent 4px) 12% 20%/22px 22px,
-    radial-gradient(circle, rgba(242,181,68,0.95) 0 3px, transparent 4px) 78% 24%/24px 24px,
-    radial-gradient(circle, rgba(47,104,181,0.9) 0 3px, transparent 4px) 62% 78%/26px 26px,
-    radial-gradient(circle, rgba(34,197,94,0.8) 0 2px, transparent 3px) 30% 70%/20px 20px,
-    radial-gradient(circle, rgba(242,181,68,0.85) 0 2px, transparent 3px) 88% 62%/18px 18px;
-  opacity: 0;
-  animation: confetti 650ms ease both;
-}
-
-@keyframes confetti {
-  0% { opacity: 0; transform: translateY(10px); filter: blur(0.2px); }
-  35% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-8px); }
-}
-
-/* Incorrect: shake */
-.quiz-card--incorrect-animate {
-  border-color: rgba(239,68,68,0.22);
-  animation: wrongShake 420ms ease both;
-}
-@keyframes wrongShake {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
-  100% { transform: translateX(0); }
-}
-
-.quiz-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.quiz-difficulty {
-  font-weight: 1000;
-  font-size: 0.85rem;
-  color: rgba(15,27,51,0.64);
-}
-
-.quiz-question {
-  margin: 8px 0 12px;
-  color: rgba(15,27,51,0.95);
   letter-spacing: -0.01em;
 }
 
-.quiz-options {
-  display: grid;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.quiz-option {
-  border-radius: 16px;
-  border: 1px solid rgba(15,27,51,0.12);
-  background: rgba(255,255,255,0.9);
-  padding: 12px 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  font-weight: 900;
-  text-align: left;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
-}
-
-.quiz-option:hover {
-  border-color: rgba(47,104,181,0.22);
-  box-shadow: 0 14px 34px rgba(15,23,42,0.10);
-  transform: translateY(-1px);
-}
-
-.quiz-option:active { transform: translateY(0) scale(0.99); }
-
-.quiz-option:disabled {
-  cursor: not-allowed;
-  opacity: 0.92;
-}
-
-.quiz-option-bullet {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(15,27,51,0.18);
-  flex: 0 0 auto;
-}
-
-.quiz-option--selected {
-  border-color: rgba(47,104,181,0.30);
-  background: rgba(47,104,181,0.06);
-}
-
-.quiz-option--correct {
-  border-color: rgba(22,163,74,0.28);
-  background: rgba(22,163,74,0.08);
-}
-
-.quiz-option--incorrect {
-  border-color: rgba(239,68,68,0.24);
-  background: rgba(239,68,68,0.06);
-}
-
-.quiz-reaction {
-  margin-top: 12px;
-  font-weight: 1000;
-}
-
-.quiz-reaction--correct { color: #166534; }
-.quiz-reaction--incorrect { color: #991b1b; }
-
-/* Collapsible explanation */
-.quiz-explain {
-  margin-top: 12px;
-  border-radius: 16px;
-  background: rgba(15, 27, 51, 0.05);
-  border: 1px solid rgba(15, 27, 51, 0.08);
-  padding: 10px 12px;
-}
-
-.quiz-explain summary {
-  cursor: pointer;
-  font-weight: 1000;
-  color: rgba(15,27,51,0.88);
-}
-
-.quiz-explain-body {
-  margin-top: 10px;
-  color: rgba(15, 27, 51, 0.78);
+.qa-header p {
+  margin: 0;
+  color: rgba(15, 27, 51, 0.72);
   line-height: 1.65;
 }
 
-.quiz-footer {
+.qa-categories {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 18px;
 }
 
-.quiz-next-btn,
-.quiz-reset-btn {
-  border: none;
+.qa-category-pill {
+  border: 1px solid rgba(15, 27, 51, 0.12);
+  background: rgba(255, 255, 255, 0.8);
   border-radius: 999px;
-  padding: 10px 14px;
-  font-weight: 1000;
-  cursor: pointer;
-  background: linear-gradient(135deg, rgba(242, 181, 68, 0.95), rgba(246, 207, 119, 0.92));
-  color: #142645;
-  box-shadow: 0 16px 32px rgba(242, 181, 68, 0.22);
-  transition: transform 0.16s ease;
-}
-
-.quiz-next-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.quiz-next-btn:active,
-.quiz-reset-btn:active { transform: scale(0.99); }
-
-.quiz-result-card {
-  padding: 14px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.92);
-  border: 1px solid rgba(15, 27, 51, 0.10);
-  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.12);
-}
-
-.quiz-score {
+  padding: 8px 13px;
+  font-size: 0.84rem;
   font-weight: 900;
-  color: rgba(15,27,51,0.78);
+  color: rgba(15, 27, 51, 0.84);
+  cursor: pointer;
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease,
+    background 0.14s ease;
+}
+
+.qa-category-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+}
+
+.qa-category-pill.active {
+  background: rgba(47, 104, 181, 0.1);
+  border-color: rgba(47, 104, 181, 0.18);
+  color: #1f3f72;
+}
+
+.qa-loading,
+.qa-empty {
+  margin-top: 10px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 27, 51, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  color: rgba(15, 27, 51, 0.76);
+  font-weight: 700;
+}
+
+.qa-list {
+  display: grid;
+  gap: 14px;
+}
+
+.qa-card {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(15, 27, 51, 0.08);
+  box-shadow: 0 14px 38px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.qa-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.12);
+  border-color: rgba(47, 104, 181, 0.14);
+}
+
+.qa-card.is-open {
+  border-color: rgba(242, 181, 68, 0.22);
+  box-shadow: 0 22px 58px rgba(15, 23, 42, 0.12);
+}
+
+.qa-question {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 18px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  cursor: pointer;
+}
+
+.qa-question-main {
+  min-width: 0;
+}
+
+.qa-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(47, 104, 181, 0.1);
+  border: 1px solid rgba(47, 104, 181, 0.16);
+  color: #1f3f72;
+  font-size: 0.75rem;
+  font-weight: 1000;
+}
+
+.qa-question h4 {
+  margin: 0;
+  font-size: 1.01rem;
+  line-height: 1.4;
+  color: var(--ser-ink);
+  letter-spacing: -0.01em;
+}
+
+.qa-caret {
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+  color: rgba(15, 27, 51, 0.56);
+  transition: transform 0.22s ease, color 0.22s ease;
+}
+
+.qa-caret.is-open {
+  transform: rotate(180deg);
+  color: #1f3f72;
+}
+
+.qa-answer-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.22s ease;
+}
+
+.qa-answer-wrap.open {
+  grid-template-rows: 1fr;
+}
+
+.qa-answer {
+  overflow: hidden;
+}
+
+.qa-answer p {
+  margin: 0;
+  padding: 0 18px 18px;
+  color: rgba(15, 27, 51, 0.78);
+  line-height: 1.72;
+  font-size: 0.97rem;
 }
 
 /* ============================================================
@@ -1264,7 +1066,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(15, 27, 51, 0.10);
+  border-bottom: 1px solid rgba(15, 27, 51, 0.1);
 }
 
 .sermons-modal-title {
@@ -1301,24 +1103,37 @@
 }
 
 /* ============================================================
-   RESPONSIVE (base)
+   RESPONSIVE
 ============================================================ */
 @media (max-width: 1000px) {
-  .video-card { grid-template-columns: 1fr; }
-  .video-thumb { min-height: 210px; }
+  .video-grid,
+  .video-grid--youtube {
+    grid-template-columns: 1fr;
+  }
+
+  .teaching-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 900px) {
-  .video-grid,
   .teaching-grid {
     grid-template-columns: 1fr;
   }
-  .quiz-sets-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .sermons-skeleton-grid--teachings {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 700px) {
-  .sermons-tabs--desktop { display: none; }
-  .sermons-mobile-menu-wrap { display: block; }
+  .sermons-tabs--desktop {
+    display: none;
+  }
+
+  .sermons-mobile-menu-wrap {
+    display: block;
+  }
 
   .sermons-toolbar {
     grid-template-columns: 1fr auto;
@@ -1326,64 +1141,43 @@
     gap: 10px;
   }
 
-  .sermons-sort { grid-column: 1 / -1; }
-  .sermons-sort select { width: 100%; }
-  .sermons-reset { display: none; }
+  .sermons-sort {
+    grid-column: 1 / -1;
+  }
 
-  .teaching-media { height: 160px; }
+  .sermons-sort select {
+    width: 100%;
+  }
 
-  .quiz-sets-grid { grid-template-columns: 1fr; }
-  .quiz-set-image { height: 160px; }
-}
+  .sermons-reset {
+    display: none;
+  }
 
-@media (min-width: 701px) {
-  .sermons-mobile-menu-wrap { display: none; }
-}
-
-/* ============================================================
-   ✅ FINAL MOBILE PREMIUM UPGRADE (VIDEOS + QUIZ SETS)
-   (This overrides the earlier responsive blocks on purpose)
-============================================================ */
-@media (max-width: 700px) {
-  /* ---------- Video cards become compact “media row” cards ---------- */
-  .video-grid {
+  .video-grid,
+  .video-grid--youtube {
     grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  .video-card {
-    grid-template-columns: 120px 1fr;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
+  .video-card,
+  .video-card--youtube {
     border-radius: 18px;
   }
 
-  .video-thumb {
-    min-height: 86px;
-    height: 86px;
-    border-radius: 14px;
+  .video-frame {
+    border-radius: 18px 18px 0 0;
   }
 
-  .video-play {
-    left: 8px;
-    bottom: 8px;
-    padding: 6px 9px;
-    gap: 6px;
-    font-size: 0.82rem;
-  }
-
-  .video-play-icon {
-    width: 20px;
-    height: 20px;
-    font-size: 0.85rem;
+  .video-info,
+  .video-info--youtube {
+    padding: 12px;
   }
 
   .featured-pill {
     top: 8px;
     right: 8px;
     padding: 5px 8px;
-    font-size: 0.70rem;
+    font-size: 0.7rem;
   }
 
   .sermons-meta {
@@ -1391,22 +1185,22 @@
     margin-bottom: 4px;
   }
 
-  .video-info h3 {
+  .video-info h3,
+  .video-info--youtube h3 {
     font-size: 0.98rem;
     line-height: 1.25;
     margin: 0 0 6px;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* max 2 lines */
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
-  /* hide long desc on mobile – keeps card small */
-  .video-desc {
+  .video-desc,
+  .video-desc--clamp {
     display: none;
   }
 
-  /* tags: small, single line wrap */
   .mini-tags {
     margin-top: 6px;
     gap: 6px;
@@ -1417,64 +1211,37 @@
     padding: 4px 8px;
   }
 
-  /* ---------- Quiz Sets: compact + premium ---------- */
-  .quiz-sets-grid {
+  .teaching-media {
+    height: 160px;
+  }
+
+  .qa-question {
+    padding: 16px 14px;
     gap: 12px;
   }
 
-  .quiz-set-card {
-    min-height: auto;
-    border-radius: 18px;
+  .qa-answer p {
+    padding: 0 14px 16px;
   }
 
-  .quiz-set-image {
-    height: 120px;
+  .qa-question h4 {
+    font-size: 0.96rem;
   }
 
-  .quiz-set-body {
-    padding: 12px 12px 12px;
+  .video-play--center {
+    min-width: 58px;
+    min-height: 58px;
   }
 
-  .quiz-set-title {
-    font-size: 0.98rem;
-    margin: 6px 0 6px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .video-play--center .video-play-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 0.92rem;
   }
+}
 
-  .quiz-set-description {
-    font-size: 0.86rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* keep compact */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .quiz-set-meta {
-    margin-top: 8px;
-    font-size: 0.78rem;
-  }
-
-  /* ---------- Quiz play view: more “game-like” on mobile ---------- */
-  .quiz-card {
-    padding: 14px;
-    border-radius: 20px;
-  }
-
-  .quiz-question {
-    font-size: 1.05rem;
-    line-height: 1.35;
-  }
-
-  .quiz-option {
-    padding: 12px;
-    border-radius: 16px;
-  }
-
-  .quiz-next-btn {
-    width: 100%;
-    justify-content: center;
+@media (min-width: 701px) {
+  .sermons-mobile-menu-wrap {
+    display: none;
   }
 }

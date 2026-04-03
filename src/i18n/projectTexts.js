@@ -1,14 +1,33 @@
+import restorationImg1 from "../assets/images/selassie_church.png";
+import restorationImg2 from "../assets/images/IMG_0354.jpg";
+import restorationImg3 from "../assets/images/Candles_inChurch.jpg";
+import restorationImg4 from "../assets/images/selassie_church.png";
+
+import youthImg1 from "../assets/images/kids_mezmur.JPG";
+import youthImg2 from "../assets/images/kids_outside_church.jpg";
+import youthImg3 from "../assets/images/kids_mezmur.JPG";
+import youthImg4 from "../assets/images/kids_mezmur.JPG";
+import youthHeroImg from "../assets/images/kids_mezmur.JPG";
+
+import safeguardingHeroImg from "../assets/images/IMG_0354.jpg";
+
 export const projectTexts = {
   en: {
     restoration_appeal: {
-      id: "restoration_appeal",
+      id: "church_restoration_appeal",
       title: "Restoration Appeal",
       miniTitle: "Help us restore a Grade II listed church and protect a living heritage",
       status: "in_progress",
       startDate: "2024-01-20",
 
-      heroImageUrl:
-        "https://images.unsplash.com/photo-1737365794036-3bcc63c2f55f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      carouselImages: [
+        restorationImg1,
+        restorationImg2,
+        restorationImg3,
+        restorationImg4,
+      ],
+
+      heroImageUrl: restorationImg1,
       heroImageAlt: "Church interior with warm light",
 
       shortDescription:
@@ -125,9 +144,6 @@ https://donate.mydona.com/debre-genet-church-london
       },
     },
 
-    // ============================
-    // ENGLISH — youth_education
-    // ============================
     youth_education: {
       id: "youth_education",
       title: "Youth & Education",
@@ -135,16 +151,14 @@ https://donate.mydona.com/debre-genet-church-london
       status: "ongoing",
       startDate: "2024-05-10",
 
-      // ✅ Used instead of heroImageUrl (if present)
       carouselImages: [
-        "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1600&q=80",
-        "https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=1600&q=80",
-        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
-        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80",
+        youthImg1,
+        youthImg2,
+        youthImg3,
+        youthImg4,
       ],
 
-      heroImageUrl:
-        "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1600&q=80",
+      heroImageUrl: youthHeroImg,
       heroImageAlt: "Students learning together",
 
       shortDescription:
@@ -194,8 +208,7 @@ These activities strengthen identity, discipline, and belonging while preserving
       status: "ongoing",
       startDate: "2024-03-12",
 
-      heroImageUrl:
-        "https://plus.unsplash.com/premium_photo-1725408055568-1401068d09c8?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzN8fFNhZmVndWFyZGluZyUyMCUyNiUyMFdlbGxiZWluZyUyMGluJTIwZ29kfGVufDB8fDB8fHww",
+      heroImageUrl: safeguardingHeroImg,
       heroImageAlt: "Supportive community gathering",
 
       shortDescription:
@@ -235,15 +248,21 @@ Pastoral support is provided with sensitivity, confidentiality, and compassion�
 
   am: {
     restoration_appeal: {
-      id: "restoration_appeal",
+      id: "church_restoration_appeal",
       title: "የመልሶ ማቋቋም ጥሪ",
       miniTitle:
         "ደረጃ II የቅርስ ሕንፃ የሆነውን ቤተ ክርስቲያናችንን እንድናድስ እና ሕያው ቅርሳችንን እንድንጠብቅ ይርዱን",
       status: "in_progress",
       startDate: "2024-01-20",
 
-      heroImageUrl:
-        "https://images.unsplash.com/photo-1737365794036-3bcc63c2f55f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      carouselImages: [
+        restorationImg1,
+        restorationImg2,
+        restorationImg3,
+        restorationImg4,
+      ],
+
+      heroImageUrl: restorationImg1,
       heroImageAlt: "የቤተ ክርስቲያን ውስጥ እይታ",
 
       shortDescription:
@@ -352,9 +371,6 @@ https://donate.mydona.com/debre-genet-church-london
       },
     },
 
-    // ============================
-    // AMHARIC — youth_education
-    // ============================
     youth_education: {
       id: "youth_education",
       title: "ወጣቶች እና ትምህርት",
@@ -362,20 +378,17 @@ https://donate.mydona.com/debre-genet-church-london
       status: "ongoing",
       startDate: "2006-05-10",
 
-      // ✅ Add carouselImages here too (so it does NOT disappear in Amharic)
       carouselImages: [
-        "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1600&q=80",
-        "https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=1600&q=80",
-        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
-        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80",
+        youthImg1,
+        youthImg2,
+        youthImg3,
+        youthImg4,
       ],
 
-      heroImageUrl:
-        "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1600&q=80",
+      heroImageUrl: youthHeroImg,
       heroImageAlt: "ተማሪዎች በመማር ላይ",
 
-      shortDescription:
-        `እምነት የታነፁ፣ የተማሩ እና በትህትና የታነፁ ወጣቶችን ለማውጣት ፕሮግራሞችን ቀርፀን እያሰራን ነው።
+      shortDescription: `እምነት የታነፁ፣ የተማሩ እና በትህትና የታነፁ ወጣቶችን ለማውጣት ፕሮግራሞችን ቀርፀን እያሰራን ነው።
 ልጅዎትን የዚህ ፕሮግራም አባል ለማድረግ ካሰቡ እባክዎትን ከታች ባለው ፎርም መልእክት ይላኩልን።`,
 
       longDescription: `
@@ -424,8 +437,7 @@ https://donate.mydona.com/debre-genet-church-london
       status: "ongoing",
       startDate: "2024-03-12",
 
-      heroImageUrl:
-        "https://plus.unsplash.com/premium_photo-1725408055568-1401068d09c8?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzN8fFNhZmVndWFyZGluZyUyMCUyNiUyMFdlbGxiZWluZyUyMGluJTIwZ29kfGVufDB8fDB8fHww",
+      heroImageUrl: safeguardingHeroImg,
       heroImageAlt: "የማህበረሰብ ድጋፍ ስብሰባ",
 
       shortDescription:
@@ -450,7 +462,6 @@ https://donate.mydona.com/debre-genet-church-london
 ---
 
 ## ደህንነት እና መንፈሳዊ እንክብካቤ
-
 
 የትኛውም ውስጣዊ ሰላምን የሚረብሽም ሆነ በአካል የሚረብሽ ነገር ከአዩ እባክዎትን ከታች ባለው ፎርም መልእክት ይላኩልን ወይም በስልኩ ይደውሉ።
       `.trim(),

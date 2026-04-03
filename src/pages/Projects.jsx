@@ -9,14 +9,13 @@ function Projects() {
   const t = texts[lang] || texts.en;
 
   const pageText = t.projects || {};
-  const pageTitle = pageText.pageTitle || (lang === "am" ? "ፕሮጀክቶች" : "Projects");
+  const pageTitle = pageText.pageTitle || (lang === "am" ? "ፕሮጀክቶች" : "Parish Projects");
   const pageIntro =
     pageText.pageIntro ||
     (lang === "am"
-      ? "እዚህ የቤተ ክርስቲያኑ ፕሮጀክቶች እና ተከታታይ ሥራዎች ይታያሉ።"
+      ? "እዚህ የቤተ ክርስቲያኑ ዋና ፕሮጀክቶች እና ተከታታይ ሥራዎች ይታያሉ።"
       : "Explore some of the key projects we are working on as a parish – from community outreach and youth initiatives to church renovation and digital ministry.");
 
-  // ✅ Always pull projects from projectTexts, fallback to en if missing
   const langProjects =
     projectTexts?.[lang] && Object.keys(projectTexts[lang]).length > 0
       ? projectTexts[lang]
@@ -38,32 +37,134 @@ function Projects() {
       cta: p.cta,
       supportTitle: p.supportTitle,
       supportItems: p.supportItems,
-      mediaHints: p.mediaHints,
       instagram: p.instagram,
       carouselImages: p.carouselImages,
       _index: idx,
     }));
   }, [langProjects]);
 
-  const [expandedKey, setExpandedKey] = useState(null);
+  const featuredProject = useMemo(() => {
+    return (
+      allProjects.find(
+        (p) =>
+          p.id === "church_restoration_appeal" ||
+          p.__key === "church_restoration_appeal" ||
+          p.title?.toLowerCase().includes("restoration")
+      ) || allProjects[0] || null
+    );
+  }, [allProjects]);
+
+  const secondaryProjects = useMemo(() => {
+    if (!featuredProject) return [];
+    return allProjects.filter((p) => p.__key !== featuredProject.__key);
+  }, [allProjects, featuredProject]);
+
+  const [expandedMap, setExpandedMap] = useState({});
   const [showAllProjects, setShowAllProjects] = useState(false);
-  const expandedRef = useRef(null);
+  const [scrollY, setScrollY] = useState(0);
+  const [lightbox, setLightbox] = useState({
+    open: false,
+    images: [],
+    index: 0,
+    title: "",
+  });
+
+  const projectRefs = useRef({});
 
   useEffect(() => {
-    setExpandedKey(null);
+    setExpandedMap({});
     setShowAllProjects(false);
+    setLightbox({
+      open: false,
+      images: [],
+      index: 0,
+      title: "",
+    });
   }, [lang]);
 
-  const expandedProject = useMemo(() => {
-    if (!expandedKey) return null;
-    return allProjects.find((p) => p.__key === expandedKey) || null;
-  }, [expandedKey, allProjects]);
+  useEffect(() => {
+    let ticking = false;
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY || 0);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
-    if (expandedProject && expandedRef.current) {
-      expandedRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    const handleKeyDown = (e) => {
+      if (!lightbox.open) return;
+
+      if (e.key === "Escape") {
+        closeLightbox();
+      } else if (e.key === "ArrowRight") {
+        nextLightboxImage();
+      } else if (e.key === "ArrowLeft") {
+        prevLightboxImage();
+      }
+    };
+
+    if (lightbox.open) {
+      document.body.classList.add("project-modal-open");
+    } else {
+      document.body.classList.remove("project-modal-open");
     }
-  }, [expandedProject]);
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.classList.remove("project-modal-open");
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [lightbox.open]);
+
+  const toggleProject = (key) => {
+    const isCurrentlyExpanded = !!expandedMap[key];
+
+    if (!isCurrentlyExpanded) {
+      setExpandedMap((prev) => ({
+        ...prev,
+        [key]: true,
+      }));
+      return;
+    }
+
+    setExpandedMap((prev) => ({
+      ...prev,
+      [key]: false,
+    }));
+
+    const targetEl = projectRefs.current[key];
+    if (targetEl) {
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const headerOffset = 120;
+      const y = targetEl.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: y,
+        behavior: reducedMotion ? "auto" : "smooth",
+      });
+    }
+  };
+
+  const toggleShowAllProjects = () => {
+    setShowAllProjects((prev) => !prev);
+  };
+
+  const onOpen = (url) => {
+    if (!url) return;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
 
   const formatDate = (iso) => {
     if (!iso) return "";
@@ -81,22 +182,11 @@ function Projects() {
   const getStatusLabel = (status) => {
     const s = status || "planned";
     if (s === "completed") return lang === "am" ? "ተጠናቀቀ" : "Completed";
-    if (s === "in_progress") return lang === "am" ? "በመካከለኛ ሂደት" : "In progress";
-    if (s === "ongoing") return lang === "am" ? "በሂደት ላይ ያለ" : "Ongoing";
+    if (s === "in_progress") return lang === "am" ? "በሂደት ላይ" : "In progress";
+    if (s === "ongoing") return lang === "am" ? "ቀጣይ" : "Ongoing";
     return lang === "am" ? "የሚጀምር" : "Planned";
   };
 
-  const toggleProject = (key) => setExpandedKey((cur) => (cur === key ? null : key));
-  const toggleShowAllProjects = () => setShowAllProjects((p) => !p);
-
-  const onOpen = (url) => {
-    if (!url) return;
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
-  /* ============================================================
-     Lightweight Markdown-like renderer (no deps)
-  ============================================================ */
   const parseInline = (text) => {
     if (!text) return null;
 
@@ -128,16 +218,16 @@ function Projects() {
         segs.push(<strong key={`${idx}-b-${start}`}>{match[1]}</strong>);
         lastIndex = end;
       }
-      if (lastIndex < part.length) segs.push(part.slice(lastIndex));
 
+      if (lastIndex < part.length) segs.push(part.slice(lastIndex));
       return <React.Fragment key={idx}>{segs}</React.Fragment>;
     });
   };
 
-  const renderFormattedText = (intro, body) => {
-    const raw = [intro, body].filter(Boolean).join("\n\n");
-    const lines = raw.split("\n");
+  const renderFormattedText = (body) => {
+    if (!body) return null;
 
+    const lines = body.split("\n");
     const blocks = [];
     let buf = [];
 
@@ -154,59 +244,52 @@ function Projects() {
     }
     flush();
 
-    const nodes = [];
-
-    for (let i = 0; i < blocks.length; i++) {
-      const block = blocks[i];
+    return blocks.map((block, i) => {
       const first = block[0].trim();
 
       if (/^---+$/.test(first)) {
-        nodes.push(<hr key={`hr-${i}`} className="project-divider" />);
-        continue;
+        return <hr key={`hr-${i}`} className="project-divider" />;
       }
 
       if (first.startsWith("### ")) {
-        nodes.push(
+        return (
           <h3 key={`h3-${i}`} className="project-h3">
             {parseInline(first.replace(/^###\s+/, ""))}
           </h3>
         );
-        continue;
       }
+
       if (first.startsWith("## ")) {
-        nodes.push(
+        return (
           <h2 key={`h2-${i}`} className="project-h2">
             {parseInline(first.replace(/^##\s+/, ""))}
           </h2>
         );
-        continue;
       }
 
       const isUl = block.every((l) => l.trim().startsWith("- "));
       if (isUl) {
-        nodes.push(
+        return (
           <ul key={`ul-${i}`} className="project-ul">
             {block.map((l, idx) => (
               <li key={`uli-${i}-${idx}`}>{parseInline(l.trim().slice(2))}</li>
             ))}
           </ul>
         );
-        continue;
       }
 
       const isOl = block.every((l) => /^\d+\.\s+/.test(l.trim()));
       if (isOl) {
-        nodes.push(
+        return (
           <ol key={`ol-${i}`} className="project-ol">
             {block.map((l, idx) => (
               <li key={`oli-${i}-${idx}`}>{parseInline(l.trim().replace(/^\d+\.\s+/, ""))}</li>
             ))}
           </ol>
         );
-        continue;
       }
 
-      nodes.push(
+      return (
         <div key={`p-${i}`}>
           {block.map((l, idx) => (
             <p key={`pp-${i}-${idx}`} className="project-p">
@@ -215,286 +298,386 @@ function Projects() {
           ))}
         </div>
       );
-    }
-
-    return nodes;
+    });
   };
 
-  // ✅ Instagram icon
-  const InstagramIcon = ({ className = "" }) => (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M16.8 3H7.2A4.2 4.2 0 0 0 3 7.2v9.6A4.2 4.2 0 0 0 7.2 21h9.6a4.2 4.2 0 0 0 4.2-4.2V7.2A4.2 4.2 0 0 0 16.8 3Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path
-        d="M12 16.2A4.2 4.2 0 1 0 12 7.8a4.2 4.2 0 0 0 0 8.4Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path d="M17.4 6.6h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
+  const openLightbox = (images = [], startIndex = 0, title = "") => {
+    const safeImages = (images || []).filter(Boolean);
+    if (!safeImages.length) return;
 
-  // ✅ Premium infinite carousel
-  const MovingCarousel = ({ images = [], speed = 26, variant = "card" }) => {
+    setLightbox({
+      open: true,
+      images: safeImages,
+      index: Math.max(0, Math.min(startIndex, safeImages.length - 1)),
+      title,
+    });
+  };
+
+  const closeLightbox = () => {
+    setLightbox((prev) => ({
+      ...prev,
+      open: false,
+    }));
+  };
+
+  const nextLightboxImage = () => {
+    setLightbox((prev) => {
+      if (!prev.images.length) return prev;
+      return {
+        ...prev,
+        index: (prev.index + 1) % prev.images.length,
+      };
+    });
+  };
+
+  const prevLightboxImage = () => {
+    setLightbox((prev) => {
+      if (!prev.images.length) return prev;
+      return {
+        ...prev,
+        index: (prev.index - 1 + prev.images.length) % prev.images.length,
+      };
+    });
+  };
+
+  const MovingCarousel = ({ images = [], speed = 26, variant = "card", title = "" }) => {
     const safe = (images || []).filter(Boolean);
-    if (safe.length === 0) return null;
+    if (!safe.length) return null;
 
     const track = [...safe, ...safe];
 
     return (
       <div
         className={`project-carousel project-carousel--${variant}`}
-        style={{ ["--duration"]: `${Math.max(10, speed)}s` }}
-        aria-label="Project photos carousel"
+        style={{ "--duration": `${Math.max(12, speed)}s` }}
+        aria-label={`${title || "Project"} image carousel`}
       >
         <div className="project-carousel__fade project-carousel__fade--left" aria-hidden="true" />
         <div className="project-carousel__fade project-carousel__fade--right" aria-hidden="true" />
 
         <div className="project-carousel__viewport">
           <div className="project-carousel__track">
-            {track.map((src, idx) => (
-              <div className="project-carousel__item" key={`${src}-${idx}`}>
-                <img src={src} alt="" loading="lazy" draggable="false" />
-              </div>
-            ))}
+            {track.map((src, idx) => {
+              const realIndex = idx % safe.length;
+              return (
+                <div className="project-carousel__item" key={`${src}-${idx}`}>
+                  <button
+                    type="button"
+                    className="project-carousel__zoom-btn"
+                    onClick={() => openLightbox(safe, realIndex, title)}
+                    aria-label={`Open image ${realIndex + 1} for ${title || "project"}`}
+                  >
+                    <img src={src} alt="" loading="lazy" draggable="false" />
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
     );
   };
 
-  const isYouth = (p) => p?.id === "youth_education";
-  const youthInstaUrl = expandedProject?.instagram?.url;
+  const hasCarousel = (project) => Array.isArray(project?.carouselImages) && project.carouselImages.length > 0;
 
-  // ✅ Remove top Instagram button in AMHARIC (you said it duplicates)
-  const showTopInstagramInExpanded = (p) => isYouth(p) && lang !== "am" && !!p?.instagram?.url;
+  const renderProjectContent = (project, featured = false) => {
+    const isExpanded = !!expandedMap[project.__key];
+    const hasLong = !!project.longDescription;
 
-  // ✅ Decide hero display: if carouselImages exist, use carousel instead of big hero image
-  const hasCarousel = (p) => Array.isArray(p?.carouselImages) && p.carouselImages.length > 0;
-
-  return (
-    <main className="page" id="projects">
-      <section className="section-header projects-page-header">
-        <h2>{pageTitle}</h2>
-        <p>{pageIntro}</p>
-      </section>
-
-      <section className="projects-section">
-        {allProjects.length === 0 && (
-          <p className="projects-empty">
-            {lang === "am" ? "ፕሮጀክቶች በቅርቡ ይጨመራሉ።" : "Projects will appear here once they are published."}
-          </p>
-        )}
-
-        {allProjects.length > 0 && (
-          <>
-            {/* EXPANDED PANEL */}
-            {expandedProject && (
-              <section className="project-expanded" ref={expandedRef} aria-label="Project details">
-                <div className="project-expanded__inner">
-                  <div className="project-expanded__header">
-                    <div className="project-expanded__meta">
-                      <span className={`project-status-pill project-status-pill--${expandedProject.status || "planned"}`}>
-                        {getStatusLabel(expandedProject.status)}
-                      </span>
-
-                      {expandedProject.startDate && <span className="project-date">{formatDate(expandedProject.startDate)}</span>}
-                    </div>
-
-                    <button
-                      type="button"
-                      className="project-expanded__close"
-                      onClick={() => setExpandedKey(null)}
-                      aria-label={lang === "am" ? "ዝጋ" : "Close"}
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div className="project-expanded__content">
-                    {/* LEFT */}
-                    <aside className="project-expanded__left">
-                      <div className="project-heroCard">
-                        <h3 className="project-heroTitle">{expandedProject.title}</h3>
-
-                        {!!expandedProject.miniTitle && <p className="project-heroMiniTitle">{expandedProject.miniTitle}</p>}
-
-                        {/* ✅ Only show this in EN (avoid duplication in AM) */}
-                        {showTopInstagramInExpanded(expandedProject) && (
-                          <div className="project-socialRow" aria-label="Social links">
-                            <button
-                              type="button"
-                              className="project-instagramBtn"
-                              onClick={() => onOpen(expandedProject.instagram.url)}
-                              aria-label={expandedProject.instagram.label || "Instagram"}
-                            >
-                              <span className="project-instagramGlow" aria-hidden="true" />
-                              <InstagramIcon className="project-instagramIcon" />
-                              <span className="project-instagramText">
-                                {expandedProject.instagram.label || (lang === "am" ? "በኢንስታግራም ይከተሉን" : "Follow us on Instagram")}
-                              </span>
-                            </button>
-                          </div>
-                        )}
-
-                        <p className="project-heroLead">
-                          {expandedProject.shortDescription ||
-                            (lang === "am" ? "ስለዚህ ፕሮጀክት ዝርዝር መረጃ በቅርቡ ይጨመራል።" : "Details for this project will be added soon.")}
-                        </p>
-
-                        {/* ✅ Hero visual */}
-                        {hasCarousel(expandedProject) ? (
-                          <div className="project-heroMediaWrap">
-                            <MovingCarousel images={expandedProject.carouselImages} speed={24} variant="hero" />
-                          </div>
-                        ) : expandedProject.heroImageUrl ? (
-                          <div className="project-heroImageWrap">
-                            <img
-                              src={expandedProject.heroImageUrl}
-                              alt={expandedProject.heroImageAlt || expandedProject.title}
-                              className="project-expanded__image"
-                              loading="lazy"
-                            />
-                          </div>
-                        ) : null}
-
-                        {(expandedProject.supportTitle || expandedProject.supportItems?.length) && (
-                          <div className="project-supportBox">
-                            <p className="project-supportBox__title">
-                              {expandedProject.supportTitle || (lang === "am" ? "እንዴት ልትረዱ ትችላላችሁ?" : "How you can support")}
-                            </p>
-
-                            {expandedProject.supportItems?.length > 0 && (
-                              <ul className="project-supportBox__list">
-                                {expandedProject.supportItems.map((item) => (
-                                  <li key={item}>{item}</li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </aside>
-
-                    {/* RIGHT */}
-                    <div className="project-expanded__right">
-                      <div className="project-doc">
-                        {expandedProject.longDescription ? (
-                          renderFormattedText(null, expandedProject.longDescription)
-                        ) : (
-                          <p className="project-expanded__fallback">{lang === "am" ? "ዝርዝር መረጃ በቅርቡ ይጨመራል።" : "More details will be added soon."}</p>
-                        )}
-                      </div>
-
-                      {/* ✅ ACTIONS: Youth uses Instagram CTA */}
-                      <div className="project-expanded__actions">
-                        {isYouth(expandedProject) && youthInstaUrl ? (
-                          <button
-                            type="button"
-                            className="project-expanded__button project-expanded__button--instagram"
-                            onClick={() => onOpen(youthInstaUrl)}
-                            aria-label="Instagram"
-                          >
-                            <InstagramIcon className="project-actionIcon" />
-                            <span>{lang === "am" ? "Instagram ይከተሉን" : "Follow on Instagram"}</span>
-                          </button>
-                        ) : expandedProject.cta?.url ? (
-                          <button type="button" className="project-expanded__button" onClick={() => onOpen(expandedProject.cta.url)}>
-                            {expandedProject.cta.label || (lang === "am" ? "ይለግሱ" : "Donate Now")}
-                          </button>
-                        ) : (
-                          <button type="button" className="project-expanded__button" onClick={() => setExpandedKey(null)}>
-                            {lang === "am" ? "ተመለስ" : "Back to projects"}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* GRID */}
-            <div className={`projects-grid ${showAllProjects ? "projects-grid--expanded" : ""}`}>
-              {allProjects.map((project, index) => {
-                const isActive = expandedKey === project.__key;
-                const showInstaTop = isYouth(project) && !!project.instagram?.url; // top-right icon on card is fine for both
-
-                return (
-                  <article key={project.__key} className={`project-card ${isActive ? "project-card--active" : ""}`} data-index={index}>
-                    {/* ✅ Card media: carousel if present, else hero image */}
-                    {hasCarousel(project) ? (
-                      <div className="project-image-wrapper">
-                        <MovingCarousel images={project.carouselImages} speed={22} variant="card" />
-                        <div className="project-image-overlay" />
-                      </div>
-                    ) : project.heroImageUrl ? (
-                      <div className="project-image-wrapper">
-                        <img src={project.heroImageUrl} alt={project.heroImageAlt || project.title} className="project-image" loading="lazy" />
-                        <div className="project-image-overlay" />
-                      </div>
-                    ) : null}
-
-                    <div className="project-body">
-                      <div className="project-meta-top">
-                        <span className={`project-status-pill project-status-pill--${project.status || "planned"}`}>
-                          {getStatusLabel(project.status)}
-                        </span>
-
-                        <div className="project-metaRight">
-                          {project.startDate && <span className="project-date">{formatDate(project.startDate)}</span>}
-
-                          {/* ✅ Insta icon at top-right of card */}
-                          {showInstaTop && (
-                            <button
-                              type="button"
-                              className="project-instaPill"
-                              onClick={() => onOpen(project.instagram.url)}
-                              aria-label={project.instagram.label || "Instagram"}
-                              title={project.instagram.label || "Instagram"}
-                            >
-                              <span className="project-instaPill__glow" aria-hidden="true" />
-                              <InstagramIcon />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      <h3 className="project-title">{project.title}</h3>
-
-                      {!!project.miniTitle && <p className="project-miniTitle">{project.miniTitle}</p>}
-
-                      <p className="project-description">
-                        {project.shortDescription ||
-                          (lang === "am" ? "ስለዚህ ፕሮጀክት ዝርዝር መረጃ በቅርቡ ይጨመራል።" : "Details for this project will be added soon.")}
-                      </p>
-
-                      {project.longDescription && (
-                        <button type="button" className="project-read-more-btn" onClick={() => toggleProject(project.__key)} aria-expanded={isActive}>
-                          {isActive ? (lang === "am" ? "ዝርዝር ዝጋ" : "Close") : lang === "am" ? "ተጨማሪ ያንብቡ" : "Read more"}
-                        </button>
-                      )}
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-
-            {/* Show more on mobile */}
-            {allProjects.length > 2 && (
-              <div className="projects-more-wrapper">
-                <button type="button" className="projects-more-btn" onClick={toggleShowAllProjects}>
-                  {showAllProjects ? (lang === "am" ? "ያጣሩ" : "Show fewer projects") : lang === "am" ? "ተጨማሪ ፕሮጀክቶች ይመልከቱ" : "Show more projects"}
-                </button>
+    return (
+      <>
+        <div className="project-meta-top">
+          <div className="project-meta-top__left">
+            {featured && (
+              <div className="project-featured-badge">
+                {lang === "am" ? "ዋና የፓሪሽ ፕሮጀክት" : "Main Parish Project"}
               </div>
             )}
-          </>
+
+            <span className={`project-status-pill project-status-pill--${project.status || "planned"}`}>
+              {getStatusLabel(project.status)}
+            </span>
+          </div>
+
+          {project.startDate && <span className="project-date">{formatDate(project.startDate)}</span>}
+        </div>
+
+        <h3 className="project-title">{project.title}</h3>
+
+        {!!project.miniTitle && <p className="project-miniTitle">{project.miniTitle}</p>}
+
+        <p className="project-description">
+          {project.shortDescription ||
+            (lang === "am"
+              ? "ስለዚህ ፕሮጀክት ተጨማሪ መረጃ በቅርቡ ይጨመራል።"
+              : "Details for this project will be added soon.")}
+        </p>
+
+        {!featured && (
+          <div className={`project-inline-expand ${isExpanded ? "project-inline-expand--open" : ""}`}>
+            <div className="project-inline-expand__content">
+              {hasLong && renderFormattedText(project.longDescription)}
+
+              {(project.supportTitle || project.supportItems?.length > 0) && (
+                <div className="project-supportBox project-supportBox--inline">
+                  <p className="project-supportBox__title">
+                    {project.supportTitle || (lang === "am" ? "እንዴት ልትረዱ ትችላላችሁ?" : "How you can support")}
+                  </p>
+
+                  {project.supportItems?.length > 0 && (
+                    <ul className="project-supportBox__list">
+                      {project.supportItems.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         )}
-      </section>
-    </main>
+
+        <div className={`project-card-actions ${featured ? "project-card-actions--featured" : ""}`}>
+          {hasLong && (
+            <button
+              type="button"
+              className="project-read-more-btn"
+              onClick={() => toggleProject(project.__key)}
+              aria-expanded={isExpanded}
+            >
+              {isExpanded ? (lang === "am" ? "ዝርዝር ዝጋ" : "Show less") : lang === "am" ? "ተጨማሪ ያንብቡ" : "Read more"}
+            </button>
+          )}
+
+          {project.instagram?.url && (
+            <button
+              type="button"
+              className={featured ? "project-secondary-cta-btn" : "project-outline-cta-btn"}
+              onClick={() => onOpen(project.instagram.url)}
+            >
+              {project.instagram.label || (lang === "am" ? "ኢንስታግራም" : "Instagram")}
+            </button>
+          )}
+
+          {!project.instagram?.url && project.cta?.url && (
+            <button
+              type="button"
+              className={featured ? "project-secondary-cta-btn" : "project-outline-cta-btn"}
+              onClick={() => onOpen(project.cta.url)}
+            >
+              {project.cta.label || (lang === "am" ? "ይለግሱ" : "Contribute")}
+            </button>
+          )}
+        </div>
+      </>
+    );
+  };
+
+  const renderProjectCard = (project, featured = false) => {
+    const isExpanded = !!expandedMap[project.__key];
+    const parallaxOffset = featured ? Math.max(-18, Math.min(18, scrollY * -0.03)) : 0;
+    const bodyOffset = featured ? Math.max(-10, Math.min(10, scrollY * -0.012)) : 0;
+    const galleryImages = hasCarousel(project)
+      ? project.carouselImages
+      : project.heroImageUrl
+      ? [project.heroImageUrl]
+      : [];
+
+    return (
+      <article
+        key={project.__key}
+        ref={(el) => {
+          if (el) projectRefs.current[project.__key] = el;
+        }}
+        className={[
+          "project-card",
+          featured ? "project-card--featured" : "project-card--standard",
+          isExpanded ? "project-card--active" : "",
+          featured && isExpanded ? "project-card--featured-expanded" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        <div
+          className={`project-image-shell ${featured ? "project-image-shell--featured" : "project-image-shell--standard"}`}
+        >
+          <div
+            className={`project-image-wrapper ${featured ? "project-image-wrapper--featured" : "project-image-wrapper--standard"}`}
+            style={featured ? { transform: `translateY(${parallaxOffset}px)` } : undefined}
+          >
+            {hasCarousel(project) ? (
+              <MovingCarousel
+                images={project.carouselImages}
+                speed={featured ? 28 : 24}
+                variant={featured ? "featured" : "card"}
+                title={project.title}
+              />
+            ) : project.heroImageUrl ? (
+              <button
+                type="button"
+                className="project-image-open-btn"
+                onClick={() => openLightbox(galleryImages, 0, project.title)}
+                aria-label={`Open image for ${project.title}`}
+              >
+                <img
+                  src={project.heroImageUrl}
+                  alt={project.heroImageAlt || project.title}
+                  className="project-image"
+                  loading="lazy"
+                />
+                <div className="project-image-overlay" />
+              </button>
+            ) : (
+              <>
+                <div className="project-image project-image--placeholder" aria-hidden="true" />
+                <div className="project-image-overlay" />
+              </>
+            )}
+          </div>
+        </div>
+
+        <div
+          className={`project-body ${featured ? "project-body--featured" : "project-body--standard"}`}
+          style={featured ? { transform: `translateY(${bodyOffset}px)` } : undefined}
+        >
+          {renderProjectContent(project, featured)}
+        </div>
+
+        {featured && (
+          <div className={`project-featured-expand ${isExpanded ? "project-featured-expand--open" : ""}`}>
+            <div className="project-featured-expand__inner">
+              {project.longDescription && renderFormattedText(project.longDescription)}
+
+              {(project.supportTitle || project.supportItems?.length > 0) && (
+                <div className="project-supportBox project-supportBox--inline">
+                  <p className="project-supportBox__title">
+                    {project.supportTitle || (lang === "am" ? "እንዴት ልትረዱ ትችላላችሁ?" : "How you can support")}
+                  </p>
+
+                  {project.supportItems?.length > 0 && (
+                    <ul className="project-supportBox__list">
+                      {project.supportItems.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </article>
+    );
+  };
+
+  return (
+    <>
+      <main className="page" id="projects">
+        <section className="section-header projects-page-header">
+          <h2>{pageTitle}</h2>
+          <p>{pageIntro}</p>
+        </section>
+
+        <section className="projects-section">
+          {allProjects.length === 0 && (
+            <p className="projects-empty">
+              {lang === "am" ? "ፕሮጀክቶች በቅርቡ ይጨመራሉ።" : "Projects will appear here once they are published."}
+            </p>
+          )}
+
+          {featuredProject && <section className="projects-featured">{renderProjectCard(featuredProject, true)}</section>}
+
+          {secondaryProjects.length > 0 && (
+            <section className="projects-lower">
+              <div className="projects-lower__header">
+                <h3>{lang === "am" ? "ሌሎች የፓሪሽ ፕሮጀክቶች" : "Other Parish Projects"}</h3>
+                <p>
+                  {lang === "am"
+                    ? "ከዋናው የማስተካከያ ፕሮጀክት በተጨማሪ እነዚህም በፓሪሹ ውስጥ በንቃት ላይ ያሉ አገልግሎቶች ናቸው።"
+                    : "Alongside the restoration appeal, these are some of the other active projects serving the parish and wider community."}
+                </p>
+              </div>
+
+              <div className={`projects-grid ${showAllProjects ? "projects-grid--expanded" : ""}`}>
+                {secondaryProjects.map((project) => renderProjectCard(project, false))}
+              </div>
+
+              {secondaryProjects.length > 2 && (
+                <div className="projects-more-wrapper">
+                  <button type="button" className="projects-more-btn" onClick={toggleShowAllProjects}>
+                    {showAllProjects
+                      ? lang === "am"
+                        ? "ያጣሩ"
+                        : "Show fewer projects"
+                      : lang === "am"
+                      ? "ተጨማሪ ፕሮጀክቶች ይመልከቱ"
+                      : "Show more projects"}
+                  </button>
+                </div>
+              )}
+            </section>
+          )}
+        </section>
+      </main>
+
+      {lightbox.open && (
+        <div
+          className="project-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={lightbox.title || "Image viewer"}
+        >
+          <button
+            type="button"
+            className="project-lightbox__backdrop"
+            onClick={closeLightbox}
+            aria-label={lang === "am" ? "ዝጋ" : "Close image viewer"}
+          />
+
+          <div className="project-lightbox__dialog">
+            <button
+              type="button"
+              className="project-lightbox__close"
+              onClick={closeLightbox}
+              aria-label={lang === "am" ? "ዝጋ" : "Close"}
+            >
+              ×
+            </button>
+
+            {lightbox.images.length > 1 && (
+              <button
+                type="button"
+                className="project-lightbox__nav project-lightbox__nav--prev"
+                onClick={prevLightboxImage}
+                aria-label={lang === "am" ? "የቀድሞ ፎቶ" : "Previous image"}
+              >
+                ‹
+              </button>
+            )}
+
+            <div className="project-lightbox__content">
+              <img
+                src={lightbox.images[lightbox.index]}
+                alt={lightbox.title || "Project image"}
+                className="project-lightbox__image"
+              />
+              {lightbox.title && <p className="project-lightbox__caption">{lightbox.title}</p>}
+            </div>
+
+            {lightbox.images.length > 1 && (
+              <button
+                type="button"
+                className="project-lightbox__nav project-lightbox__nav--next"
+                onClick={nextLightboxImage}
+                aria-label={lang === "am" ? "ቀጣይ ፎቶ" : "Next image"}
+              >
+                ›
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

@@ -19,7 +19,7 @@ export const texts = {
 
     heroSlides: [
       {
-        title: "Selassie Ethiopian Orthodox Church in London",
+        title: "Debre-Genet Holy Trinity",
         subtitle:
           "A spiritual home for the Ethiopian Orthodox community in London. Join us in worship, prayer, and fellowship.",
         cta: "Learn More",
@@ -43,7 +43,7 @@ export const texts = {
     home: {
       welcomeTitle: "Welcome",
       welcomeP1:
-        "Welcome to Selassie Ethiopian Orthodox Church in London, a spiritual home for the Ethiopian Orthodox community. We invite you to join us in worship, prayer, and fellowship as we grow together in the Orthodox faith.",
+        "Welcome to Debre-Genet Holy Trinity Ethiopian Orthodox Church in London, a spiritual home for the Ethiopian Orthodox community. We invite you to join us in worship, prayer, and fellowship as we grow together in the Orthodox faith.",
       welcomeP2:
         "Whether you are a lifelong member of the Church or visiting for the first time, you are warmly welcomed and we are glad you are here.",
       missionTitle: "Our Mission",
