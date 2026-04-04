@@ -1,16 +1,33 @@
 const fs = require("fs");
 const path = require("path");
 
-const imagesDir = path.join(__dirname, "assets/images");
+const assetsDir = path.join(__dirname, "assets");
 const srcDir = __dirname;
-const backupDir = path.join(__dirname, "unused-images-backup");
+const backupDir = path.join(__dirname, "unused-media-backup");
 
-// Ensure backup folder exists
+const MEDIA_EXTENSIONS = [
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".webp",
+  ".svg",
+  ".gif",
+  ".mp4",
+  ".mov",
+  ".avi",
+  ".m4v",
+  ".webm",
+];
+
+const SOURCE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx", ".css", ".scss"];
+
 if (!fs.existsSync(backupDir)) {
-  fs.mkdirSync(backupDir);
+  fs.mkdirSync(backupDir, { recursive: true });
 }
 
 function getAllFiles(dir, extensions = []) {
+  if (!fs.existsSync(dir)) return [];
+
   let results = [];
 
   fs.readdirSync(dir).forEach((file) => {
@@ -21,13 +38,11 @@ function getAllFiles(dir, extensions = []) {
 
       if (stat.isDirectory()) {
         results = results.concat(getAllFiles(fullPath, extensions));
-      } else {
-        if (
-          extensions.length === 0 ||
-          extensions.includes(path.extname(file).toLowerCase())
-        ) {
-          results.push(fullPath);
-        }
+      } else if (
+        extensions.length === 0 ||
+        extensions.includes(path.extname(file).toLowerCase())
+      ) {
+        results.push(fullPath);
       }
     } catch (err) {
       console.warn(`⚠️ Skipped: ${fullPath}`);
@@ -37,60 +52,89 @@ function getAllFiles(dir, extensions = []) {
   return results;
 }
 
-// Get all images
-const images = getAllFiles(imagesDir, [
-  ".png",
-  ".jpg",
-  ".jpeg",
-  ".webp",
-  ".svg",
-]);
+function readAllSourceContent(files) {
+  return files
+    .map((file) => {
+      try {
+        return fs.readFileSync(file, "utf8");
+      } catch {
+        return "";
+      }
+    })
+    .join("\n");
+}
 
-// Get all source files
-const sourceFiles = getAllFiles(srcDir, [
-  ".js",
-  ".jsx",
-  ".ts",
-  ".tsx",
-  ".css",
-]);
+function isUsed(filePath, usedContent) {
+  const fileName = path.basename(filePath);
+  const relativeFromSrc = path
+    .relative(srcDir, filePath)
+    .replace(/\\/g, "/");
 
-// Read all code content
-const usedContent = sourceFiles
-  .map((file) => {
-    try {
-      return fs.readFileSync(file, "utf8");
-    } catch {
-      return "";
-    }
-  })
-  .join("\n");
+  const relativeFromAssets = path
+    .relative(assetsDir, filePath)
+    .replace(/\\/g, "/");
 
-// Find unused images
-const unusedImages = images.filter((imgPath) => {
-  const fileName = path.basename(imgPath);
-  return !usedContent.includes(fileName);
-});
+  return (
+    usedContent.includes(fileName) ||
+    usedContent.includes(relativeFromSrc) ||
+    usedContent.includes(relativeFromAssets)
+  );
+}
 
-// Log results
+function moveToBackup(filePath) {
+  const relativePath = path.relative(assetsDir, filePath);
+  const destinationPath = path.join(backupDir, relativePath);
+  const destinationDir = path.dirname(destinationPath);
+
+  if (!fs.existsSync(destinationDir)) {
+    fs.mkdirSync(destinationDir, { recursive: true });
+  }
+
+  fs.renameSync(filePath, destinationPath);
+}
+
+const mediaFiles = getAllFiles(assetsDir, MEDIA_EXTENSIONS);
+const sourceFiles = getAllFiles(srcDir, SOURCE_EXTENSIONS);
+const usedContent = readAllSourceContent(sourceFiles);
+
+const unusedMedia = mediaFiles.filter((filePath) => !isUsed(filePath, usedContent));
+
+const unusedImages = unusedMedia.filter((file) =>
+  [".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif"].includes(
+    path.extname(file).toLowerCase()
+  )
+);
+
+const unusedVideos = unusedMedia.filter((file) =>
+  [".mp4", ".mov", ".avi", ".m4v", ".webm"].includes(
+    path.extname(file).toLowerCase()
+  )
+);
+
 console.log("\n🧹 Unused Images:\n");
-unusedImages.forEach((img) => console.log(img));
+unusedImages.forEach((file) => console.log(file));
 
-console.log(`\nTotal unused: ${unusedImages.length}`);
+console.log("\n🎬 Unused Videos:\n");
+unusedVideos.forEach((file) => console.log(file));
 
-// Move unused images to backup
-console.log("\n📦 Moving unused images...\n");
+console.log(`\nTotal unused images: ${unusedImages.length}`);
+console.log(`Total unused videos: ${unusedVideos.length}`);
+console.log(`Total unused media: ${unusedMedia.length}`);
 
-unusedImages.forEach((imgPath) => {
-  const fileName = path.basename(imgPath);
-  const newPath = path.join(backupDir, fileName);
+if (unusedMedia.length === 0) {
+  console.log("\n✅ No unused media found.");
+  process.exit(0);
+}
 
+console.log("\n📦 Moving unused media to backup...\n");
+
+unusedMedia.forEach((filePath) => {
   try {
-    fs.renameSync(imgPath, newPath);
-    console.log(`✅ Moved: ${fileName}`);
+    moveToBackup(filePath);
+    console.log(`✅ Moved: ${filePath}`);
   } catch (err) {
-    console.error(`❌ Failed: ${fileName}`, err.message);
+    console.error(`❌ Failed: ${filePath}`, err.message);
   }
 });
 
-console.log(`\n🎉 Done! Images moved to: ${backupDir}`);
+console.log(`\n🎉 Done! Unused media moved to: ${backupDir}`);
