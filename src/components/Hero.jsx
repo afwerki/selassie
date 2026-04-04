@@ -8,9 +8,9 @@ import slide1 from "../assets/images/churchAtendes.JPG";
 import slide2 from "../assets/images/church7.JPG";
 import slide3 from "../assets/images/church9.JPG";
 
-import heroVideo1 from "../assets/videos/kids.MP4";
+import heroVideo1 from "../assets/videos/church_inside2.MP4";
 import heroVideo2 from "../assets/videos/church_inside2.MP4";
-import heroVideo3 from "../assets/videos/church_video.MP4";
+import heroVideo3 from "../assets/videos/church_inside2.MP4";
 
 const heroImages = [slide1, slide2, slide3];
 const heroVideos = [heroVideo1, heroVideo2, heroVideo3];
