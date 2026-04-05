@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import "../styling/home.css";
 
 import Theodros from "../assets/images/Theodros.JPG";
@@ -21,7 +22,7 @@ const clergyMembers = [
     verse: "“The Lord is my shepherd; I shall not want.”",
     reference: "Psalm 23:1",
   },
-   {
+  {
     id: "priest2",
     name: "Kesis Feseha",
     title: "Priest",
@@ -30,7 +31,7 @@ const clergyMembers = [
     verse: "“Let all that you do be done in love.”",
     reference: "1 Corinthians 16:14",
   },
-   {
+  {
     id: "priest3",
     name: "Kesis Kaleb",
     title: "Priest",
@@ -40,7 +41,7 @@ const clergyMembers = [
     reference: "1 Corinthians 16:14",
   },
   {
-    id: "priest3",
+    id: "priest4",
     name: "Kesis Theodros",
     title: "Priest",
     roleTag: "Supporting liturgy & teaching",
@@ -49,31 +50,13 @@ const clergyMembers = [
     reference: "1 Corinthians 16:14",
   },
   {
-    id: "priest4",
+    id: "priest5",
     name: "Deacon Yohannes",
     title: "Deacon",
     roleTag: "Supporting liturgy & teaching",
     image: yohannes,
     verse: "“Let all that you do be done in love.”",
     reference: "1 Corinthians 16:14",
-  },
-];
-
-const heroSlides = [
-  {
-    id: "slide-1",
-    title: "Faith",
-    subtitle: "Rooted in Orthodox worship and prayer",
-  },
-  {
-    id: "slide-2",
-    title: "Hope",
-    subtitle: "Growing together in grace and service",
-  },
-  {
-    id: "slide-3",
-    title: "Community",
-    subtitle: "A spiritual home for all generations",
   },
 ];
 
@@ -93,7 +76,11 @@ function IconCross() {
 
 function IconArrow() {
   return (
-    <svg className="home-ic home-ic-arrow" viewBox="0 0 24 24" aria-hidden="true">
+    <svg
+      className="home-ic home-ic-arrow"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
       <path d="M13 5l7 7-7 7-2.2-2.2 3.2-3.3H4v-3h10l-3.2-3.3L13 5z" />
     </svg>
   );
@@ -104,23 +91,62 @@ export default function Home() {
   const t = texts[lang] || texts.en;
 
   const [flippedId, setFlippedId] = useState(null);
-  const [missionExpanded, setMissionExpanded] = useState(false);
-  const [activeHeroSlide, setActiveHeroSlide] = useState(0);
+  const [mobileClergyIndex, setMobileClergyIndex] = useState(0);
+  const [mobileClergyFlipped, setMobileClergyFlipped] = useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveHeroSlide((prev) => (prev + 1) % heroSlides.length);
-    }, 3400);
+  const carouselMembers = useMemo(
+    () => [...clergyMembers, ...clergyMembers],
+    []
+  );
 
-    return () => clearInterval(timer);
-  }, []);
+  const activeMobileClergy = clergyMembers[mobileClergyIndex];
 
   const handleCardClick = (id) => {
     setFlippedId((current) => (current === id ? null : id));
   };
 
-  const toggleMission = () => {
-    setMissionExpanded((prev) => !prev);
+  const handleMobileClergyFlip = () => {
+    setMobileClergyFlipped((prev) => !prev);
+  };
+
+  const goToPrevClergy = () => {
+    setMobileClergyFlipped(false);
+    setMobileClergyIndex((prev) =>
+      prev === 0 ? clergyMembers.length - 1 : prev - 1
+    );
+  };
+
+  const goToNextClergy = () => {
+    setMobileClergyFlipped(false);
+    setMobileClergyIndex((prev) =>
+      prev === clergyMembers.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const goToMobileClergy = (index) => {
+    setMobileClergyFlipped(false);
+    setMobileClergyIndex(index);
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setMobileClergyFlipped(false);
+      setMobileClergyIndex((prev) =>
+        prev === clergyMembers.length - 1 ? 0 : prev + 1
+      );
+    }, 4200);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const scrollToSection = (sectionId) => {
+    const el = document.getElementById(sectionId);
+    if (!el) return;
+
+    el.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   return (
@@ -145,26 +171,28 @@ export default function Home() {
 
             <p className="home-hero-lead">
               {t.home?.welcomeP1 ||
-                "Welcome to Debre-Genet Holy Trinity Church in London, a spiritual home for the Ethiopian Orthodox community."}
-            </p>
-
-            <p className="home-hero-sublead">
-              {t.home?.welcomeP2 ||
-                "Whether you are a lifelong member of the Church or visiting for the first time, you are warmly welcomed and we are glad you are here."}
+                "Welcome to Debre-Genet Holy Trinity Church in London, a spiritual home for worship, prayer, and community."}
             </p>
 
             <div className="home-hero-actions">
-              <a href="/about" className="home-btn home-btn-primary">
-                <span>Learn More</span>
+              <Link to="/contact" className="home-btn home-btn-primary">
+                <span>Plan Your Visit</span>
                 <IconArrow />
-              </a>
+              </Link>
 
-              <a href="/contact" className="home-btn home-btn-secondary">
-                Contact Us
-              </a>
+              <button
+                type="button"
+                className="home-btn home-btn-secondary"
+                onClick={() => scrollToSection("clergy")}
+              >
+                Meet Our Clergy
+              </button>
             </div>
 
-            <div className="home-hero-stats" aria-label="Church highlights">
+            <div
+              className="home-hero-stats home-hero-stats--desktop"
+              aria-label="Church highlights"
+            >
               {stats.map((item) => (
                 <article key={item.id} className="home-stat-card">
                   <strong>{item.value}</strong>
@@ -175,54 +203,33 @@ export default function Home() {
           </div>
 
           <div className="home-hero-visual">
-            <div className="home-hero-card">
-              <div className="home-hero-card-top">
-                <span className="home-hero-badge">Faith • Hope • Community</span>
-              </div>
-
-              <div className="home-hero-slider">
-                {heroSlides.map((slide, index) => (
-                  <div
-                    key={slide.id}
-                    className={`home-hero-slide ${
-                      index === activeHeroSlide ? "is-active" : ""
-                    }`}
-                  >
-                    <div className="home-hero-slide-title">{slide.title}</div>
-                    <p>{slide.subtitle}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="home-hero-indicators">
-                {heroSlides.map((slide, index) => (
-                  <button
-                    key={slide.id}
-                    type="button"
-                    className={`home-hero-dot ${
-                      index === activeHeroSlide ? "is-active" : ""
-                    }`}
-                    onClick={() => setActiveHeroSlide(index)}
-                    aria-label={`Show ${slide.title}`}
-                  />
-                ))}
-              </div>
-
+            <div className="home-hero-image-card">
               <div className="home-hero-image-wrap">
                 <img
                   src={MissionImage}
-                  alt="Church mission"
+                  alt="Debre-Genet Holy Trinity Church"
                   className="home-hero-image"
                 />
                 <div className="home-hero-image-overlay" />
+              </div>
+
+              <div className="home-hero-image-content">
+                <span className="home-hero-image-chip">
+                  Faith • Prayer • Community
+                </span>
+                <h2>A spiritual home for worship and belonging</h2>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* MOVING CLERGY */}
-      <section className="home-clergy-feature home-load home-load-delay-2" id="clergy">
+      {/* CLERGY */}
+          {/* CLERGY */}
+      <section
+        className="home-clergy-feature home-load home-load-delay-2"
+        id="clergy"
+      >
         <div className="home-clergy-feature-shell">
           <div className="section-heading section-heading--center">
             <span className="section-chip">Clergy & service</span>
@@ -233,33 +240,45 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="home-clergy-scroller">
+          {/* DESKTOP / TABLET MARQUEE */}
+          <div className="home-clergy-scroller home-clergy-scroller--desktop">
             <div className="home-clergy-track">
-              {[...clergyMembers, ...clergyMembers].map((member, index) => {
+              {carouselMembers.map((member, index) => {
                 const uniqueId = `${member.id}-${index}`;
+                const isFlipped = flippedId === uniqueId;
+
                 return (
                   <button
                     key={uniqueId}
                     type="button"
                     className={`home-clergy-premium-card ${
-                      member.id === "priest1" ? "home-clergy-premium-card--lead" : ""
-                    }`}
+                      member.id === "priest1"
+                        ? "home-clergy-premium-card--lead"
+                        : ""
+                    } ${isFlipped ? "is-card-flipped" : ""}`}
                     onClick={() => handleCardClick(uniqueId)}
+                    aria-pressed={isFlipped}
+                    aria-label={`View details for ${member.name}`}
                   >
                     <div
                       className={`home-clergy-premium-inner ${
-                        flippedId === uniqueId ? "is-flipped" : ""
+                        isFlipped ? "is-flipped" : ""
                       }`}
                     >
                       <div className="home-clergy-premium-face home-clergy-premium-face--front">
-                        <div className="home-clergy-image-wrap">
+                        <div className="home-clergy-image-wrap-card">
                           <img src={member.image} alt={member.name} />
                         </div>
 
                         <div className="home-clergy-premium-content">
-                          <span className="home-clergy-mini-chip">{member.title}</span>
+                          <span className="home-clergy-mini-chip">
+                            {member.title}
+                          </span>
                           <h3>{member.name}</h3>
                           <p className="home-clergy-role">{member.roleTag}</p>
+                          <span className="home-clergy-tap-hint">
+                            Tap to read more
+                          </span>
                         </div>
                       </div>
 
@@ -274,11 +293,94 @@ export default function Home() {
                           <strong>{member.name}</strong>
                           <span>{member.title}</span>
                         </div>
+
+                        <span className="home-clergy-tap-hint home-clergy-tap-hint--back">
+                          Tap to return
+                        </span>
                       </div>
                     </div>
                   </button>
                 );
               })}
+            </div>
+          </div>
+
+          {/* MOBILE FEATURED CAROUSEL */}
+          <div className="home-mobile-clergy-carousel">
+            <button
+              type="button"
+              className={`home-mobile-clergy-card ${
+                mobileClergyFlipped ? "is-card-flipped" : ""
+              }`}
+              onClick={handleMobileClergyFlip}
+              aria-pressed={mobileClergyFlipped}
+              aria-label={`View details for ${activeMobileClergy.name}`}
+            >
+              <div
+                className={`home-clergy-premium-inner ${
+                  mobileClergyFlipped ? "is-flipped" : ""
+                }`}
+              >
+                <div className="home-clergy-premium-face home-clergy-premium-face--front">
+                  <div className="home-clergy-image-wrap-card home-clergy-image-wrap-card--mobile">
+                    <img
+                      src={activeMobileClergy.image}
+                      alt={activeMobileClergy.name}
+                    />
+                  </div>
+
+                  <div className="home-clergy-premium-content home-clergy-premium-content--mobile">
+                    <span className="home-clergy-mini-chip">
+                      {activeMobileClergy.title}
+                    </span>
+                    <h3>{activeMobileClergy.name}</h3>
+                    <p className="home-clergy-role">
+                      {activeMobileClergy.roleTag}
+                    </p>
+                    <span className="home-clergy-tap-hint">
+                      Tap to read more
+                    </span>
+                  </div>
+                </div>
+
+                <div className="home-clergy-premium-face home-clergy-premium-face--back">
+                  <span className="home-clergy-back-kicker">
+                    Favourite Scripture
+                  </span>
+                  <p className="home-clergy-back-verse">
+                    {activeMobileClergy.verse}
+                  </p>
+                  <p className="home-clergy-back-ref">
+                    {activeMobileClergy.reference}
+                  </p>
+
+                  <div className="home-clergy-back-meta">
+                    <strong>{activeMobileClergy.name}</strong>
+                    <span>{activeMobileClergy.title}</span>
+                  </div>
+
+                  <span className="home-clergy-tap-hint home-clergy-tap-hint--back">
+                    Tap to return
+                  </span>
+                </div>
+              </div>
+            </button>
+
+            <div
+              className="home-mobile-clergy-dots"
+              aria-label="Clergy carousel navigation"
+            >
+              {clergyMembers.map((member, index) => (
+                <button
+                  key={member.id}
+                  type="button"
+                  className={`home-mobile-clergy-dot ${
+                    index === mobileClergyIndex ? "is-active" : ""
+                  }`}
+                  onClick={() => goToMobileClergy(index)}
+                  aria-label={`Show ${member.name}`}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -293,19 +395,20 @@ export default function Home() {
             </span>
             <h2>Come worship, connect, and grow with us</h2>
             <p>
-              Whether you are visiting for the first time or looking for a
-              spiritual home, we would be glad to welcome you.
+              We would be glad to welcome you whether you are visiting for the
+              first time or looking for a spiritual home.
             </p>
           </div>
 
           <div className="home-cta-actions">
-            <a href="/contact" className="home-btn home-btn-primary">
+            <Link to="/contact" className="home-btn home-btn-primary">
               <span>Plan Your Visit</span>
               <IconArrow />
-            </a>
-            <a href="/about" className="home-btn home-btn-ghost">
+            </Link>
+
+            <Link to="/about" className="home-btn home-btn-ghost">
               Explore More
-            </a>
+            </Link>
           </div>
         </div>
       </section>
