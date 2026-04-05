@@ -73,7 +73,7 @@ function Navbar() {
             </span>
             <span className="logo-subtext">
               {lang === "am"
-                ? "እምነት • ተስፋ • ማህበረሰብ"
+                ? "እምነት • ተስፋ • ማህበራዊ ህይዎት"
                 : "Faith • Hope • Community"}
             </span>
           </div>

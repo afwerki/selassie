@@ -33,7 +33,6 @@
 /* =========================
    GLOBAL NOTE
 ========================= */
-/* Add space for the fixed navbar */
 body {
   padding-top: 110px;
 }
@@ -87,7 +86,7 @@ body {
   border: 1px solid var(--nav-border);
 
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,250,243,0.92)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 250, 243, 0.92)),
     var(--nav-bg);
 
   backdrop-filter: blur(18px);
@@ -105,10 +104,10 @@ body {
   background:
     linear-gradient(
       90deg,
-      rgba(255,255,255,0.26),
+      rgba(255, 255, 255, 0.26),
       transparent 18%,
       transparent 82%,
-      rgba(255,255,255,0.14)
+      rgba(255, 255, 255, 0.14)
     );
 }
 
@@ -118,9 +117,12 @@ body {
   inset: 1px;
   border-radius: inherit;
   pointer-events: none;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
+/* =========================
+   LOGO AREA
+========================= */
 /* =========================
    LOGO AREA
 ========================= */
@@ -129,52 +131,57 @@ body {
   z-index: 2;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   min-width: 0;
-  max-width: 40%;
+  max-width: 44%;
   text-decoration: none;
   flex: 0 1 auto;
 }
 
-/* Change logo size here later */
 .logo-shell {
-  width: 82px;
+  width: 110px;
   height: 82px;
   flex-shrink: 0;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   border-radius: 24px;
 
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,242,230,0.98));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(250, 242, 230, 0.98)
+  );
   border: 1px solid rgba(245, 166, 35, 0.22);
 
   box-shadow:
     0 10px 24px rgba(70, 44, 18, 0.08),
-    inset 0 1px 0 rgba(255,255,255,0.95);
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
-/* Change actual image sizing here later */
 .logo-image {
-  width: 88%;
-  height: 88%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   display: block;
   filter: saturate(1.04) contrast(1.02);
+  transform: none;
 }
 
 .logo-copy {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   min-width: 0;
   overflow: hidden;
+  padding-right: 4px;
 }
 
 .logo-text {
   font-family: "Playfair Display", serif;
-  font-size: clamp(1.4rem, 1.8vw, 2.1rem);
-  line-height: 0.98;
+  font-size: clamp(1.38rem, 1.8vw, 2.1rem);
+  line-height: 1.02;
   font-weight: 800;
   letter-spacing: 0.01em;
   color: var(--nav-text);
@@ -185,7 +192,7 @@ body {
 }
 
 .logo-subtext {
-  margin-top: 6px;
+  margin-top: 7px;
   font-family: "Manrope", sans-serif;
   font-size: 0.76rem;
   line-height: 1.1;
@@ -212,7 +219,6 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Manrope", sans-serif;
-
   flex: 1 1 auto;
   min-width: 0;
 }
@@ -231,7 +237,6 @@ body {
   min-height: 44px;
   padding: 11px 14px;
   border-radius: 999px;
-
   text-decoration: none;
   color: var(--nav-text);
   font-size: 0.96rem;
@@ -239,7 +244,6 @@ body {
   font-weight: 700;
   letter-spacing: -0.01em;
   white-space: nowrap;
-
   transition:
     background-color 0.22s ease,
     color 0.22s ease,
@@ -275,7 +279,7 @@ body {
    CTA / LANGUAGE BUTTON
 ========================= */
 .nav-actions {
-  margin-left: 4px;
+  margin-left: 6px;
   flex-shrink: 0;
 }
 
@@ -297,7 +301,7 @@ body {
   background: linear-gradient(135deg, #ffbf47, #f5a623);
   box-shadow:
     0 10px 24px rgba(245, 166, 35, 0.24),
-    inset 0 1px 0 rgba(255,255,255,0.45);
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
 
   transition:
     transform 0.22s ease,
@@ -309,7 +313,7 @@ body {
   transform: translateY(-1px);
   box-shadow:
     0 14px 30px rgba(245, 166, 35, 0.28),
-    inset 0 1px 0 rgba(255,255,255,0.48);
+    inset 0 1px 0 rgba(255, 255, 255, 0.48);
   filter: brightness(1.02);
 }
 
@@ -372,18 +376,22 @@ body {
     gap: 12px;
   }
 
-  .logo-shell {
-    width: 74px;
-    height: 74px;
-    border-radius: 22px;
+.logo-shell {
+  width: 98px;
+  height: 74px;
+  border-radius: 22px;
+}
+  .logo-image {
+    transform: scale(1.08);
   }
 
   .navbar-logo {
-    max-width: 37%;
+    max-width: 39%;
+    gap: 14px;
   }
 
   .logo-text {
-    font-size: 1.75rem;
+    font-size: 1.72rem;
   }
 
   .logo-subtext {
@@ -414,18 +422,22 @@ body {
   }
 
   .navbar-logo {
-    max-width: 34%;
+    max-width: 36%;
     gap: 12px;
   }
 
-  .logo-shell {
-    width: 68px;
-    height: 68px;
-    border-radius: 20px;
+.logo-shell {
+  width: 90px;
+  height: 68px;
+  border-radius: 20px;
+}
+
+  .logo-image {
+    transform: scale(1.1);
   }
 
   .logo-text {
-    font-size: 1.46rem;
+    font-size: 1.42rem;
   }
 
   .logo-subtext {
@@ -471,28 +483,33 @@ body {
   .navbar-inner {
     min-height: 78px;
     padding: 0 14px;
+    gap: 12px;
   }
 
   .navbar-logo {
     flex: 1 1 auto;
     max-width: calc(100% - 64px);
+    gap: 12px;
   }
 
   .logo-subtext {
     display: none;
   }
 
-  .logo-shell {
-    width: 64px;
-    height: 64px;
-    border-radius: 18px;
+ .logo-shell {
+  width: 84px;
+  height: 64px;
+  border-radius: 18px;
+}
+  .logo-image {
+    transform: scale(1.1);
   }
 
   .logo-text {
-    font-size: 1.15rem;
+    font-size: 1.08rem;
     white-space: normal;
-    line-height: 1.02;
-    max-width: 240px;
+    line-height: 1.08;
+    max-width: 230px;
   }
 
   .navbar-links {
@@ -510,7 +527,7 @@ body {
     border-radius: 24px;
     border: 1px solid var(--nav-border);
     background:
-      linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,251,245,0.98)),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 251, 245, 0.98)),
       var(--nav-bg-strong);
     box-shadow: 0 22px 50px rgba(70, 44, 18, 0.12);
 
@@ -582,17 +599,28 @@ body {
     min-height: 72px;
     padding: 0 12px;
     border-radius: 24px;
+    gap: 10px;
   }
 
-  .logo-shell {
-    width: 58px;
-    height: 58px;
-    border-radius: 16px;
+  .navbar-logo {
+    gap: 10px;
+    max-width: calc(100% - 58px);
+  }
+
+ .logo-shell {
+  width: 76px;
+  height: 58px;
+  border-radius: 16px;
+}
+
+  .logo-image {
+    transform: scale(1.12);
   }
 
   .logo-text {
-    font-size: 1rem;
-    max-width: 175px;
+    font-size: 0.98rem;
+    max-width: 170px;
+    line-height: 1.08;
   }
 
   .navbar-toggle {
@@ -619,15 +647,30 @@ body {
    VERY SMALL MOBILE
 ========================= */
 @media (max-width: 430px) {
-  .logo-shell {
-    width: 52px;
-    height: 52px;
-    border-radius: 15px;
+  .navbar-inner {
+    min-height: 70px;
+    padding: 0 10px;
+  }
+
+  .navbar-logo {
+    gap: 9px;
+    max-width: calc(100% - 54px);
+  }
+
+.logo-shell {
+  width: 68px;
+  height: 52px;
+  border-radius: 15px;
+}
+
+  .logo-image {
+    transform: scale(1.12);
   }
 
   .logo-text {
-    font-size: 0.87rem;
-    max-width: 138px;
+    font-size: 0.86rem;
+    max-width: 132px;
+    line-height: 1.06;
   }
 
   .navbar-links {
