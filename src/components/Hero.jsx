@@ -25,7 +25,7 @@ function Hero() {
     const defaultSlides = [
       {
         eyebrow: "Debre-Genet Holy Trinity",
-        title: "London D.G. Holy Trinity Ethiopian Orthodox Tewahedo Church",
+        title: "Debre-Genet Holy Trinity",
         mobileTitle: "Debre-Genet Holy Trinity",
         highlightWords: ["Holy Trinity"],
         subtitle:
@@ -46,7 +46,7 @@ function Hero() {
         subtitle:
           "Preserving the timeless teachings of the Orthodox faith through worship, prayer, and spiritual community.",
         mobileSubtitle:
-          "Preserving the timeless teachings of the Orthodox faith.",
+          "Preserving the timeless teachings of the Orthodox faith through worship, prayer, and spiritual community.",
         cta: "Upcoming Events",
         href: "/#events",
         image: heroImages[1],
@@ -55,13 +55,13 @@ function Hero() {
       },
       {
         eyebrow: "Visit • Worship • Connect",
-        title: "Experience Worship and Church Family Life",
+        title: "Worship and Church Family Life",
         mobileTitle: "Worship and Church Family Life",
         highlightWords: ["Worship", "Church Family"],
         subtitle:
           "Explore ministries, events, and meaningful ways to connect, serve, and grow together in Christ.",
         mobileSubtitle:
-          "Explore ministries, events, and ways to connect, serve, and grow in Christ.",
+          "Explore ministries, events, and meaningful ways to connect, serve, and grow together in Christ.",
         cta: "Watch Sermons",
         href: "/#sermons",
         image: heroImages[2],
@@ -224,54 +224,6 @@ function Hero() {
 
       <div className="hero__shell">
         <div className="hero__layout">
-          <div className="hero__content">
-            <div className="heroText">
-              <div className="heroText__eyebrow heroAnim heroAnim--1 amharic-fix">
-                {activeSlide?.eyebrow}
-              </div>
-
-              <div className="heroText__titleWrap">
-                <h1 className="heroText__title heroAnim heroAnim--2 amharic-fix">
-                  {renderTitle(currentTitle, activeSlide?.highlightWords)}
-                </h1>
-              </div>
-
-              <div className="heroText__subtitleWrap">
-                <p className="heroText__subtitle heroAnim heroAnim--3 amharic-fix">
-                  {currentSubtitle}
-                </p>
-              </div>
-
-              <div className="heroText__actions heroAnim heroAnim--4">
-                <Link to={primaryTo} className="heroBtn heroBtn--primary">
-                  {activeSlide?.cta}
-                  <span aria-hidden="true">→</span>
-                </Link>
-
-                <Link to={secondaryTo} className="heroBtn heroBtn--ghost">
-                  {t.hero?.btnSecondary || "Plan Your Visit"}
-                </Link>
-              </div>
-
-              <div className="heroStats heroAnim heroAnim--5" aria-label="Hero highlights">
-                <div className="heroStats__item">
-                  <strong>{lang === "am" ? "ጸሎት" : "Prayer"}</strong>
-                  <span>{lang === "am" ? "መንፈሳዊ ሕይወት" : "Spiritual life"}</span>
-                </div>
-
-                <div className="heroStats__item">
-                  <strong>{lang === "am" ? "ስብከት" : "Sermons"}</strong>
-                  <span>{lang === "am" ? "ትምህርት እና እምነት" : "Teaching & faith"}</span>
-                </div>
-
-                <div className="heroStats__item">
-                  <strong>{lang === "am" ? "ማህበረሰብ" : "Community"}</strong>
-                  <span>{lang === "am" ? "አንድነት እና እድገት" : "Unity & growth"}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div className="hero__media">
             <div className="hero__mediaStage">
               <div className="hero__mediaGlow" aria-hidden="true" />
@@ -316,8 +268,8 @@ function Hero() {
                 })}
               </div>
 
-              <div className="hero__mobileGlass">
-                <div className="heroText heroText--mobileGlass">
+              <div className="hero__overlayContent">
+                <div className="heroText heroText--overlay">
                   <div className="heroText__eyebrow amharic-fix">
                     {activeSlide?.eyebrow}
                   </div>
