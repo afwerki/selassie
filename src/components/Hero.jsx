@@ -8,12 +8,13 @@ import slide1 from "../assets/images/churchAtendes.JPG";
 import slide2 from "../assets/images/church7.JPG";
 import slide3 from "../assets/images/church9.JPG";
 
-import heroVideo1 from "../assets/videos/church_inside2.MP4";
+import heroVideo1 from "../assets/videos/kids.mov";
 import heroVideo2 from "../assets/videos/church_inside2.MP4";
-import heroVideo3 from "../assets/videos/church_inside2.MP4";
+import heroVideo3 from "../assets/videos/prists.mov";
 
 const heroImages = [slide1, slide2, slide3];
 const heroVideos = [heroVideo1, heroVideo2, heroVideo3];
+const IMAGE_SLIDE_DURATION = 7000;
 
 function Hero() {
   const { lang } = useLanguage();
@@ -85,7 +86,6 @@ function Hero() {
   }, [t]);
 
   const [active, setActive] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const [touchStartX, setTouchStartX] = useState(null);
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -102,14 +102,56 @@ function Hero() {
   const goPrev = () => setActive((prev) => (prev - 1 + total) % total);
 
   useEffect(() => {
-    if (isPaused || total <= 1) return;
+    if (total <= 1) return;
 
-    const timer = setInterval(() => {
-      setActive((prev) => (prev + 1) % total);
-    }, 7000);
+    const activeVideo = videoRefs.current[active];
+    let timerId = null;
+    let endedHandler = null;
+    let loadedMetadataHandler = null;
 
-    return () => clearInterval(timer);
-  }, [isPaused, total]);
+    if (activeSlide?.video && activeVideo) {
+      endedHandler = () => {
+        setActive((prev) => (prev + 1) % total);
+      };
+
+      activeVideo.addEventListener("ended", endedHandler);
+
+      const setupFallback = () => {
+        if (!Number.isFinite(activeVideo.duration) || activeVideo.duration <= 0) {
+          timerId = window.setTimeout(() => {
+            setActive((prev) => (prev + 1) % total);
+          }, IMAGE_SLIDE_DURATION);
+        }
+      };
+
+      if (activeVideo.readyState >= 1) {
+        setupFallback();
+      } else {
+        loadedMetadataHandler = () => {
+          setupFallback();
+        };
+        activeVideo.addEventListener("loadedmetadata", loadedMetadataHandler);
+      }
+    } else {
+      timerId = window.setTimeout(() => {
+        setActive((prev) => (prev + 1) % total);
+      }, IMAGE_SLIDE_DURATION);
+    }
+
+    return () => {
+      if (timerId) {
+        window.clearTimeout(timerId);
+      }
+
+      if (activeVideo && endedHandler) {
+        activeVideo.removeEventListener("ended", endedHandler);
+      }
+
+      if (activeVideo && loadedMetadataHandler) {
+        activeVideo.removeEventListener("loadedmetadata", loadedMetadataHandler);
+      }
+    };
+  }, [active, activeSlide, total]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -127,6 +169,12 @@ function Hero() {
       if (!videoEl) return;
 
       if (index === active) {
+        try {
+          videoEl.currentTime = 0;
+        } catch {
+          // ignore
+        }
+
         const playPromise = videoEl.play();
         if (playPromise && typeof playPromise.catch === "function") {
           playPromise.catch(() => {});
@@ -166,7 +214,9 @@ function Hero() {
   const secondaryTo = "/#contact";
 
   const currentTitle =
-    isMobile && activeSlide?.mobileTitle ? activeSlide.mobileTitle : activeSlide?.title;
+    isMobile && activeSlide?.mobileTitle
+      ? activeSlide.mobileTitle
+      : activeSlide?.title;
 
   const currentSubtitle =
     isMobile && activeSlide?.mobileSubtitle
@@ -213,8 +263,6 @@ function Hero() {
       id="home"
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       aria-label="Church hero section"
@@ -248,7 +296,6 @@ function Hero() {
                           className="hero__video"
                           muted
                           playsInline
-                          loop
                           preload="metadata"
                           poster={slide.image}
                         >
@@ -278,7 +325,9 @@ function Hero() {
                     {renderTitle(currentTitle, activeSlide?.highlightWords)}
                   </h1>
 
-                  <p className="heroText__subtitle amharic-fix">{currentSubtitle}</p>
+                  <p className="heroText__subtitle amharic-fix">
+                    {currentSubtitle}
+                  </p>
 
                   <div className="heroText__actions">
                     <Link to={primaryTo} className="heroBtn heroBtn--primary">
