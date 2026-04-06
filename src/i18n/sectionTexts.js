@@ -5,7 +5,7 @@ export const sectionTexts = {
    sermons: {
   sectionTitle: "Teachings & Sermons",
   sectionIntro:
-    "Grow deeper in faith through sermons, reading materials, and helpful questions and answers from Selassie Ethiopian Orthodox Church.",
+    "Grow deeper in faith through sermons, reading materials, and helpful questions and answers from Debre-Genet Holy Trinity Ethiopian Orthodox Church.",
 
   tabs: {
     videos: "Videos",

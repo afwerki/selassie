@@ -6,11 +6,21 @@ import { sectionTexts } from "../i18n/sectionTexts";
 const EVENTS_FEED_URL =
   "https://dght.churchsuite.com/-/calendar/4b62ba5d-f1b0-45e3-86bc-7ac1e497980b/json";
 
+const EXCLUDED_CATEGORY_IDS = [13];
+
 const NEXT_EVENT_POPUP_STORAGE_KEY = "dght-next-event-popup-cooldown-v1";
 const POPUP_COOLDOWN_MS = 30 * 60 * 1000;
 
 function stripHtml(html = "") {
-  return String(html).replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  return String(html)
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/\u00a0/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 function parseDateSafe(value) {
@@ -146,6 +156,34 @@ function getMonthGridDates(monthDate) {
   return dates;
 }
 
+function isDisplayableStatus(status) {
+  if (!status) return true;
+
+  const safeStatus = String(status).trim().toLowerCase();
+  return ["confirmed", "published", "active", "live"].includes(safeStatus);
+}
+
+function looksLikeSermonEvent(event) {
+  const categoryId = Number(event?.category_id);
+  if (EXCLUDED_CATEGORY_IDS.includes(categoryId)) return true;
+
+  const name = String(event?.name || "").toLowerCase().trim();
+  const description = stripHtml(event?.description || "").toLowerCase().trim();
+
+  const hasStructuredSermonFields =
+    description.includes("speaker:") ||
+    description.includes("youtube:") ||
+    description.includes("series:") ||
+    description.includes("language:");
+
+  const sermonishName =
+    name === "sermon" ||
+    name.includes("sermon") ||
+    name.includes("ስብከት");
+
+  return hasStructuredSermonFields || sermonishName;
+}
+
 function normalizeEvent(event) {
   return {
     ...event,
@@ -154,13 +192,6 @@ function normalizeEvent(event) {
     dayKey: getDayKeyFromEvent(event),
     startsAtDate: parseDateSafe(event?.starts_at),
   };
-}
-
-function isDisplayableStatus(status) {
-  if (!status) return true;
-
-  const safeStatus = String(status).trim().toLowerCase();
-  return ["confirmed", "published", "active", "live"].includes(safeStatus);
 }
 
 function EventDetailsCard({ event, lang, onClose, variant = "modal" }) {
@@ -310,8 +341,14 @@ function Events() {
         const data = await response.json();
         const incomingEvents = Array.isArray(data?.events) ? data.events : [];
 
+        const filteredIncomingEvents = incomingEvents.filter((event) => {
+          if (!isDisplayableStatus(event?.status)) return false;
+          if (looksLikeSermonEvent(event)) return false;
+          return true;
+        });
+
         if (!ignore) {
-          setEvents(incomingEvents.map(normalizeEvent));
+          setEvents(filteredIncomingEvents.map(normalizeEvent));
         }
       } catch (err) {
         if (!ignore) {
@@ -334,7 +371,6 @@ function Events() {
   const upcomingEvents = useMemo(() => {
     return [...events]
       .filter((event) => event?.startsAtDate)
-      .filter((event) => isDisplayableStatus(event?.status))
       .filter(isUpcomingEvent)
       .sort(sortByStartDateAsc);
   }, [events]);
@@ -512,8 +548,8 @@ function Events() {
 
               <p className="events-calendar-topbar-text">
                 {lang === "am"
-                  ? "ቀኑን ይጫኑ እና የፕሮግራሙን ዝርዝር በሚያምር ካርድ ይመልከቱ።"
-                  : "Click a date to open a beautifully detailed event card. Search events quickly below."}
+                  ? "ቀኑን ይጫኑ እና የፕሮግራሙን ዝርዝር ይመልከቱ።"
+                  : "Click a date to open detailed event card. Search events quickly below."}
               </p>
             </div>
 

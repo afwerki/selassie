@@ -8,6 +8,12 @@ import VideosTab from "./Sermons/VideosTab";
 import TeachingsTab from "./Sermons/TeachingsTab";
 import QATab from "./Sermons/QATab";
 
+const CHURCHSUITE_SERMONS_FEED_URL =
+  "https://dght.churchsuite.com/-/calendar/4b62ba5d-f1b0-45e3-86bc-7ac1e497980b/json";
+
+const CHURCHSUITE_VIDEO_CATEGORY_ID = 13;
+const CHURCHSUITE_READING_CATEGORY_ID = 14;
+
 const trackEvent = (action, params = {}) => {
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
     window.gtag("event", action, params);
@@ -19,6 +25,196 @@ const YT_EMBED = (id) =>
 
 const DEFAULT_LATEST_VIDEOS = 6;
 const DEFAULT_LATEST_READING = 6;
+
+function normalizeText(value) {
+  return (value || "").toString().trim();
+}
+
+function htmlToPlainText(html = "") {
+  if (!html) return "";
+
+  try {
+    const withBreaks = String(html)
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/p>/gi, "\n")
+      .replace(/<\/div>/gi, "\n")
+      .replace(/<\/li>/gi, "\n")
+      .replace(/&amp;/gi, "&");
+
+    if (typeof window !== "undefined" && window.DOMParser) {
+      const parser = new window.DOMParser();
+      const doc = parser.parseFromString(withBreaks, "text/html");
+      return (doc.body.textContent || "")
+        .replace(/\u00a0/g, " ")
+        .replace(/\r/g, "")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+    }
+
+    return withBreaks.replace(/<[^>]*>/g, "").trim();
+  } catch {
+    return String(html).replace(/<[^>]*>/g, "").trim();
+  }
+}
+
+function extractField(text = "", label = "") {
+  if (!text || !label) return "";
+
+  const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`^\\s*${escapedLabel}\\s*:\\s*(.+)\\s*$`, "im");
+  const match = text.match(regex);
+
+  return match?.[1]?.trim() || "";
+}
+
+function extractYoutubeId(value = "") {
+  if (!value) return "";
+
+  const raw = String(value).trim();
+
+  const shortMatch = raw.match(/youtu\.be\/([a-zA-Z0-9_-]{6,})/);
+  if (shortMatch?.[1]) return shortMatch[1];
+
+  const embedMatch = raw.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{6,})/);
+  if (embedMatch?.[1]) return embedMatch[1];
+
+  try {
+    const url = new URL(raw);
+
+    if (url.hostname.includes("youtu.be")) {
+      return url.pathname.replace("/", "").trim();
+    }
+
+    if (url.hostname.includes("youtube.com")) {
+      const v = url.searchParams.get("v");
+      if (v) return v.trim();
+
+      const parts = url.pathname.split("/").filter(Boolean);
+      const embedIndex = parts.findIndex((part) => part === "embed");
+      if (embedIndex >= 0 && parts[embedIndex + 1]) {
+        return parts[embedIndex + 1].trim();
+      }
+    }
+  } catch {
+    const fallbackMatch = raw.match(/[?&]v=([a-zA-Z0-9_-]{6,})/);
+    if (fallbackMatch?.[1]) return fallbackMatch[1];
+  }
+
+  return "";
+}
+
+function buildYoutubeThumbnail(youtubeId = "") {
+  if (!youtubeId) return "";
+  return `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
+}
+
+function splitTags(value = "") {
+  if (!value) return [];
+  return value
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function buildExcerptFromDescription(description = "") {
+  const plain = htmlToPlainText(description);
+  if (!plain) return "";
+
+  const lines = plain
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const explicitExcerpt = extractField(plain, "Excerpt");
+  if (explicitExcerpt) return explicitExcerpt;
+
+  const filtered = lines.filter((line) => {
+    const lower = line.toLowerCase();
+    return !(
+      lower.startsWith("speaker:") ||
+      lower.startsWith("author:") ||
+      lower.startsWith("series:") ||
+      lower.startsWith("youtube:") ||
+      lower.startsWith("pdf:") ||
+      lower.startsWith("tags:") ||
+      lower.startsWith("language:") ||
+      lower.startsWith("excerpt:")
+    );
+  });
+
+  return filtered.join(" ").replace(/\s+/g, " ").trim();
+}
+
+function mapChurchSuiteEventToVideo(event) {
+  const plainDescription = htmlToPlainText(event?.description || "");
+  const speaker = extractField(plainDescription, "Speaker");
+  const series = extractField(plainDescription, "Series");
+  const youtubeUrl = extractField(plainDescription, "YouTube");
+  const tagsValue = extractField(plainDescription, "Tags");
+  const languageValue = extractField(plainDescription, "Language");
+
+  const youtubeId = extractYoutubeId(youtubeUrl);
+  const topicTags = splitTags(tagsValue);
+
+  const fallbackThumbnail =
+    event?.image?.large ||
+    event?.image?.medium ||
+    event?.image?.small ||
+    event?.image?.thumbnail ||
+    buildYoutubeThumbnail(youtubeId);
+
+  return {
+    _id: event?.identifier || `churchsuite-video-${event?.id || Math.random()}`,
+    _createdAt: event?.starts_at || "",
+    title: normalizeText(event?.name),
+    description: plainDescription,
+    series: normalizeText(series),
+    speaker: normalizeText(speaker),
+    topicTags,
+    publishedAt: event?.starts_at || "",
+    isFeatured: false,
+    youtubeId,
+    thumbnailUrl: fallbackThumbnail || "",
+    language: normalizeText(languageValue),
+    churchSuiteUrl: event?.url || "",
+  };
+}
+
+function mapChurchSuiteEventToTeaching(event) {
+  const plainDescription = htmlToPlainText(event?.description || "");
+  const author =
+    extractField(plainDescription, "Author") ||
+    extractField(plainDescription, "Speaker");
+  const series = extractField(plainDescription, "Series");
+  const pdfUrl = extractField(plainDescription, "PDF");
+  const tagsValue = extractField(plainDescription, "Tags");
+  const languageValue = extractField(plainDescription, "Language");
+  const excerpt = buildExcerptFromDescription(plainDescription);
+
+  const heroImageUrl =
+    event?.image?.large ||
+    event?.image?.medium ||
+    event?.image?.small ||
+    event?.image?.thumbnail ||
+    "";
+
+  return {
+    _id: event?.identifier || `churchsuite-reading-${event?.id || Math.random()}`,
+    _createdAt: event?.starts_at || "",
+    title: normalizeText(event?.name),
+    excerpt: normalizeText(excerpt),
+    description: plainDescription,
+    series: normalizeText(series),
+    author: normalizeText(author),
+    topicTags: splitTags(tagsValue),
+    publishedAt: event?.starts_at || "",
+    isFeatured: false,
+    pdfUrl: normalizeText(pdfUrl),
+    heroImageUrl,
+    language: normalizeText(languageValue),
+    churchSuiteUrl: event?.url || "",
+  };
+}
 
 export default function Sermons() {
   const { lang } = useLanguage();
@@ -43,11 +239,14 @@ export default function Sermons() {
   const formatDate = (iso) => {
     if (!iso) return "";
     try {
-      return new Date(iso).toLocaleDateString(lang === "am" ? "am-ET" : "en-GB", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
+      return new Date(iso).toLocaleDateString(
+        lang === "am" ? "am-ET" : "en-GB",
+        {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }
+      );
     } catch {
       return "";
     }
@@ -56,34 +255,8 @@ export default function Sermons() {
   useEffect(() => {
     let isMounted = true;
 
-    const query = `
+    const sanityQuery = `
       {
-        "videos": *[_type == "sermonVideo"] | order(coalesce(publishedAt, _createdAt) desc) {
-          _id,
-          _createdAt,
-          title,
-          description,
-          series,
-          speaker,
-          topicTags,
-          publishedAt,
-          isFeatured,
-          youtubeId,
-          "thumbnailUrl": thumbnail.asset->url
-        },
-        "teachings": *[_type == "writtenTeaching"] | order(coalesce(publishedAt, _createdAt) desc) {
-          _id,
-          _createdAt,
-          title,
-          excerpt,
-          series,
-          author,
-          topicTags,
-          publishedAt,
-          isFeatured,
-          "pdfUrl": pdfFile.asset->url,
-          "heroImageUrl": heroImage.asset->url
-        },
         "qaItems": *[_type == "sermonQa" || _type == "churchQa"] | order(coalesce(orderRank, _createdAt) asc) {
           _id,
           question,
@@ -94,19 +267,45 @@ export default function Sermons() {
       }
     `;
 
-    setLoadingContent(true);
+    async function loadContent() {
+      setLoadingContent(true);
 
-    client
-      .fetch(query)
-      .then((res) => {
+      try {
+        const [churchSuiteRes, sanityRes] = await Promise.all([
+          fetch(CHURCHSUITE_SERMONS_FEED_URL).then((res) => {
+            if (!res.ok) {
+              throw new Error(`ChurchSuite fetch failed with status ${res.status}`);
+            }
+            return res.json();
+          }),
+          client.fetch(sanityQuery),
+        ]);
+
         if (!isMounted) return;
 
-        const safeVideos = Array.isArray(res?.videos) ? res.videos : [];
-        const safeTeachings = Array.isArray(res?.teachings) ? res.teachings : [];
+        const churchSuiteEvents = Array.isArray(churchSuiteRes?.events)
+          ? churchSuiteRes.events
+          : [];
+
+        const churchSuiteVideoEvents = churchSuiteEvents.filter(
+          (event) => Number(event?.category_id) === CHURCHSUITE_VIDEO_CATEGORY_ID
+        );
+
+        const churchSuiteReadingEvents = churchSuiteEvents.filter(
+          (event) => Number(event?.category_id) === CHURCHSUITE_READING_CATEGORY_ID
+        );
+
+        const churchSuiteVideos = churchSuiteVideoEvents
+          .map(mapChurchSuiteEventToVideo)
+          .filter((item) => item.youtubeId);
+
+        const churchSuiteTeachings = churchSuiteReadingEvents
+          .map(mapChurchSuiteEventToTeaching)
+          .filter((item) => item.pdfUrl);
 
         const safeQa =
-          Array.isArray(res?.qaItems) && res.qaItems.length > 0
-            ? res.qaItems.map((item, index) => ({
+          Array.isArray(sanityRes?.qaItems) && sanityRes.qaItems.length > 0
+            ? sanityRes.qaItems.map((item, index) => ({
                 id: item._id || `qa-${index}`,
                 question: item.question || "",
                 answer: item.answer || "",
@@ -115,20 +314,21 @@ export default function Sermons() {
               }))
             : [];
 
-        setVideos(safeVideos);
-        setTeachings(safeTeachings);
+        setVideos(churchSuiteVideos);
+        setTeachings(churchSuiteTeachings);
         setQaItems(safeQa);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error fetching sermons content:", err);
         if (!isMounted) return;
         setVideos([]);
         setTeachings([]);
         setQaItems([]);
-      })
-      .finally(() => {
+      } finally {
         if (isMounted) setLoadingContent(false);
-      });
+      }
+    }
+
+    loadContent();
 
     return () => {
       isMounted = false;
@@ -225,11 +425,19 @@ export default function Sermons() {
     normalize(searchQuery).length > 0 || (activeTag && activeTag !== allLabel);
 
   const filteredVideos = useMemo(() => {
-    return (videos || []).filter(matchesQuery).filter(matchesTag).slice().sort(sortByDate);
+    return (videos || [])
+      .filter(matchesQuery)
+      .filter(matchesTag)
+      .slice()
+      .sort(sortByDate);
   }, [videos, searchQuery, activeTag, sortMode, allLabel]);
 
   const filteredTeachings = useMemo(() => {
-    return (teachings || []).filter(matchesQuery).filter(matchesTag).slice().sort(sortByDate);
+    return (teachings || [])
+      .filter(matchesQuery)
+      .filter(matchesTag)
+      .slice()
+      .sort(sortByDate);
   }, [teachings, searchQuery, activeTag, sortMode, allLabel]);
 
   const visibleVideos = useMemo(() => {
@@ -295,7 +503,9 @@ export default function Sermons() {
   const clearLabel = lang === "am" ? "ፈልግን አጥፋ" : "Clear search";
   const sortAria = lang === "am" ? "መደርደሪያ" : "Sort";
   const searchAria =
-    lang === "am" ? "ስብከቶችን እና የንባብ ትምህርቶችን ፈልግ" : "Search sermons and reading materials";
+    lang === "am"
+      ? "ስብከቶችን እና የንባብ ትምህርቶችን ፈልግ"
+      : "Search sermons and reading materials";
   const tabsAria = lang === "am" ? "የስብከት ታቦች" : "Sermons tabs";
   const closeMenuLabel = lang === "am" ? "ሜኑን ዝጋ" : "Close menu";
 
