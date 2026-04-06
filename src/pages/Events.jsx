@@ -6,7 +6,8 @@ import { sectionTexts } from "../i18n/sectionTexts";
 const EVENTS_FEED_URL =
   "https://dght.churchsuite.com/-/calendar/4b62ba5d-f1b0-45e3-86bc-7ac1e497980b/json";
 
-const NEXT_EVENT_POPUP_STORAGE_KEY = "dght-next-event-popup-seen-v2";
+const NEXT_EVENT_POPUP_STORAGE_KEY = "dght-next-event-popup-cooldown-v1";
+const POPUP_COOLDOWN_MS = 30 * 60 * 1000;
 
 function stripHtml(html = "") {
   return String(html).replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
@@ -159,7 +160,6 @@ function isDisplayableStatus(status) {
   if (!status) return true;
 
   const safeStatus = String(status).trim().toLowerCase();
-
   return ["confirmed", "published", "active", "live"].includes(safeStatus);
 }
 
@@ -345,15 +345,41 @@ function Events() {
     if (typeof window === "undefined") return;
     if (!nextEvent) return;
 
-    const popupKey = `${NEXT_EVENT_POPUP_STORAGE_KEY}-${nextEvent.id}-${nextEvent.dayKey}`;
-    const alreadySeen = window.localStorage.getItem(popupKey) === "1";
+    const storageKey = `${NEXT_EVENT_POPUP_STORAGE_KEY}-${nextEvent.id}-${nextEvent.dayKey}`;
+    const savedRaw = window.localStorage.getItem(storageKey);
+    const now = Date.now();
 
-    if (alreadySeen) return;
+    let canShow = true;
+
+    if (savedRaw) {
+      try {
+        const saved = JSON.parse(savedRaw);
+        const lastShownAt = Number(saved?.lastShownAt || 0);
+
+        if (lastShownAt && now - lastShownAt < POPUP_COOLDOWN_MS) {
+          canShow = false;
+        }
+      } catch {
+        canShow = true;
+      }
+    }
+
+    if (!canShow) {
+      setShowNextEventPopup(false);
+      return;
+    }
 
     const timer = window.setTimeout(() => {
       setShowNextEventPopup(true);
-      window.localStorage.setItem(popupKey, "1");
-    }, 900);
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          eventId: nextEvent.id,
+          dayKey: nextEvent.dayKey,
+          lastShownAt: Date.now(),
+        })
+      );
+    }, 700);
 
     return () => window.clearTimeout(timer);
   }, [nextEvent]);
