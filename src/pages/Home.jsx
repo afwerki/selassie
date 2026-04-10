@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import "../styling/home.css";
 
 import Theodros from "../assets/images/Theodros.JPG";
-import Feseha from "../assets/images/feseha.JPG";
-import kefeyalew from "../assets/images/kefeyalew.JPG";
+import Feseha from "../assets/images/Feseha_updated.JPG";
+import kefeyalew from "../assets/images/kefyalew.JPG";
 import yohannes from "../assets/images/yohannes.JPG";
 import MissionImage from "../assets/images/eotc.jpg";
-import kaleb from "../assets/images/kaleb.JPG";
+import kaleb from "../assets/images/Kaleb_updated.JPG";
 
 import { useLanguage } from "../contexts/LanguageContext";
 import { texts } from "../i18n/texts";
