@@ -4,7 +4,7 @@ import "./Hero.css";
 import { useLanguage } from "../contexts/LanguageContext";
 import { texts } from "../i18n/texts";
 
-import slide1 from "../assets/images/churchAtendes.JPG";
+import slide1 from "../assets/images/Kids.JPG";
 import slide2 from "../assets/images/church7.JPG";
 import slide3 from "../assets/images/church9.JPG";
 
@@ -15,6 +15,13 @@ import heroVideo3 from "../assets/videos/church_inside2.MP4";
 const heroImages = [slide1, slide2, slide3];
 const heroVideos = [heroVideo1, heroVideo2, heroVideo3];
 const IMAGE_SLIDE_DURATION = 7000;
+const MOBILE_BREAKPOINT = 760;
+
+function getVideoType(src) {
+  const lower = String(src || "").toLowerCase();
+  if (lower.endsWith(".mov")) return "video/quicktime";
+  return "video/mp4";
+}
 
 function Hero() {
   const { lang } = useLanguage();
@@ -89,7 +96,7 @@ function Hero() {
   const [touchStartX, setTouchStartX] = useState(null);
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === "undefined") return false;
-    return window.innerWidth <= 760;
+    return window.innerWidth <= MOBILE_BREAKPOINT;
   });
 
   const videoRefs = useRef([]);
@@ -100,6 +107,23 @@ function Hero() {
   const goTo = (index) => setActive((index + total) % total);
   const goNext = () => setActive((prev) => (prev + 1) % total);
   const goPrev = () => setActive((prev) => (prev - 1 + total) % total);
+
+  useEffect(() => {
+    if (active >= total) {
+      setActive(0);
+    }
+  }, [active, total]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (total <= 1) return;
@@ -117,7 +141,10 @@ function Hero() {
       activeVideo.addEventListener("ended", endedHandler);
 
       const setupFallback = () => {
-        if (!Number.isFinite(activeVideo.duration) || activeVideo.duration <= 0) {
+        if (
+          !Number.isFinite(activeVideo.duration) ||
+          activeVideo.duration <= 0
+        ) {
           timerId = window.setTimeout(() => {
             setActive((prev) => (prev + 1) % total);
           }, IMAGE_SLIDE_DURATION);
@@ -130,7 +157,10 @@ function Hero() {
         loadedMetadataHandler = () => {
           setupFallback();
         };
-        activeVideo.addEventListener("loadedmetadata", loadedMetadataHandler);
+        activeVideo.addEventListener(
+          "loadedmetadata",
+          loadedMetadataHandler
+        );
       }
     } else {
       timerId = window.setTimeout(() => {
@@ -148,21 +178,13 @@ function Hero() {
       }
 
       if (activeVideo && loadedMetadataHandler) {
-        activeVideo.removeEventListener("loadedmetadata", loadedMetadataHandler);
+        activeVideo.removeEventListener(
+          "loadedmetadata",
+          loadedMetadataHandler
+        );
       }
     };
   }, [active, activeSlide, total]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 760);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     videoRefs.current.forEach((videoEl, index) => {
@@ -170,6 +192,7 @@ function Hero() {
 
       if (index === active) {
         try {
+          videoEl.pause();
           videoEl.currentTime = 0;
         } catch {
           // ignore
@@ -188,7 +211,7 @@ function Hero() {
         }
       }
     });
-  }, [active]);
+  }, [active, slides, lang]);
 
   const handleKeyDown = (e) => {
     if (e.key === "ArrowRight") goNext();
@@ -201,6 +224,7 @@ function Hero() {
 
   const handleTouchEnd = (e) => {
     if (touchStartX == null) return;
+
     const diff = e.changedTouches[0].clientX - touchStartX;
 
     if (Math.abs(diff) > 50) {
@@ -240,7 +264,9 @@ function Hero() {
     const parts = processed.split("|||");
 
     return parts.map((part, index) => {
-      if (part === "HIGHLIGHT_START" || part === "HIGHLIGHT_END") return null;
+      if (part === "HIGHLIGHT_START" || part === "HIGHLIGHT_END") {
+        return null;
+      }
 
       const prev = parts[index - 1];
       const next = parts[index + 1];
@@ -284,7 +310,7 @@ function Hero() {
 
                   return (
                     <div
-                      key={`${slide.title}-${index}`}
+                      key={`${slide.title || "slide"}-${index}`}
                       className={`hero__slide ${isActive ? "is-active" : ""}`}
                       aria-hidden={!isActive}
                     >
@@ -299,14 +325,18 @@ function Hero() {
                           preload="metadata"
                           poster={slide.image}
                         >
-                          <source src={slide.video} type="video/mp4" />
+                          <source
+                            src={slide.video}
+                            type={getVideoType(slide.video)}
+                          />
                         </video>
                       ) : (
                         <div
                           className="hero__imageFallback"
                           style={{
                             backgroundImage: `url(${slide.image})`,
-                            backgroundPosition: slide.position || "center center",
+                            backgroundPosition:
+                              slide.position || "center center",
                           }}
                         />
                       )}
