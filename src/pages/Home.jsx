@@ -91,53 +91,55 @@ export default function Home() {
   const t = texts[lang] || texts.en;
 
   const [flippedId, setFlippedId] = useState(null);
+
+  // Mobile carousel state
   const [mobileClergyIndex, setMobileClergyIndex] = useState(0);
-  const [mobileClergyFlipped, setMobileClergyFlipped] = useState(false);
+  const [mobileClergyFlippedId, setMobileClergyFlippedId] = useState(null);
 
   const carouselMembers = useMemo(
     () => [...clergyMembers, ...clergyMembers],
     []
   );
 
-  const activeMobileClergy = clergyMembers[mobileClergyIndex];
-
   const handleCardClick = (id) => {
     setFlippedId((current) => (current === id ? null : id));
   };
 
-  const handleMobileClergyFlip = () => {
-    setMobileClergyFlipped((prev) => !prev);
+  const handleMobileClergyFlip = (id) => {
+    setMobileClergyFlippedId((current) => (current === id ? null : id));
   };
 
   const goToPrevClergy = () => {
-    setMobileClergyFlipped(false);
+    setMobileClergyFlippedId(null);
     setMobileClergyIndex((prev) =>
       prev === 0 ? clergyMembers.length - 1 : prev - 1
     );
   };
 
   const goToNextClergy = () => {
-    setMobileClergyFlipped(false);
+    setMobileClergyFlippedId(null);
     setMobileClergyIndex((prev) =>
       prev === clergyMembers.length - 1 ? 0 : prev + 1
     );
   };
 
   const goToMobileClergy = (index) => {
-    setMobileClergyFlipped(false);
+    setMobileClergyFlippedId(null);
     setMobileClergyIndex(index);
   };
 
+  // Slower auto-slide and do not advance while reading back side
   useEffect(() => {
+    if (mobileClergyFlippedId) return;
+
     const timer = setInterval(() => {
-      setMobileClergyFlipped(false);
       setMobileClergyIndex((prev) =>
         prev === clergyMembers.length - 1 ? 0 : prev + 1
       );
-    }, 4200);
+    }, 9000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [mobileClergyFlippedId]);
 
   const scrollToSection = (sectionId) => {
     const el = document.getElementById(sectionId);
@@ -225,7 +227,6 @@ export default function Home() {
       </section>
 
       {/* CLERGY */}
-          {/* CLERGY */}
       <section
         className="home-clergy-feature home-load home-load-delay-2"
         id="clergy"
@@ -305,82 +306,116 @@ export default function Home() {
             </div>
           </div>
 
-          {/* MOBILE FEATURED CAROUSEL */}
+          {/* MOBILE SLIDER */}
           <div className="home-mobile-clergy-carousel">
-            <button
-              type="button"
-              className={`home-mobile-clergy-card ${
-                mobileClergyFlipped ? "is-card-flipped" : ""
-              }`}
-              onClick={handleMobileClergyFlip}
-              aria-pressed={mobileClergyFlipped}
-              aria-label={`View details for ${activeMobileClergy.name}`}
-            >
+            <div className="home-mobile-clergy-viewport">
               <div
-                className={`home-clergy-premium-inner ${
-                  mobileClergyFlipped ? "is-flipped" : ""
-                }`}
+                className="home-mobile-clergy-track"
+                style={{
+                  transform: `translateX(-${mobileClergyIndex * 100}%)`,
+                }}
               >
-                <div className="home-clergy-premium-face home-clergy-premium-face--front">
-                  <div className="home-clergy-image-wrap-card home-clergy-image-wrap-card--mobile">
-                    <img
-                      src={activeMobileClergy.image}
-                      alt={activeMobileClergy.name}
-                    />
-                  </div>
+                {clergyMembers.map((member) => {
+                  const isFlipped = mobileClergyFlippedId === member.id;
 
-                  <div className="home-clergy-premium-content home-clergy-premium-content--mobile">
-                    <span className="home-clergy-mini-chip">
-                      {activeMobileClergy.title}
-                    </span>
-                    <h3>{activeMobileClergy.name}</h3>
-                    <p className="home-clergy-role">
-                      {activeMobileClergy.roleTag}
-                    </p>
-                    <span className="home-clergy-tap-hint">
-                      Tap to read more
-                    </span>
-                  </div>
-                </div>
+                  return (
+                    <div className="home-mobile-clergy-slide" key={member.id}>
+                      <button
+                        type="button"
+                        className={`home-mobile-clergy-card ${
+                          isFlipped ? "is-card-flipped" : ""
+                        }`}
+                        onClick={() => handleMobileClergyFlip(member.id)}
+                        aria-pressed={isFlipped}
+                        aria-label={`View details for ${member.name}`}
+                      >
+                        <div
+                          className={`home-clergy-premium-inner ${
+                            isFlipped ? "is-flipped" : ""
+                          }`}
+                        >
+                          <div className="home-clergy-premium-face home-clergy-premium-face--front">
+                            <div className="home-clergy-image-wrap-card home-clergy-image-wrap-card--mobile">
+                              <img src={member.image} alt={member.name} />
+                            </div>
 
-                <div className="home-clergy-premium-face home-clergy-premium-face--back">
-                  <span className="home-clergy-back-kicker">
-                    Favourite Scripture
-                  </span>
-                  <p className="home-clergy-back-verse">
-                    {activeMobileClergy.verse}
-                  </p>
-                  <p className="home-clergy-back-ref">
-                    {activeMobileClergy.reference}
-                  </p>
+                            <div className="home-clergy-premium-content home-clergy-premium-content--mobile">
+                              <span className="home-clergy-mini-chip">
+                                {member.title}
+                              </span>
+                              <h3>{member.name}</h3>
+                              <p className="home-clergy-role">
+                                {member.roleTag}
+                              </p>
+                              <span className="home-clergy-tap-hint">
+                                Tap to read more
+                              </span>
+                            </div>
+                          </div>
 
-                  <div className="home-clergy-back-meta">
-                    <strong>{activeMobileClergy.name}</strong>
-                    <span>{activeMobileClergy.title}</span>
-                  </div>
+                          <div className="home-clergy-premium-face home-clergy-premium-face--back">
+                            <span className="home-clergy-back-kicker">
+                              Favourite Scripture
+                            </span>
+                            <p className="home-clergy-back-verse">
+                              {member.verse}
+                            </p>
+                            <p className="home-clergy-back-ref">
+                              {member.reference}
+                            </p>
 
-                  <span className="home-clergy-tap-hint home-clergy-tap-hint--back">
-                    Tap to return
-                  </span>
-                </div>
+                            <div className="home-clergy-back-meta">
+                              <strong>{member.name}</strong>
+                              <span>{member.title}</span>
+                            </div>
+
+                            <span className="home-clergy-tap-hint home-clergy-tap-hint--back">
+                              Tap to return
+                            </span>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
-            </button>
+            </div>
 
-            <div
-              className="home-mobile-clergy-dots"
-              aria-label="Clergy carousel navigation"
-            >
-              {clergyMembers.map((member, index) => (
-                <button
-                  key={member.id}
-                  type="button"
-                  className={`home-mobile-clergy-dot ${
-                    index === mobileClergyIndex ? "is-active" : ""
-                  }`}
-                  onClick={() => goToMobileClergy(index)}
-                  aria-label={`Show ${member.name}`}
-                />
-              ))}
+            <div className="home-mobile-clergy-controls">
+              <button
+                type="button"
+                className="home-mobile-clergy-nav"
+                onClick={goToPrevClergy}
+                aria-label="Previous clergy member"
+              >
+                ‹
+              </button>
+
+              <div
+                className="home-mobile-clergy-dots"
+                aria-label="Clergy carousel navigation"
+              >
+                {clergyMembers.map((member, index) => (
+                  <button
+                    key={member.id}
+                    type="button"
+                    className={`home-mobile-clergy-dot ${
+                      index === mobileClergyIndex ? "is-active" : ""
+                    }`}
+                    onClick={() => goToMobileClergy(index)}
+                    aria-label={`Show ${member.name}`}
+                  />
+                ))}
+              </div>
+
+              <button
+                type="button"
+                className="home-mobile-clergy-nav"
+                onClick={goToNextClergy}
+                aria-label="Next clergy member"
+              >
+                ›
+              </button>
             </div>
           </div>
         </div>

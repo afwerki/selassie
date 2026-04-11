@@ -1,13 +1,23 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap");
+/* =========================================================
+   HOME PAGE — FULL MOBILE WIDTH / SMOOTH MOBILE CLERGY SLIDER
+   Font notes:
+   - Titles: Cormorant Garamond
+   - Body text / buttons / UI: Manrope
+   You can change both later in:
+   --home-title-font
+   --home-body-font
+========================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap");
 
 :root {
   --home-bg: #eef2f8;
-  --home-surface: rgba(255, 255, 255, 0.82);
-  --home-surface-strong: rgba(255, 255, 255, 0.92);
-  --home-stroke: rgba(255, 255, 255, 0.42);
+  --home-surface: rgba(255, 255, 255, 0.84);
+  --home-surface-strong: rgba(255, 255, 255, 0.94);
+  --home-stroke: rgba(255, 255, 255, 0.5);
 
   --home-ink: #132645;
-  --home-ink-soft: rgba(19, 38, 69, 0.78);
+  --home-ink-soft: rgba(19, 38, 69, 0.8);
   --home-muted: rgba(19, 38, 69, 0.62);
 
   --home-gold: #f2b544;
@@ -17,12 +27,13 @@
   --home-shadow-xl: 0 28px 90px rgba(12, 24, 52, 0.14);
   --home-shadow-lg: 0 18px 50px rgba(12, 24, 52, 0.12);
   --home-shadow-md: 0 10px 26px rgba(12, 24, 52, 0.08);
+  --home-shadow-soft: 0 8px 18px rgba(12, 24, 52, 0.05);
 
-  --home-title-font: "Playfair Display", Georgia, "Times New Roman", serif;
-  --home-body-font: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+  --home-title-font: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --home-body-font: "Manrope", system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
 
-  --home-radius-xl: 30px;
+  --home-radius-xl: 32px;
   --home-radius-lg: 24px;
   --home-radius-md: 18px;
 
@@ -42,11 +53,6 @@ body {
   width: 100%;
 }
 
-section {
-  width: 100%;
-  position: relative;
-}
-
 body {
   background:
     radial-gradient(circle at top left, rgba(242, 181, 68, 0.05), transparent 26%),
@@ -54,6 +60,11 @@ body {
     linear-gradient(180deg, #f7f9fd 0%, var(--home-bg) 40%, #f5f7fb 100%);
   font-family: var(--home-body-font);
   color: var(--home-ink);
+}
+
+section {
+  width: 100%;
+  position: relative;
 }
 
 a {
@@ -68,6 +79,10 @@ img {
   display: block;
   max-width: 100%;
 }
+
+/* =========================================================
+   LOAD ANIMATION
+========================================================= */
 
 .home-load {
   opacity: 0;
@@ -97,6 +112,10 @@ img {
     transform: translateY(0);
   }
 }
+
+/* =========================================================
+   PAGE
+========================================================= */
 
 .home-page {
   position: relative;
@@ -129,6 +148,10 @@ img {
   right: -110px;
 }
 
+/* =========================================================
+   SECTION UI
+========================================================= */
+
 .section-heading {
   margin-bottom: 24px;
 }
@@ -143,15 +166,16 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 36px;
-  padding: 8px 12px;
+  min-height: 38px;
+  padding: 8px 14px;
   border-radius: 999px;
   background: var(--home-gold-soft);
   border: 1px solid rgba(242, 181, 68, 0.22);
-  color: rgba(19, 38, 69, 0.84);
+  color: rgba(19, 38, 69, 0.9);
   font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.02em;
+  font-family: var(--home-body-font);
 }
 
 .section-chip--light {
@@ -163,18 +187,23 @@ img {
 .section-heading h2 {
   margin-top: 14px;
   font-family: var(--home-title-font);
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  line-height: 1.02;
+  font-size: clamp(2.3rem, 4vw, 4.2rem);
+  line-height: 0.96;
   letter-spacing: -0.03em;
   color: var(--home-ink);
 }
 
 .section-heading p {
-  margin-top: 10px;
+  margin-top: 12px;
   color: var(--home-muted);
-  line-height: 1.8;
+  line-height: 1.85;
   font-size: 1rem;
+  font-family: var(--home-body-font);
 }
+
+/* =========================================================
+   ICONS
+========================================================= */
 
 .home-ic {
   width: 18px;
@@ -188,7 +217,58 @@ img {
   height: 16px;
 }
 
-/* HERO */
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.home-btn {
+  min-height: 52px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--home-body-font);
+  font-weight: 800;
+  font-size: 0.96rem;
+  border: none;
+  cursor: pointer;
+  transition:
+    transform var(--home-transition),
+    box-shadow var(--home-transition),
+    background var(--home-transition),
+    color var(--home-transition),
+    border-color var(--home-transition);
+}
+
+.home-btn:hover {
+  transform: translateY(-2px);
+}
+
+.home-btn-primary {
+  background: linear-gradient(135deg, var(--home-gold), #ffd37c);
+  color: #1b2433;
+  box-shadow: 0 16px 34px rgba(242, 181, 68, 0.26);
+}
+
+.home-btn-secondary {
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--home-ink);
+  border: 1px solid rgba(19, 38, 69, 0.08);
+  box-shadow: var(--home-shadow-md);
+}
+
+.home-btn-ghost {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
 .home-hero {
   position: relative;
   z-index: 1;
@@ -227,6 +307,7 @@ img {
   color: var(--home-ink);
   width: fit-content;
   max-width: 100%;
+  font-family: var(--home-body-font);
 }
 
 .home-kicker-icon {
@@ -248,8 +329,8 @@ img {
   margin-top: 18px;
   max-width: 10ch;
   font-family: var(--home-title-font);
-  font-size: clamp(2.7rem, 6vw, 5.4rem);
-  line-height: 0.92;
+  font-size: clamp(3rem, 6vw, 5.8rem);
+  line-height: 0.9;
   letter-spacing: -0.05em;
   color: var(--home-ink);
   text-wrap: balance;
@@ -259,8 +340,9 @@ img {
   max-width: 58ch;
   margin-top: 18px;
   color: var(--home-ink-soft);
-  line-height: 1.82;
-  font-size: 1.03rem;
+  line-height: 1.9;
+  font-size: 1.04rem;
+  font-family: var(--home-body-font);
 }
 
 .home-hero-actions {
@@ -268,49 +350,6 @@ img {
   flex-wrap: wrap;
   gap: 14px;
   margin-top: 26px;
-}
-
-.home-btn {
-  min-height: 50px;
-  padding: 12px 18px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-weight: 800;
-  font-size: 0.96rem;
-  border: none;
-  cursor: pointer;
-  transition:
-    transform var(--home-transition),
-    box-shadow var(--home-transition),
-    background var(--home-transition),
-    color var(--home-transition),
-    border-color var(--home-transition);
-}
-
-.home-btn:hover {
-  transform: translateY(-2px);
-}
-
-.home-btn-primary {
-  background: linear-gradient(135deg, var(--home-gold), #ffd37c);
-  color: #1b2433;
-  box-shadow: 0 16px 34px rgba(242, 181, 68, 0.26);
-}
-
-.home-btn-secondary {
-  background: rgba(255, 255, 255, 0.78);
-  color: var(--home-ink);
-  border: 1px solid rgba(19, 38, 69, 0.08);
-  box-shadow: var(--home-shadow-md);
-}
-
-.home-btn-ghost {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .home-hero-stats {
@@ -335,6 +374,7 @@ img {
   color: var(--home-ink);
   font-size: 1.16rem;
   font-weight: 800;
+  font-family: var(--home-body-font);
 }
 
 .home-stat-card span {
@@ -342,7 +382,8 @@ img {
   margin-top: 6px;
   color: var(--home-muted);
   font-size: 0.9rem;
-  line-height: 1.5;
+  line-height: 1.6;
+  font-family: var(--home-body-font);
 }
 
 .home-hero-visual {
@@ -412,6 +453,7 @@ img {
   -webkit-backdrop-filter: blur(10px);
   font-size: 0.82rem;
   font-weight: 700;
+  font-family: var(--home-body-font);
 }
 
 .home-hero-image-content h2 {
@@ -423,7 +465,11 @@ img {
   letter-spacing: -0.03em;
   text-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
 }
-/* CLERGY */
+
+/* =========================================================
+   CLERGY
+========================================================= */
+
 .home-clergy-feature {
   position: relative;
   z-index: 3;
@@ -533,6 +579,7 @@ img {
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   border-radius: 28px;
   overflow: hidden;
   box-shadow: var(--home-shadow-lg);
@@ -594,6 +641,7 @@ img {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-family: var(--home-body-font);
 }
 
 .home-clergy-premium-content h3 {
@@ -602,6 +650,7 @@ img {
   line-height: 1.15;
   color: var(--home-ink);
   font-weight: 800;
+  font-family: var(--home-body-font);
 }
 
 .home-clergy-role {
@@ -609,6 +658,7 @@ img {
   color: var(--home-muted);
   line-height: 1.65;
   font-size: 1rem;
+  font-family: var(--home-body-font);
 }
 
 .home-clergy-tap-hint {
@@ -617,6 +667,7 @@ img {
   font-size: 0.8rem;
   font-weight: 700;
   color: rgba(19, 38, 69, 0.56);
+  font-family: var(--home-body-font);
 }
 
 .home-clergy-tap-hint--back {
@@ -634,6 +685,7 @@ img {
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  font-family: var(--home-body-font);
 }
 
 .home-clergy-back-verse {
@@ -641,6 +693,7 @@ img {
   font-size: 1.06rem;
   line-height: 1.82;
   font-style: italic;
+  font-family: var(--home-body-font);
 }
 
 .home-clergy-back-ref {
@@ -648,6 +701,7 @@ img {
   color: #f3dfa5;
   font-size: 0.95rem;
   font-weight: 700;
+  font-family: var(--home-body-font);
 }
 
 .home-clergy-back-meta {
@@ -659,6 +713,7 @@ img {
   display: block;
   font-size: 1.2rem;
   color: #fff;
+  font-family: var(--home-body-font);
 }
 
 .home-clergy-back-meta span {
@@ -666,11 +721,29 @@ img {
   margin-top: 6px;
   font-size: 0.92rem;
   color: rgba(255, 255, 255, 0.82);
+  font-family: var(--home-body-font);
 }
 
-/* mobile featured clergy */
+/* mobile smooth slider */
 .home-mobile-clergy-carousel {
   display: none;
+}
+
+.home-mobile-clergy-viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.home-mobile-clergy-track {
+  display: flex;
+  width: 100%;
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-mobile-clergy-slide {
+  width: 100%;
+  min-width: 100%;
+  flex: 0 0 100%;
 }
 
 .home-mobile-clergy-card {
@@ -698,11 +771,40 @@ img {
   font-size: 1.02rem;
 }
 
+.home-mobile-clergy-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.home-mobile-clergy-nav {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(19, 38, 69, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--home-ink);
+  box-shadow: var(--home-shadow-soft);
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform var(--home-transition),
+    box-shadow var(--home-transition),
+    background var(--home-transition);
+}
+
+.home-mobile-clergy-nav:hover {
+  transform: translateY(-1px);
+}
+
 .home-mobile-clergy-dots {
   display: flex;
   justify-content: center;
   gap: 12px;
-  margin-top: 20px;
+  flex: 1;
 }
 
 .home-mobile-clergy-dot {
@@ -720,7 +822,10 @@ img {
   transform: scale(1.18);
 }
 
-/* CTA */
+/* =========================================================
+   CTA
+========================================================= */
+
 .home-cta {
   position: relative;
   z-index: 1;
@@ -772,8 +877,9 @@ img {
 .home-cta-copy p {
   margin-top: 12px;
   color: rgba(255, 255, 255, 0.86);
-  line-height: 1.8;
+  line-height: 1.85;
   max-width: 46ch;
+  font-family: var(--home-body-font);
 }
 
 .home-cta-actions {
@@ -784,7 +890,10 @@ img {
   min-width: 260px;
 }
 
-/* RESPONSIVE */
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
 @media (max-width: 1100px) {
   .home-hero-grid {
     grid-template-columns: 1fr;
@@ -823,19 +932,34 @@ img {
     padding-bottom: 70px;
   }
 
+  /* remove side width loss on mobile */
   .home-hero,
   .home-clergy-feature,
   .home-cta {
-    padding-left: 16px;
-    padding-right: 16px;
+    max-width: none;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
   }
 
+  /* full-width hero */
   .home-hero {
-    padding-top: 20px;
+    padding: 0 0 14px;
   }
 
   .home-hero-grid {
-    gap: 20px;
+    gap: 0;
+  }
+
+  .home-hero-visual {
+    order: 1;
+  }
+
+  .home-hero-copy {
+    order: 2;
+    padding: 22px 16px 0;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.99));
   }
 
   .home-kicker {
@@ -874,23 +998,27 @@ img {
   }
 
   .home-hero-image-card {
-    padding: 14px;
-    border-radius: 24px;
+    padding: 0;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
   }
 
   .home-hero-image-wrap {
-    min-height: 300px;
-    border-radius: 20px;
+    min-height: 320px;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .home-hero-image {
-    height: 300px;
+    height: 320px;
   }
 
   .home-hero-image-content {
-    left: 22px;
-    right: 22px;
-    bottom: 22px;
+    left: 16px;
+    right: 16px;
+    bottom: 18px;
   }
 
   .home-hero-image-chip {
@@ -904,13 +1032,18 @@ img {
     line-height: 1.06;
   }
 
+  /* full-width clergy section */
   .home-clergy-feature {
     margin-top: 2px;
+    padding-bottom: 18px;
   }
 
   .home-clergy-feature-shell {
-    padding: 22px 14px 18px;
-    border-radius: 28px;
+    padding: 22px 16px 18px;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    box-shadow: none;
   }
 
   .home-clergy-scroller--desktop {
@@ -922,11 +1055,11 @@ img {
   }
 
   .home-mobile-clergy-card {
-    min-height: 540px;
+    min-height: 560px;
   }
 
   .home-mobile-clergy-card .home-clergy-premium-inner {
-    min-height: 540px;
+    min-height: 560px;
   }
 
   .home-clergy-image-wrap-card--mobile {
@@ -946,9 +1079,16 @@ img {
     line-height: 1.72;
   }
 
+  /* full-width cta section */
+  .home-cta {
+    padding-top: 12px;
+  }
+
   .home-cta-card {
-    padding: 24px 20px;
-    border-radius: 28px;
+    padding: 24px 16px;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
   }
 
   .home-cta-copy h2 {
@@ -957,13 +1097,6 @@ img {
 }
 
 @media (max-width: 520px) {
-  .home-hero,
-  .home-clergy-feature,
-  .home-cta {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-
   .section-chip {
     font-size: 0.8rem;
   }
@@ -974,6 +1107,14 @@ img {
 
   .section-heading p {
     font-size: 0.95rem;
+  }
+
+  .home-hero {
+    padding: 0 0 12px;
+  }
+
+  .home-hero-copy {
+    padding: 20px 14px 0;
   }
 
   .home-kicker {
@@ -989,22 +1130,18 @@ img {
     font-size: 0.94rem;
   }
 
-  .home-hero-image-card {
-    padding: 12px;
-  }
-
   .home-hero-image-wrap {
-    min-height: 260px;
+    min-height: 280px;
   }
 
   .home-hero-image {
-    height: 260px;
+    height: 280px;
   }
 
   .home-hero-image-content {
-    left: 18px;
-    right: 18px;
-    bottom: 18px;
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
   }
 
   .home-hero-image-chip {
@@ -1017,12 +1154,16 @@ img {
     font-size: 1.38rem;
   }
 
+  .home-clergy-feature-shell {
+    padding: 20px 14px 18px;
+  }
+
   .home-mobile-clergy-card {
-    min-height: 500px;
+    min-height: 520px;
   }
 
   .home-mobile-clergy-card .home-clergy-premium-inner {
-    min-height: 500px;
+    min-height: 520px;
   }
 
   .home-clergy-image-wrap-card--mobile {
@@ -1053,6 +1194,20 @@ img {
     font-size: 1.04rem;
   }
 
+  .home-mobile-clergy-controls {
+    gap: 8px;
+  }
+
+  .home-mobile-clergy-nav {
+    width: 38px;
+    height: 38px;
+    font-size: 1.2rem;
+  }
+
+  .home-cta-card {
+    padding: 22px 14px;
+  }
+
   .home-cta-actions {
     width: 100%;
     flex-direction: column;
@@ -1069,7 +1224,10 @@ img {
   .home-btn,
   .home-clergy-premium-inner,
   .home-clergy-image-wrap-card img,
-  .home-clergy-track {
+  .home-clergy-track,
+  .home-mobile-clergy-track,
+  .home-mobile-clergy-nav,
+  .home-mobile-clergy-dot {
     animation: none !important;
     transition: none !important;
     transform: none !important;
