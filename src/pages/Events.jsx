@@ -6,6 +6,11 @@ import { sectionTexts } from "../i18n/sectionTexts";
 const EVENTS_FEED_URL =
   "https://dght.churchsuite.com/-/calendar/4b62ba5d-f1b0-45e3-86bc-7ac1e497980b/json";
 
+/**
+ * Exclude sermon / reading categories from the Events page.
+ * Keep this category-based only so normal event descriptions
+ * do not accidentally disappear.
+ */
 const EXCLUDED_CATEGORY_IDS = [13];
 
 const NEXT_EVENT_POPUP_STORAGE_KEY = "dght-next-event-popup-cooldown-v1";
@@ -15,12 +20,29 @@ function stripHtml(html = "") {
   return String(html)
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/p>/gi, "\n")
+    .replace(/<\/div>/gi, "\n")
+    .replace(/<li>/gi, "- ")
+    .replace(/<\/li>/gi, "\n")
+    .replace(/<ul[^>]*>/gi, "\n")
+    .replace(/<\/ul>/gi, "\n")
+    .replace(/<ol[^>]*>/gi, "\n")
+    .replace(/<\/ol>/gi, "\n")
     .replace(/<[^>]*>/g, "")
     .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, " ")
     .replace(/\u00a0/g, " ")
     .replace(/[ \t]+/g, " ")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+function truncateText(text = "", maxLength = 140) {
+  const safe = String(text || "").trim();
+  if (!safe) return "";
+  if (safe.length <= maxLength) return safe;
+  return `${safe.slice(0, maxLength).trim()}…`;
 }
 
 function parseDateSafe(value) {
@@ -163,35 +185,83 @@ function isDisplayableStatus(status) {
   return ["confirmed", "published", "active", "live"].includes(safeStatus);
 }
 
-function looksLikeSermonEvent(event) {
+function isExcludedEvent(event) {
   const categoryId = Number(event?.category_id);
-  if (EXCLUDED_CATEGORY_IDS.includes(categoryId)) return true;
-
-  const name = String(event?.name || "").toLowerCase().trim();
-  const description = stripHtml(event?.description || "").toLowerCase().trim();
-
-  const hasStructuredSermonFields =
-    description.includes("speaker:") ||
-    description.includes("youtube:") ||
-    description.includes("series:") ||
-    description.includes("language:");
-
-  const sermonishName =
-    name === "sermon" ||
-    name.includes("sermon") ||
-    name.includes("ስብከት");
-
-  return hasStructuredSermonFields || sermonishName;
+  return EXCLUDED_CATEGORY_IDS.includes(categoryId);
 }
 
 function normalizeEvent(event) {
+  const cleanDescription = stripHtml(event?.description || "");
+
   return {
     ...event,
-    cleanDescription: stripHtml(event?.description || ""),
+    cleanDescription,
+    shortDescription: truncateText(cleanDescription, 120),
     imageSrc: getEventImage(event),
     dayKey: getDayKeyFromEvent(event),
     startsAtDate: parseDateSafe(event?.starts_at),
   };
+}
+
+function renderDescriptionLines(descriptionText) {
+  const lines = String(descriptionText || "").split("\n");
+
+  return lines.map((line, index) => {
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      return (
+        <div
+          key={`space-${index}`}
+          className="events-details-description-spacer"
+          aria-hidden="true"
+        />
+      );
+    }
+
+    const isBullet = /^[-•]\s+/.test(trimmed);
+    const isLabelLine = /^[A-Za-zÀ-ÿ\u1200-\u137F\s]+:\s*/.test(trimmed);
+
+    if (isBullet) {
+      return (
+        <div
+          key={`bullet-${trimmed}-${index}`}
+          className="events-details-description-row events-details-description-row--bullet"
+        >
+          <span className="events-details-description-dot" aria-hidden="true" />
+          <span className="events-details-description-text">
+            {trimmed.replace(/^[-•]\s+/, "")}
+          </span>
+        </div>
+      );
+    }
+
+    if (isLabelLine) {
+      const [label, ...restParts] = trimmed.split(":");
+      const rest = restParts.join(":").trim();
+
+      return (
+        <div
+          key={`label-${trimmed}-${index}`}
+          className="events-details-description-row events-details-description-row--label"
+        >
+          <span className="events-details-description-text">
+            <strong>{label.trim()}:</strong>{" "}
+            {rest}
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        key={`line-${trimmed}-${index}`}
+        className="events-details-description-row"
+      >
+        <span className="events-details-description-text">{trimmed}</span>
+      </div>
+    );
+  });
 }
 
 function EventDetailsCard({ event, lang, onClose, variant = "modal" }) {
@@ -202,8 +272,19 @@ function EventDetailsCard({ event, lang, onClose, variant = "modal" }) {
       ? "ከቤተክርስቲያናችን ጋር በዚህ ፕሮግራም ይቀላቀሉ።"
       : "Join us for this upcoming church event and gathering.";
 
+  const descriptionText = event.cleanDescription || fallbackDescription;
+  const hasImage = Boolean(event.imageSrc);
+
   return (
-    <div className={`events-details-card events-details-card--${variant}`}>
+    <div
+      className={[
+        "events-details-card",
+        `events-details-card--${variant}`,
+        !hasImage ? "events-details-card--no-image" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <button
         type="button"
         className="events-overlay-close"
@@ -213,7 +294,7 @@ function EventDetailsCard({ event, lang, onClose, variant = "modal" }) {
         ×
       </button>
 
-      {event.imageSrc ? (
+      {hasImage ? (
         <div className="events-details-media">
           <img
             src={event.imageSrc}
@@ -276,9 +357,15 @@ function EventDetailsCard({ event, lang, onClose, variant = "modal" }) {
           )}
         </div>
 
-        <p className="events-details-description">
-          {event.cleanDescription || fallbackDescription}
-        </p>
+        <div className="events-details-description-wrap">
+          <div className="events-details-description-label">
+            {lang === "am" ? "ማብራሪያ" : "Description"}
+          </div>
+
+          <div className="events-details-description">
+            {renderDescriptionLines(descriptionText)}
+          </div>
+        </div>
 
         <div className="events-details-actions">
           {event.url ? (
@@ -343,7 +430,7 @@ function Events() {
 
         const filteredIncomingEvents = incomingEvents.filter((event) => {
           if (!isDisplayableStatus(event?.status)) return false;
-          if (looksLikeSermonEvent(event)) return false;
+          if (isExcludedEvent(event)) return false;
           return true;
         });
 
@@ -549,7 +636,7 @@ function Events() {
               <p className="events-calendar-topbar-text">
                 {lang === "am"
                   ? "ቀኑን ይጫኑ እና የፕሮግራሙን ዝርዝር ይመልከቱ።"
-                  : "Click a date to open detailed event card. Search events quickly below."}
+                  : "Click a date to open a detailed event card. Search events quickly below."}
               </p>
             </div>
 
@@ -627,7 +714,8 @@ function Events() {
                           className="events-search-result-item"
                           onClick={() => {
                             const eventDate =
-                              event.startsAtDate || parseDateSafe(event.starts_at);
+                              event.startsAtDate ||
+                              parseDateSafe(event.starts_at);
 
                             if (eventDate) {
                               setCurrentMonth(
@@ -645,9 +733,22 @@ function Events() {
                           <span className="events-search-result-name">
                             {event.name}
                           </span>
+
                           <span className="events-search-result-meta">
-                            {formatFullDate(event.starts_at, lang)}
+                            {formatFullDate(event.starts_at, lang)} •{" "}
+                            {formatEventRange(
+                              event.starts_at,
+                              event.ends_at,
+                              event.all_day,
+                              lang
+                            )}
                           </span>
+
+                          {event.shortDescription ? (
+                            <span className="events-search-result-description">
+                              {event.shortDescription}
+                            </span>
+                          ) : null}
                         </button>
                       ))}
                     </div>
@@ -789,6 +890,12 @@ function Events() {
                             lang
                           )}
                         </span>
+
+                        {event.shortDescription ? (
+                          <span className="events-selected-day-item-description">
+                            {event.shortDescription}
+                          </span>
+                        ) : null}
                       </button>
                     ))}
                   </div>
