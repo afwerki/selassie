@@ -5,6 +5,7 @@ import "../styling/home.css";
 import Theodros from "../assets/images/Theodros.JPG";
 import Feseha from "../assets/images/Feseha_updated.JPG";
 import kefeyalew from "../assets/images/kefyalew.JPG";
+import addis from "../assets/images/addis.JPG";
 import yohannes from "../assets/images/yohannes.JPG";
 import MissionImage from "../assets/images/eotc.jpg";
 import kaleb from "../assets/images/Kaleb_updated.JPG";
@@ -24,6 +25,15 @@ const clergyMembers = [
   },
   {
     id: "priest2",
+    name: "Kesis Addis",
+    title: "Parish Priest",
+    roleTag: "Shepherd of the parish",
+    image: addis,
+    verse: "“The Lord is my shepherd; I shall not want.”",
+    reference: "Psalm 23:1",
+  },
+  {
+    id: "priest3",
     name: "Kesis Feseha",
     title: "Priest",
     roleTag: "Supporting liturgy & teaching",
@@ -32,7 +42,7 @@ const clergyMembers = [
     reference: "1 Corinthians 16:14",
   },
   {
-    id: "priest3",
+    id: "priest4",
     name: "Kesis Kaleb",
     title: "Priest",
     roleTag: "Supporting liturgy & teaching",
@@ -41,7 +51,7 @@ const clergyMembers = [
     reference: "1 Corinthians 16:14",
   },
   {
-    id: "priest4",
+    id: "priest5",
     name: "Kesis Theodros",
     title: "Priest",
     roleTag: "Supporting liturgy & teaching",
@@ -50,7 +60,7 @@ const clergyMembers = [
     reference: "1 Corinthians 16:14",
   },
   {
-    id: "priest5",
+    id: "priest6",
     name: "Deacon Yohannes",
     title: "Deacon",
     roleTag: "Supporting liturgy & teaching",
