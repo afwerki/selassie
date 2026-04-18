@@ -9,7 +9,8 @@ function Projects() {
   const t = texts[lang] || texts.en;
 
   const pageText = t.projects || {};
-  const pageTitle = pageText.pageTitle || (lang === "am" ? "ፕሮጀክቶች" : "Parish Projects");
+  const pageTitle =
+    pageText.pageTitle || (lang === "am" ? "ፕሮጀክቶች" : "Parish Projects");
   const pageIntro =
     pageText.pageIntro ||
     (lang === "am"
@@ -146,7 +147,9 @@ function Projects() {
 
     const targetEl = projectRefs.current[key];
     if (targetEl) {
-      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
       const headerOffset = 120;
       const y = targetEl.getBoundingClientRect().top + window.pageYOffset - headerOffset;
 
@@ -283,7 +286,9 @@ function Projects() {
         return (
           <ol key={`ol-${i}`} className="project-ol">
             {block.map((l, idx) => (
-              <li key={`oli-${i}-${idx}`}>{parseInline(l.trim().replace(/^\d+\.\s+/, ""))}</li>
+              <li key={`oli-${i}-${idx}`}>
+                {parseInline(l.trim().replace(/^\d+\.\s+/, ""))}
+              </li>
             ))}
           </ol>
         );
@@ -342,13 +347,91 @@ function Projects() {
 
   const MovingCarousel = ({ images = [], speed = 26, variant = "card", title = "" }) => {
     const safe = (images || []).filter(Boolean);
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const mobileTrackRef = useRef(null);
+
+    useEffect(() => {
+      const onResize = () => setIsMobile(window.innerWidth <= 768);
+      window.addEventListener("resize", onResize);
+      return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    useEffect(() => {
+      if (!isMobile || safe.length <= 1) return;
+
+      const interval = setInterval(() => {
+        setActiveIndex((prev) => {
+          const next = (prev + 1) % safe.length;
+
+          if (mobileTrackRef.current) {
+            const slideWidth = mobileTrackRef.current.clientWidth;
+            mobileTrackRef.current.scrollTo({
+              left: slideWidth * next,
+              behavior: "smooth",
+            });
+          }
+
+          return next;
+        });
+      }, 3200);
+
+      return () => clearInterval(interval);
+    }, [isMobile, safe.length]);
+
+    const handleMobileScroll = () => {
+      if (!mobileTrackRef.current) return;
+      const { scrollLeft, clientWidth } = mobileTrackRef.current;
+      const nextIndex = Math.round(scrollLeft / clientWidth);
+      setActiveIndex(nextIndex);
+    };
+
     if (!safe.length) return null;
+
+    if (isMobile) {
+      return (
+        <div
+          className={`project-carousel project-carousel--mobile project-carousel--${variant}`}
+          aria-label={`${title || "Project"} image carousel`}
+        >
+          <div
+            className="project-carousel__mobile-track"
+            ref={mobileTrackRef}
+            onScroll={handleMobileScroll}
+          >
+            {safe.map((src, idx) => (
+              <div className="project-carousel__mobile-slide" key={`${src}-${idx}`}>
+                <button
+                  type="button"
+                  className="project-carousel__zoom-btn project-carousel__zoom-btn--mobile"
+                  onClick={() => openLightbox(safe, idx, title)}
+                  aria-label={`Open image ${idx + 1} for ${title || "project"}`}
+                >
+                  <img src={src} alt="" loading="lazy" draggable="false" />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {safe.length > 1 && (
+            <div className="project-carousel__dots" aria-hidden="true">
+              {safe.map((_, idx) => (
+                <span
+                  key={idx}
+                  className={`project-carousel__dot ${idx === activeIndex ? "is-active" : ""}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
 
     const track = [...safe, ...safe];
 
     return (
       <div
-        className={`project-carousel project-carousel--${variant}`}
+        className={`project-carousel project-carousel--desktop project-carousel--${variant}`}
         style={{ "--duration": `${Math.max(12, speed)}s` }}
         aria-label={`${title || "Project"} image carousel`}
       >
@@ -378,7 +461,8 @@ function Projects() {
     );
   };
 
-  const hasCarousel = (project) => Array.isArray(project?.carouselImages) && project.carouselImages.length > 0;
+  const hasCarousel = (project) =>
+    Array.isArray(project?.carouselImages) && project.carouselImages.length > 0;
 
   const renderProjectContent = (project, featured = false) => {
     const isExpanded = !!expandedMap[project.__key];
@@ -399,12 +483,16 @@ function Projects() {
             </span>
           </div>
 
-          {project.startDate && <span className="project-date">{formatDate(project.startDate)}</span>}
+          {project.startDate && (
+            <span className="project-date">{formatDate(project.startDate)}</span>
+          )}
         </div>
 
         <h3 className="project-title">{project.title}</h3>
 
-        {!!project.miniTitle && <p className="project-miniTitle">{project.miniTitle}</p>}
+        {!!project.miniTitle && (
+          <p className="project-miniTitle">{project.miniTitle}</p>
+        )}
 
         <p className="project-description">
           {project.shortDescription ||
@@ -421,7 +509,10 @@ function Projects() {
               {(project.supportTitle || project.supportItems?.length > 0) && (
                 <div className="project-supportBox project-supportBox--inline">
                   <p className="project-supportBox__title">
-                    {project.supportTitle || (lang === "am" ? "እንዴት ልትረዱ ትችላላችሁ?" : "How you can support")}
+                    {project.supportTitle ||
+                      (lang === "am"
+                        ? "እንዴት ልትረዱ ትችላላችሁ?"
+                        : "How you can support")}
                   </p>
 
                   {project.supportItems?.length > 0 && (
@@ -445,7 +536,13 @@ function Projects() {
               onClick={() => toggleProject(project.__key)}
               aria-expanded={isExpanded}
             >
-              {isExpanded ? (lang === "am" ? "ዝርዝር ዝጋ" : "Show less") : lang === "am" ? "ተጨማሪ ያንብቡ" : "Read more"}
+              {isExpanded
+                ? lang === "am"
+                  ? "ዝርዝር ዝጋ"
+                  : "Show less"
+                : lang === "am"
+                ? "ተጨማሪ ያንብቡ"
+                : "Read more"}
             </button>
           )}
 
@@ -551,7 +648,10 @@ function Projects() {
               {(project.supportTitle || project.supportItems?.length > 0) && (
                 <div className="project-supportBox project-supportBox--inline">
                   <p className="project-supportBox__title">
-                    {project.supportTitle || (lang === "am" ? "እንዴት ልትረዱ ትችላላችሁ?" : "How you can support")}
+                    {project.supportTitle ||
+                      (lang === "am"
+                        ? "እንዴት ልትረዱ ትችላላችሁ?"
+                        : "How you can support")}
                   </p>
 
                   {project.supportItems?.length > 0 && (
@@ -572,7 +672,7 @@ function Projects() {
 
   return (
     <>
-      <main className="page" id="projects">
+      <main className="page page--projects" id="projects">
         <section className="section-header projects-page-header">
           <h2>{pageTitle}</h2>
           <p>{pageIntro}</p>
@@ -581,11 +681,17 @@ function Projects() {
         <section className="projects-section">
           {allProjects.length === 0 && (
             <p className="projects-empty">
-              {lang === "am" ? "ፕሮጀክቶች በቅርቡ ይጨመራሉ።" : "Projects will appear here once they are published."}
+              {lang === "am"
+                ? "ፕሮጀክቶች በቅርቡ ይጨመራሉ።"
+                : "Projects will appear here once they are published."}
             </p>
           )}
 
-          {featuredProject && <section className="projects-featured">{renderProjectCard(featuredProject, true)}</section>}
+          {featuredProject && (
+            <section className="projects-featured">
+              {renderProjectCard(featuredProject, true)}
+            </section>
+          )}
 
           {secondaryProjects.length > 0 && (
             <section className="projects-lower">
@@ -604,7 +710,11 @@ function Projects() {
 
               {secondaryProjects.length > 2 && (
                 <div className="projects-more-wrapper">
-                  <button type="button" className="projects-more-btn" onClick={toggleShowAllProjects}>
+                  <button
+                    type="button"
+                    className="projects-more-btn"
+                    onClick={toggleShowAllProjects}
+                  >
                     {showAllProjects
                       ? lang === "am"
                         ? "ያጣሩ"
@@ -661,7 +771,9 @@ function Projects() {
                 alt={lightbox.title || "Project image"}
                 className="project-lightbox__image"
               />
-              {lightbox.title && <p className="project-lightbox__caption">{lightbox.title}</p>}
+              {lightbox.title && (
+                <p className="project-lightbox__caption">{lightbox.title}</p>
+              )}
             </div>
 
             {lightbox.images.length > 1 && (

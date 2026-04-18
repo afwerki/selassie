@@ -2,19 +2,59 @@
    GLOBAL
 ========================================= */
 
-/* ✅ Ensure page never exceeds viewport width on mobile */
+/* ✅ Base page container */
 .page {
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: 40px 24px 80px;
+  box-sizing: border-box;
 }
 
-/* ✅ On very small screens: prevent padding from causing “width > 100vw” */
-@media (max-width: 600px) {
+/* ✅ Allow FULL WIDTH pages (like Projects) */
+.page--full,
+.page--projects {
+  max-width: none;
+  width: 100%;
+}
+
+/* ✅ MOBILE — remove boxed layout feeling */
+@media (max-width: 700px) {
   .page {
-    padding: 24px 16px 60px;
+    padding: 24px 12px 60px;
   }
+
+  /* 🔥 Critical: allow full-width layouts */
+  .page--full,
+  .page--projects {
+    margin: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+/* EXTRA small devices */
+@media (max-width: 420px) {
+  .page {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .page--full,
+  .page--projects {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+}
+
+/* Prevent overflow bugs */
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Make anchor links stop below navbar */
@@ -22,7 +62,10 @@
   scroll-margin-top: 90px;
 }
 
-/* Reusable card style */
+/* =========================================
+   REUSABLE CARD
+========================================= */
+
 .card {
   background-color: #ffffff;
   border-radius: 16px;
@@ -67,7 +110,10 @@
   box-shadow: none;
 }
 
-/* Section header */
+/* =========================================
+   SECTION HEADER
+========================================= */
+
 .section-header {
   max-width: 760px;
 }
@@ -108,7 +154,10 @@
   color: var(--text-muted);
 }
 
-/* Service Times Card */
+/* =========================================
+   Service Times
+========================================= */
+
 .service-times {
   background-color: #e8f1f6;
   border-radius: 16px;
@@ -151,21 +200,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: background-color 0.15s ease, transform 0.15s ease;
-}
-
-.service-row:hover {
-  background-color: #f5fafc;
-  transform: translateY(-2px);
 }
 
 .service-label {
-  display: block;
   font-weight: 600;
 }
 
 .service-sub {
-  display: block;
   font-size: 0.85rem;
   color: var(--text-muted);
 }
@@ -201,7 +242,6 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease;
 }
 
 .icon-inner-circle {
@@ -211,27 +251,12 @@
   background: radial-gradient(circle at 30% 20%, #ffeec4, #b95e3e);
 }
 
-.icon-placeholder:hover {
-  transform: translateY(-4px);
-}
+/* =========================================
+   Events
+========================================= */
 
-.mission-text h2 {
-  font-family: "Merriweather", serif;
-  font-size: 2rem;
-  margin-bottom: 16px;
-}
-
-.mission-text p {
-  margin-top: 0;
-  margin-bottom: 14px;
-  line-height: 1.7;
-  color: var(--text-muted);
-}
-
-/* Events */
 .events-section {
   margin-top: 60px;
-  animation: fadeInUp 0.8s ease-out 0.5s both;
 }
 
 .event-list {
@@ -258,18 +283,19 @@
   padding: 8px 0;
 }
 
-/* Visit */
+/* =========================================
+   Visit
+========================================= */
+
 .visit-section {
   margin-top: 60px;
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
   gap: 30px;
-  align-items: stretch;
-  animation: fadeInUp 0.8s ease-out 0.6s both;
 }
 
 /* =========================================
-   About / Contact Layouts (IMPORTANT)
+   About / Contact
 ========================================= */
 
 .about-layout {
@@ -279,7 +305,6 @@
   gap: 24px;
 }
 
-/* 🟡 FIXED: Contact grid now responsive */
 .contact-grid {
   margin-top: 24px;
   display: grid;
@@ -287,10 +312,9 @@
   gap: 24px;
 }
 
-/* 👉 On MOBILE, switch to 1 column */
 @media (max-width: 768px) {
   .contact-grid {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 1fr;
   }
 }
 
@@ -309,7 +333,7 @@
   margin: 0 auto;
   padding: 0 24px 20px;
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1.2fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
 }
 
@@ -328,18 +352,12 @@
   }
 }
 
-@media (max-width: 1100px) {
-  .visit-section {
-    grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.2fr);
-  }
-}
-
 @media (max-width: 900px) {
   .welcome-section,
   .mission-section,
   .visit-section,
   .footer-inner {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 1fr;
   }
 }
 
