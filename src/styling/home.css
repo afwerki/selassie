@@ -1,11 +1,5 @@
 /* =========================================================
    HOME PAGE — FULL MOBILE WIDTH / SMOOTH MOBILE CLERGY SLIDER
-   Font notes:
-   - Titles: Cormorant Garamond
-   - Body text / buttons / UI: Manrope
-   You can change both later in:
-   --home-title-font
-   --home-body-font
 ========================================================= */
 
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap");
@@ -491,7 +485,6 @@ img {
   overflow: hidden;
 }
 
-/* desktop marquee */
 .home-clergy-scroller {
   width: 100%;
   overflow: hidden;
@@ -543,6 +536,7 @@ img {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(calc(-50% - 11px));
   }
@@ -557,16 +551,16 @@ img {
 }
 
 .home-clergy-premium-card {
-  min-height: 430px;
-  width: 320px;
-  flex: 0 0 320px;
+  min-height: 455px;
+  width: 330px;
+  flex: 0 0 330px;
 }
 
 .home-clergy-premium-inner {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 430px;
+  min-height: 455px;
   transform-style: preserve-3d;
   transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -593,11 +587,14 @@ img {
 }
 
 .home-clergy-premium-face--back {
-  background: linear-gradient(180deg, #142645, #1b3258);
+  background:
+    radial-gradient(circle at top right, rgba(242, 181, 68, 0.16), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(86, 123, 201, 0.16), transparent 36%),
+    linear-gradient(180deg, #142645 0%, #1b3258 100%);
   color: #f7f3e8;
   border: 1px solid rgba(36, 57, 96, 0.9);
   transform: rotateY(180deg);
-  padding: 28px 24px;
+  padding: 26px 24px 24px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -646,7 +643,7 @@ img {
 
 .home-clergy-premium-content h3 {
   margin-top: 16px;
-  font-size: 1.5rem;
+  font-size: 1.45rem;
   line-height: 1.15;
   color: var(--home-ink);
   font-weight: 800;
@@ -657,7 +654,7 @@ img {
   margin-top: 10px;
   color: var(--home-muted);
   line-height: 1.65;
-  font-size: 1rem;
+  font-size: 0.96rem;
   font-family: var(--home-body-font);
 }
 
@@ -672,55 +669,90 @@ img {
 
 .home-clergy-tap-hint--back {
   color: rgba(255, 255, 255, 0.72);
-  margin-top: 18px;
+  margin-top: 16px;
 }
 
 .home-clergy-premium-card--lead .home-clergy-premium-face--front {
   box-shadow: 0 24px 60px rgba(242, 181, 68, 0.16), var(--home-shadow-lg);
 }
 
+/* biography back card */
 .home-clergy-back-kicker {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(242, 181, 68, 0.12);
+  border: 1px solid rgba(242, 181, 68, 0.22);
   color: var(--home-gold);
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
   font-family: var(--home-body-font);
 }
 
-.home-clergy-back-verse {
+.home-clergy-back-name {
+  margin-top: 16px;
+  font-family: var(--home-title-font);
+  font-size: 1.65rem;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: #fffaf0;
+}
+
+.home-clergy-bio-list {
+  list-style: none;
+  display: grid;
+  gap: 10px;
   margin-top: 18px;
-  font-size: 1.06rem;
-  line-height: 1.82;
-  font-style: italic;
+  padding: 0;
+  text-align: left;
+}
+
+.home-clergy-bio-list li {
+  position: relative;
+  padding-left: 22px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  font-weight: 500;
   font-family: var(--home-body-font);
 }
 
-.home-clergy-back-ref {
-  margin-top: 12px;
-  color: #f3dfa5;
-  font-size: 0.95rem;
-  font-weight: 700;
-  font-family: var(--home-body-font);
+.home-clergy-bio-list li::before {
+  content: "";
+  position: absolute;
+  left: 1px;
+  top: 0.66em;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--home-gold), #ffe1a0);
+  box-shadow:
+    0 0 0 4px rgba(242, 181, 68, 0.12),
+    0 6px 14px rgba(242, 181, 68, 0.22);
 }
 
 .home-clergy-back-meta {
   margin-top: auto;
-  padding-top: 28px;
+  padding-top: 22px;
 }
 
 .home-clergy-back-meta strong {
   display: block;
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #fff;
   font-family: var(--home-body-font);
 }
 
 .home-clergy-back-meta span {
   display: block;
-  margin-top: 6px;
-  font-size: 0.92rem;
-  color: rgba(255, 255, 255, 0.82);
+  margin-top: 5px;
+  font-size: 0.86rem;
+  color: rgba(255, 255, 255, 0.78);
   font-family: var(--home-body-font);
 }
 
@@ -748,11 +780,11 @@ img {
 
 .home-mobile-clergy-card {
   width: 100%;
-  min-height: 560px;
+  min-height: 590px;
 }
 
 .home-mobile-clergy-card .home-clergy-premium-inner {
-  min-height: 560px;
+  min-height: 590px;
 }
 
 .home-clergy-image-wrap-card--mobile {
@@ -764,11 +796,11 @@ img {
 }
 
 .home-clergy-premium-content--mobile h3 {
-  font-size: 1.7rem;
+  font-size: 1.65rem;
 }
 
 .home-clergy-premium-content--mobile .home-clergy-role {
-  font-size: 1.02rem;
+  font-size: 1rem;
 }
 
 .home-mobile-clergy-controls {
@@ -932,7 +964,6 @@ img {
     padding-bottom: 70px;
   }
 
-  /* remove side width loss on mobile */
   .home-hero,
   .home-clergy-feature,
   .home-cta {
@@ -942,7 +973,6 @@ img {
     padding-right: 0;
   }
 
-  /* full-width hero */
   .home-hero {
     padding: 0 0 14px;
   }
@@ -958,8 +988,11 @@ img {
   .home-hero-copy {
     order: 2;
     padding: 22px 16px 0;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.99));
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.97),
+      rgba(255, 255, 255, 0.99)
+    );
   }
 
   .home-kicker {
@@ -1032,7 +1065,6 @@ img {
     line-height: 1.06;
   }
 
-  /* full-width clergy section */
   .home-clergy-feature {
     margin-top: 2px;
     padding-bottom: 18px;
@@ -1055,11 +1087,11 @@ img {
   }
 
   .home-mobile-clergy-card {
-    min-height: 560px;
+    min-height: 590px;
   }
 
   .home-mobile-clergy-card .home-clergy-premium-inner {
-    min-height: 560px;
+    min-height: 590px;
   }
 
   .home-clergy-image-wrap-card--mobile {
@@ -1074,12 +1106,19 @@ img {
     font-size: 0.98rem;
   }
 
-  .home-clergy-back-verse {
-    font-size: 0.98rem;
-    line-height: 1.72;
+  .home-clergy-premium-face--back {
+    padding: 24px 22px;
   }
 
-  /* full-width cta section */
+  .home-clergy-back-name {
+    font-size: 1.55rem;
+  }
+
+  .home-clergy-bio-list li {
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
   .home-cta {
     padding-top: 12px;
   }
@@ -1159,15 +1198,15 @@ img {
   }
 
   .home-mobile-clergy-card {
-    min-height: 520px;
+    min-height: 570px;
   }
 
   .home-mobile-clergy-card .home-clergy-premium-inner {
-    min-height: 520px;
+    min-height: 570px;
   }
 
   .home-clergy-image-wrap-card--mobile {
-    height: 315px;
+    height: 300px;
   }
 
   .home-clergy-premium-content--mobile {
@@ -1175,7 +1214,7 @@ img {
   }
 
   .home-clergy-premium-content--mobile h3 {
-    font-size: 1.36rem;
+    font-size: 1.32rem;
   }
 
   .home-clergy-premium-content--mobile .home-clergy-role {
@@ -1186,12 +1225,32 @@ img {
     font-size: 0.72rem;
   }
 
-  .home-clergy-back-verse {
-    font-size: 0.92rem;
+  .home-clergy-premium-face--back {
+    padding: 22px 18px;
+  }
+
+  .home-clergy-back-kicker {
+    font-size: 0.68rem;
+  }
+
+  .home-clergy-back-name {
+    font-size: 1.35rem;
+    margin-top: 14px;
+  }
+
+  .home-clergy-bio-list {
+    gap: 9px;
+    margin-top: 15px;
+  }
+
+  .home-clergy-bio-list li {
+    font-size: 0.82rem;
+    line-height: 1.48;
+    padding-left: 20px;
   }
 
   .home-clergy-back-meta strong {
-    font-size: 1.04rem;
+    font-size: 0.98rem;
   }
 
   .home-mobile-clergy-controls {

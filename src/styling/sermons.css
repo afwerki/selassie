@@ -1,28 +1,20 @@
 :root {
   --ser-ink: #0f1b33;
   --ser-muted: rgba(15, 27, 51, 0.72);
-  --ser-soft: rgba(15, 27, 51, 0.1);
-
-  --ser-card: rgba(255, 255, 255, 0.92);
-  --ser-card2: rgba(255, 255, 255, 0.88);
-
-  --ser-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
-  --ser-shadowHover: 0 26px 70px rgba(15, 23, 42, 0.16);
-
+  --ser-card: rgba(255, 255, 255, 0.94);
+  --ser-shadow: 0 18px 46px rgba(15, 23, 42, 0.11);
+  --ser-shadowHover: 0 30px 80px rgba(15, 23, 42, 0.18);
   --ser-gold: #f2b544;
-  --ser-gold2: #f6cf77;
+  --ser-gold2: #f8d681;
   --ser-blue: #2f68b5;
-
-  --ser-radius: 22px;
+  --ser-radius: 24px;
+  --ser-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* ============================================================
-   A11Y + MOTION
-============================================================ */
 :focus-visible {
   outline: 3px solid rgba(47, 104, 181, 0.28);
   outline-offset: 3px;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -34,31 +26,25 @@
   }
 }
 
-/* ============================================================
-   SECTION WRAP
-============================================================ */
 .sermons-section {
   position: relative;
   margin-top: 60px;
-  padding: 0 18px 24px;
-  max-width: 1100px;
+  padding: 0 18px 32px;
+  max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
   overflow: visible;
-}
-
-.sermons-section.is-menu-open {
-  isolation: isolate;
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
 }
 
 .sermons-section::before {
   content: "";
   position: absolute;
-  inset: -120px -40px -80px;
+  inset: -140px -70px -90px;
   background:
-    radial-gradient(circle at 18% 18%, rgba(47, 104, 181, 0.12), transparent 55%),
-    radial-gradient(circle at 82% 15%, rgba(242, 181, 68, 0.14), transparent 58%),
-    radial-gradient(circle at 40% 85%, rgba(47, 104, 181, 0.08), transparent 62%);
+    radial-gradient(circle at 12% 12%, rgba(47, 104, 181, 0.16), transparent 44%),
+    radial-gradient(circle at 88% 10%, rgba(242, 181, 68, 0.2), transparent 48%),
+    radial-gradient(circle at 38% 92%, rgba(47, 104, 181, 0.1), transparent 52%);
   pointer-events: none;
   z-index: 0;
 }
@@ -69,110 +55,99 @@
 }
 
 .sermons-header .section-header {
-  max-width: 760px;
-  margin-bottom: 14px;
+  max-width: 820px;
+  margin-bottom: 18px;
 }
 
 .sermons-section .section-header h2 {
-  font-family: "Merriweather", serif;
-  font-size: clamp(1.7rem, 2.7vw, 2.35rem);
-  margin: 0 0 8px;
-  letter-spacing: -0.015em;
+  font-family: "Playfair Display", "Merriweather", "Cormorant Garamond", serif;
+  font-size: clamp(2rem, 3.4vw, 3.15rem);
+  margin: 0 0 10px;
+  letter-spacing: -0.035em;
   color: var(--ser-ink);
+  line-height: 1.05;
 }
 
 .sermons-section .section-header p {
   margin: 0;
   color: var(--ser-muted);
-  line-height: 1.65;
-  font-size: 1.02rem;
+  line-height: 1.7;
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  max-width: 760px;
 }
 
-/* ============================================================
-   WOW STAGGER
-============================================================ */
 .wow-stagger {
   opacity: 0;
-  transform: translateY(10px);
-  animation: wowIn 420ms ease forwards;
-  animation-delay: calc(var(--stagger, 0) * 70ms);
+  transform: translateY(14px) scale(0.985);
+  animation: wowIn 520ms var(--ser-ease) forwards;
+  animation-delay: calc(var(--stagger, 0) * 80ms);
 }
 
 @keyframes wowIn {
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-/* ============================================================
-   TABS
-============================================================ */
+@keyframes shineMove {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(180%) skewX(-18deg);
+  }
+}
+
+/* Tabs */
 .sermons-tabs {
-  position: relative;
   display: inline-flex;
   gap: 8px;
-  padding: 7px;
+  padding: 8px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(15, 27, 51, 0.1);
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(10px);
-  margin: 16px 0 14px;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.09);
+  backdrop-filter: blur(14px);
+  margin: 18px 0;
   overflow: hidden;
 }
 
 .sermons-tab {
   border: none;
   background: transparent;
-  padding: 10px 16px;
+  padding: 11px 18px;
   border-radius: 999px;
-  font-size: 0.93rem;
-  font-weight: 850;
-  letter-spacing: 0.01em;
-  color: rgba(15, 27, 51, 0.8);
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: rgba(15, 27, 51, 0.78);
   cursor: pointer;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    background 0.18s ease,
-    color 0.18s ease;
-  position: relative;
-  z-index: 2;
+  transition: 0.2s var(--ser-ease);
 }
 
 .sermons-tab:hover {
-  background: rgba(242, 181, 68, 0.12);
+  background: rgba(242, 181, 68, 0.13);
   transform: translateY(-1px);
-}
-
-.sermons-tab:active {
-  transform: translateY(0) scale(0.99);
 }
 
 .sermons-tab.active {
-  background: linear-gradient(135deg, rgba(242, 181, 68, 0.95), rgba(246, 207, 119, 0.92));
+  background: linear-gradient(135deg, #f7b932 0%, #f8d67e 100%);
   color: #142645;
-  box-shadow: 0 14px 30px rgba(242, 181, 68, 0.28);
-  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(242, 181, 68, 0.3);
 }
 
 .tab-count {
-  font-weight: 900;
-  opacity: 0.85;
+  font-weight: 1000;
+  opacity: 0.86;
 }
 
-/* ============================================================
-   TOOLBAR
-============================================================ */
+/* Toolbar */
 .sermons-toolbar {
   display: grid;
   grid-template-columns: 1fr auto auto auto;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  margin-top: 8px;
-  margin-bottom: 10px;
-  position: relative;
+  margin: 8px 0 14px;
   z-index: 100002;
 }
 
@@ -183,20 +158,34 @@
   min-width: 0;
 }
 
+.sermons-search::before {
+  content: "⌕";
+  position: absolute;
+  left: 17px;
+  top: 50%;
+  transform: translateY(-51%);
+  color: rgba(15, 27, 51, 0.42);
+  font-size: 1.15rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .sermons-search input {
   width: 100%;
-  border: 1px solid rgba(15, 27, 51, 0.14);
-  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(15, 27, 51, 0.13);
+  background: rgba(255, 255, 255, 0.88);
   border-radius: 999px;
-  padding: 12px 44px 12px 16px;
-  font-size: 0.95rem;
+  padding: 14px 46px 14px 42px;
+  font-size: 0.98rem;
   outline: none;
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
-  transition: box-shadow 0.18s ease, transform 0.18s ease;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.065);
+  transition: 0.22s var(--ser-ease);
 }
 
 .sermons-search input:focus {
-  box-shadow: 0 16px 40px rgba(47, 104, 181, 0.14);
+  background: rgba(255, 255, 255, 0.97);
+  border-color: rgba(47, 104, 181, 0.28);
+  box-shadow: 0 18px 46px rgba(47, 104, 181, 0.15);
 }
 
 .sermons-search input:disabled {
@@ -206,48 +195,36 @@
 .sermons-clear {
   position: absolute;
   right: 10px;
-  border: none;
-  background: rgba(15, 27, 51, 0.06);
   border: 1px solid rgba(15, 27, 51, 0.1);
-  width: 30px;
-  height: 30px;
+  background: rgba(15, 27, 51, 0.06);
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
   cursor: pointer;
-  font-weight: 900;
-  transition: transform 0.16s ease;
-}
-
-.sermons-clear:active {
-  transform: scale(0.96);
+  font-weight: 1000;
 }
 
 .sermons-sort select {
-  border: 1px solid rgba(15, 27, 51, 0.14);
-  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(15, 27, 51, 0.13);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 999px;
-  padding: 10px 14px;
-  font-weight: 800;
+  padding: 13px 16px;
+  font-weight: 900;
   cursor: pointer;
-}
-
-.sermons-sort select:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.065);
 }
 
 .sermons-reset {
-  border: none;
   border-radius: 999px;
-  padding: 10px 14px;
-  font-weight: 900;
+  padding: 12px 16px;
+  font-weight: 1000;
   cursor: pointer;
-  background: rgba(15, 27, 51, 0.08);
+  color: rgba(15, 27, 51, 0.85);
+  background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(15, 27, 51, 0.12);
 }
 
-/* ============================================================
-   MOBILE MENU
-============================================================ */
+/* Mobile menu */
 .sermons-mobile-menu-wrap {
   position: relative;
   z-index: 10001;
@@ -255,61 +232,30 @@
 }
 
 .sermons-burger {
-  border: 1px solid rgba(15, 27, 51, 0.14);
-  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 27, 51, 0.13);
+  background: rgba(255, 255, 255, 0.94);
   border-radius: 999px;
-  padding: 10px 12px;
+  padding: 11px 13px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
-  font-weight: 900;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+  font-weight: 1000;
   color: rgba(15, 27, 51, 0.92);
-  white-space: nowrap;
-  transition: transform 0.16s ease;
-}
-
-.sermons-burger:active {
-  transform: scale(0.99);
-}
-
-.sermons-burger-icon {
-  font-size: 1.05rem;
-}
-
-.sermons-burger-label {
-  font-size: 0.92rem;
-  white-space: nowrap;
-}
-
-.sermons-burger-caret {
-  opacity: 0.75;
 }
 
 .sermons-mobile-menu {
   position: absolute;
   right: 0;
-  top: calc(100% + 8px);
-  width: 240px;
+  top: calc(100% + 9px);
+  width: 252px;
   background: rgba(255, 255, 255, 0.98);
   border: 1px solid rgba(15, 27, 51, 0.12);
-  border-radius: 16px;
-  box-shadow: 0 26px 80px rgba(15, 23, 42, 0.18);
+  border-radius: 18px;
+  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.2);
   overflow: hidden;
   z-index: 100000;
-  animation: menuDrop 180ms ease;
-}
-
-@keyframes menuDrop {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .sermons-mobile-item {
@@ -317,197 +263,71 @@
   text-align: left;
   border: none;
   background: transparent;
-  padding: 12px;
-  font-weight: 900;
+  padding: 13px 14px;
+  font-weight: 1000;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-}
-
-.sermons-mobile-item:hover {
-  background: rgba(242, 181, 68, 0.1);
 }
 
 .sermons-mobile-item.active {
-  background: linear-gradient(135deg, rgba(242, 181, 68, 0.22), rgba(246, 207, 119, 0.18));
+  background: linear-gradient(135deg, rgba(242, 181, 68, 0.24), rgba(246, 207, 119, 0.18));
 }
 
-.sermons-menu-scrim {
-  position: fixed;
-  inset: 0;
-  border: none;
-  background: rgba(10, 20, 36, 0.08);
-  padding: 0;
-  margin: 0;
-  z-index: 90000;
-}
-
-.sermons-section.is-menu-open .sermons-content {
-  pointer-events: none;
-}
-
-.sermons-section.is-menu-open .sermons-mobile-menu-wrap,
-.sermons-section.is-menu-open .sermons-mobile-menu,
-.sermons-section.is-menu-open .sermons-burger,
-.sermons-section.is-menu-open .sermons-menu-scrim {
-  pointer-events: auto;
-}
-
-/* ============================================================
-   TAGS
-============================================================ */
+/* Tags */
 .sermons-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 8px 0 18px;
-  position: relative;
-  z-index: 5;
+  gap: 9px;
+  margin: 10px 0 22px;
 }
 
 .sermons-tag {
   border: 1px solid rgba(15, 27, 51, 0.12);
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.78);
   border-radius: 999px;
-  padding: 7px 12px;
-  font-weight: 850;
-  font-size: 0.86rem;
+  padding: 8px 14px;
+  font-weight: 900;
+  font-size: 0.87rem;
   cursor: pointer;
-  transition: transform 0.14s ease, box-shadow 0.14s ease;
+  color: rgba(15, 27, 51, 0.86);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.045);
 }
 
 .sermons-tag:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-}
-
-.sermons-tag:active {
-  transform: translateY(0) scale(0.99);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.09);
 }
 
 .sermons-tag.active {
-  background: rgba(47, 104, 181, 0.1);
-  border-color: rgba(47, 104, 181, 0.2);
+  background: linear-gradient(135deg, rgba(47, 104, 181, 0.14), rgba(47, 104, 181, 0.07));
+  border-color: rgba(47, 104, 181, 0.24);
   color: #1f3f72;
-}
-
-/* ============================================================
-   PANELS / EMPTY / LOADING
-============================================================ */
-.tab-panel {
-  margin-top: 6px;
-}
-
-.sermons-skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  margin-top: 10px;
-}
-
-.sermons-skeleton-card {
-  height: 210px;
-  border-radius: var(--ser-radius);
-  background: linear-gradient(
-    90deg,
-    rgba(15, 27, 51, 0.06),
-    rgba(15, 27, 51, 0.1),
-    rgba(15, 27, 51, 0.06)
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.2s ease-in-out infinite;
-}
-
-.sermons-skeleton-grid--teachings {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.sermons-skeleton-card--t {
-  height: 190px;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
 }
 
 .sermons-empty {
   margin-top: 14px;
-  padding: 14px 16px;
-  border-radius: 16px;
+  padding: 16px 18px;
+  border-radius: 18px;
   border: 1px solid rgba(15, 27, 51, 0.12);
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.78);
   color: rgba(15, 27, 51, 0.78);
-  font-weight: 700;
+  font-weight: 800;
 }
 
-.sermons-more-note {
-  margin-top: 14px;
-  color: rgba(15, 27, 51, 0.72);
-  font-weight: 700;
-}
-
-/* ============================================================
-   META / BADGES / TAGS
-============================================================ */
-.sermons-meta {
-  margin: 0 0 6px;
-  font-size: 0.82rem;
-  font-weight: 900;
-  color: rgba(15, 27, 51, 0.58);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.featured-pill {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(242, 181, 68, 0.35);
-  color: #7a4a00;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 1000;
-  font-size: 0.76rem;
-  z-index: 3;
-}
-
-.featured-pill--soft {
-  position: static;
-  background: rgba(242, 181, 68, 0.12);
-}
-
-.mini-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-
+/* Shared pills */
+.tag-pill,
 .mini-tag {
-  font-size: 0.78rem;
-  font-weight: 900;
-  padding: 5px 10px;
-  border-radius: 999px;
   background: rgba(47, 104, 181, 0.1);
   border: 1px solid rgba(47, 104, 181, 0.18);
   color: #1f3f72;
+  border-radius: 999px;
+  font-weight: 1000;
 }
 
 .tag-pill {
-  background: rgba(47, 104, 181, 0.1);
-  border: 1px solid rgba(47, 104, 181, 0.18);
-  color: #1f3f72;
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 0.76rem;
-  font-weight: 1000;
+  padding: 6px 12px;
+  font-size: 0.77rem;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -519,57 +339,44 @@
   height: 7px;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--ser-gold), var(--ser-gold2));
-  box-shadow: 0 6px 16px rgba(242, 181, 68, 0.28);
 }
 
-/* ============================================================
-   VIDEOS
-============================================================ */
+.mini-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.mini-tag {
+  font-size: 0.78rem;
+  padding: 6px 10px;
+}
+
+/* Video cards */
 .video-grid,
 .video-grid--youtube {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 22px;
 }
 
 .video-card,
 .video-card--youtube {
   border-radius: var(--ser-radius);
   background: var(--ser-card);
-  border: 1px solid rgba(15, 27, 51, 0.07);
+  border: 1px solid rgba(15, 27, 51, 0.075);
   box-shadow: var(--ser-shadow);
-  backdrop-filter: blur(10px);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
+  backdrop-filter: blur(12px);
+  transition: 0.26s var(--ser-ease);
   position: relative;
   overflow: hidden;
 }
 
-.video-card::after,
-.video-card--youtube::after {
-  content: "";
-  position: absolute;
-  inset: -30px;
-  background:
-    radial-gradient(circle at 20% 10%, rgba(242, 181, 68, 0.16), transparent 45%),
-    radial-gradient(circle at 90% 30%, rgba(47, 104, 181, 0.12), transparent 48%);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-
-.video-card:hover::after,
-.video-card--youtube:hover::after {
-  opacity: 1;
-}
-
 .video-card:hover,
 .video-card--youtube:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   box-shadow: var(--ser-shadowHover);
-  border-color: rgba(242, 181, 68, 0.3);
 }
 
 .video-frame,
@@ -586,15 +393,6 @@
   aspect-ratio: 16 / 9;
 }
 
-.video-frame {
-  border-radius: 20px 20px 0 0;
-}
-
-.video-thumb {
-  border-radius: 18px;
-  min-height: 160px;
-}
-
 .video-frame img,
 .video-thumb img {
   width: 100%;
@@ -602,184 +400,65 @@
   display: block;
   object-fit: cover;
   transform: scale(1.02);
-  transition: transform 0.35s ease;
+  transition: transform 0.46s var(--ser-ease);
 }
 
-.video-card:hover .video-frame img,
-.video-card:hover .video-thumb img,
-.video-card--youtube:hover .video-frame img {
-  transform: scale(1.06);
-}
-
-.video-thumb-fallback {
-  width: 100%;
-  height: 100%;
-  background: #0b1220;
-}
-
-.video-thumb-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 30% 25%, rgba(242, 181, 68, 0.18), transparent 55%),
-    linear-gradient(to top, rgba(15, 23, 42, 0.58), rgba(15, 23, 42, 0.12), transparent 55%);
-  pointer-events: none;
-}
-
-.video-play {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(15, 27, 51, 0.12);
-  border-radius: 999px;
-  padding: 9px 12px;
-  font-weight: 950;
-  transition: transform 0.16s ease;
-  z-index: 2;
-}
-
-.video-play--center {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  min-width: 72px;
-  min-height: 72px;
-  padding: 0;
-  box-shadow: 0 20px 36px rgba(15, 23, 42, 0.22);
-}
-
-.video-thumb:active .video-play,
-.video-frame:active .video-play {
-  transform: translate(-50%, -50%) scale(0.98);
-}
-
-.video-thumb .video-play {
-  left: 12px;
-  bottom: 12px;
-}
-
-.video-thumb .video-play-icon,
-.video-frame .video-play-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--ser-gold), var(--ser-gold2));
-  color: #142645;
-}
-
-.video-play--center .video-play-icon {
-  width: 34px;
-  height: 34px;
-  font-size: 1rem;
+.video-card:hover img,
+.video-card--youtube:hover img {
+  transform: scale(1.075);
 }
 
 .video-info,
 .video-info--youtube {
-  padding: 14px 16px 16px;
+  padding: 16px 18px 18px;
 }
 
 .video-info h3,
 .video-info--youtube h3 {
   margin: 0 0 8px;
-  font-size: 1.08rem;
-  letter-spacing: -0.01em;
+  font-size: 1.14rem;
   color: var(--ser-ink);
-  line-height: 1.3;
+  line-height: 1.28;
 }
 
 .video-desc {
-  margin-top: 8px;
   color: rgba(15, 27, 51, 0.7);
-  line-height: 1.6;
-  font-size: 0.95rem;
-  max-height: 96px;
-  overflow: auto;
-  padding-right: 6px;
+  line-height: 1.65;
+  font-size: 0.96rem;
 }
 
-.video-desc--clamp {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  max-height: none;
-  padding-right: 0;
-}
-
-.video-desc::-webkit-scrollbar {
-  width: 8px;
-}
-
-.video-desc::-webkit-scrollbar-thumb {
-  background: rgba(15, 27, 51, 0.18);
-  border-radius: 999px;
-}
-
-.video-desc::-webkit-scrollbar-track {
-  background: rgba(15, 27, 51, 0.06);
-  border-radius: 999px;
-}
-
-/* ============================================================
-   READING MATERIALS
-============================================================ */
+/* Reading Materials Premium Cards */
 .teaching-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(2, minmax(360px, 1fr));
+  gap: 28px;
+  align-items: stretch;
 }
 
 .teaching-card {
-  padding: 16px;
-  border-radius: var(--ser-radius);
-  background: var(--ser-card2);
-  border: 1px solid rgba(15, 27, 51, 0.07);
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.1);
-  backdrop-filter: blur(10px);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
+  padding: 0;
+  border-radius: 30px;
   overflow: hidden;
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 250, 240, 0.94) 100%);
+  border: 1px solid rgba(182, 127, 36, 0.16);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.13);
+  transition: 0.35s var(--ser-ease);
   position: relative;
 }
 
-.teaching-card::after {
-  content: "";
-  position: absolute;
-  inset: -30px;
-  background:
-    radial-gradient(circle at 20% 10%, rgba(47, 104, 181, 0.12), transparent 45%),
-    radial-gradient(circle at 90% 30%, rgba(242, 181, 68, 0.14), transparent 48%);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-
-.teaching-card:hover::after {
-  opacity: 1;
-}
-
 .teaching-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.16);
-  border-color: rgba(47, 104, 181, 0.2);
+  transform: translateY(-8px);
+  box-shadow: 0 34px 90px rgba(15, 23, 42, 0.2);
 }
 
 .teaching-media {
   width: 100%;
-  height: 170px;
-  border-radius: 18px;
+  height: clamp(260px, 22vw, 360px);
+  margin: 0 0 22px;
+  border-radius: 0;
+  border: none;
   overflow: hidden;
-  margin-bottom: 12px;
-  background: rgba(15, 23, 42, 0.06);
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #111827;
   position: relative;
 }
 
@@ -787,181 +466,151 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 38%;
   display: block;
-  transform: scale(1.02);
-  transition: transform 0.35s ease;
+  transform: scale(1.01);
+  transition: 0.55s var(--ser-ease);
 }
 
 .teaching-card:hover .teaching-media img {
-  transform: scale(1.06);
+  transform: scale(1.08);
+  filter: saturate(1.08) contrast(1.04);
 }
 
 .teaching-media::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(15, 23, 42, 0.25), transparent 55%);
+  background:
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.05), transparent 35%),
+    linear-gradient(to top, rgba(15, 23, 42, 0.34), transparent 48%);
   pointer-events: none;
+}
+
+.teaching-top,
+.teaching-card h3,
+.sermons-submeta,
+.teaching-card p,
+.teaching-actions,
+.mini-tags {
+  margin-left: 26px;
+  margin-right: 26px;
 }
 
 .teaching-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.teaching-card h3 {
-  margin: 10px 0 6px;
-  font-size: 1.05rem;
-  color: var(--ser-ink);
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-}
-
-.teaching-card .card-meta {
-  margin: 0 0 8px;
-  font-size: 0.86rem;
-  font-weight: 850;
-  color: rgba(15, 27, 51, 0.62);
-}
-
-.teaching-card p {
-  margin: 6px 0;
-  line-height: 1.65;
-  color: rgba(15, 27, 51, 0.74);
-}
-
-.teaching-actions {
-  margin-top: 10px;
-}
-
-.teaching-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  padding: 10px 14px;
-  font-weight: 1000;
-  text-decoration: none;
-  border: 1px solid rgba(15, 27, 51, 0.12);
-  background: linear-gradient(135deg, rgba(242, 181, 68, 0.95), rgba(246, 207, 119, 0.92));
-  color: #142645;
-  box-shadow: 0 16px 32px rgba(242, 181, 68, 0.22);
-  transition:
-    transform 0.16s ease,
-    box-shadow 0.16s ease;
-}
-
-.teaching-btn:hover {
-  box-shadow: 0 20px 38px rgba(242, 181, 68, 0.28);
-}
-
-.teaching-btn:active {
-  transform: scale(0.99);
-}
-
-.teaching-btn--disabled {
-  opacity: 0.55;
-  background: rgba(15, 27, 51, 0.06);
-  box-shadow: none;
-}
-
-/* ============================================================
-   Q&A
-============================================================ */
-.qa-shell {
-  max-width: 900px;
-}
-
-.qa-header {
   margin-bottom: 14px;
 }
 
-.qa-header h3 {
-  margin: 0 0 6px;
-  font-size: 1.26rem;
-  color: var(--ser-ink);
-  letter-spacing: -0.01em;
+.teaching-card h3 {
+  font-family: "Playfair Display", "Noto Serif Ethiopic", "Abyssinica SIL", serif;
+  font-size: clamp(1.45rem, 2vw, 2rem);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  color: #101a2f;
+  margin-top: 12px;
+  margin-bottom: 12px;
 }
 
-.qa-header p {
-  margin: 0;
-  color: rgba(15, 27, 51, 0.72);
-  line-height: 1.65;
-}
-
-.qa-categories {
+.sermons-submeta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 16px 0 18px;
+  gap: 4px 10px;
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: rgba(15, 27, 51, 0.72);
 }
 
-.qa-category-pill {
-  border: 1px solid rgba(15, 27, 51, 0.12);
-  background: rgba(255, 255, 255, 0.8);
+.sermons-submeta-item strong {
+  color: #101a2f;
+  font-weight: 950;
+  margin-right: 4px;
+}
+
+.teaching-card p,
+.teaching-excerpt {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 1.02rem;
+  line-height: 1.75;
+  color: rgba(15, 27, 51, 0.78);
+}
+
+.teaching-excerpt--clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.teaching-actions {
+  margin-top: 22px;
+  margin-bottom: 18px;
+}
+
+.teaching-btn {
+  min-width: 240px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 999px;
-  padding: 8px 13px;
-  font-size: 0.84rem;
-  font-weight: 900;
-  color: rgba(15, 27, 51, 0.84);
-  cursor: pointer;
-  transition:
-    transform 0.14s ease,
-    box-shadow 0.14s ease,
-    background 0.14s ease;
+  padding: 13px 22px;
+  background: linear-gradient(135deg, #f59e0b 0%, #f8d46d 100%);
+  color: #101a2f;
+  font-weight: 1000;
+  text-decoration: none;
+  border: 1px solid rgba(15, 27, 51, 0.12);
+  box-shadow: 0 18px 38px rgba(245, 158, 11, 0.28);
+  position: relative;
+  overflow: hidden;
 }
 
-.qa-category-pill:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+.teaching-btn::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  bottom: -40%;
+  width: 42px;
+  background: rgba(255, 255, 255, 0.34);
+  filter: blur(2px);
+  animation: shineMove 2.8s ease-in-out infinite;
 }
 
-.qa-category-pill.active {
-  background: rgba(47, 104, 181, 0.1);
-  border-color: rgba(47, 104, 181, 0.18);
-  color: #1f3f72;
+.teaching-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 50px rgba(245, 158, 11, 0.36);
 }
 
-.qa-loading,
-.qa-empty {
-  margin-top: 10px;
-  padding: 14px 16px;
-  border-radius: 16px;
-  border: 1px solid rgba(15, 27, 51, 0.1);
-  background: rgba(255, 255, 255, 0.8);
-  color: rgba(15, 27, 51, 0.76);
-  font-weight: 700;
+.teaching-btn--disabled {
+  opacity: 0.58;
+  background: rgba(15, 27, 51, 0.06);
+  color: rgba(15, 27, 51, 0.55);
+  box-shadow: none;
+}
+
+.teaching-btn--disabled::after {
+  display: none;
+}
+
+/* Q&A */
+.qa-shell {
+  max-width: 920px;
 }
 
 .qa-list {
   display: grid;
-  gap: 14px;
+  gap: 15px;
 }
 
 .qa-card {
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.9);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.91);
   border: 1px solid rgba(15, 27, 51, 0.08);
-  box-shadow: 0 14px 38px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.09);
   overflow: hidden;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    border-color 0.18s ease;
-}
-
-.qa-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.12);
-  border-color: rgba(47, 104, 181, 0.14);
-}
-
-.qa-card.is-open {
-  border-color: rgba(242, 181, 68, 0.22);
-  box-shadow: 0 22px 58px rgba(15, 23, 42, 0.12);
 }
 
 .qa-question {
@@ -969,56 +618,16 @@
   border: none;
   background: transparent;
   text-align: left;
-  padding: 18px 18px;
+  padding: 19px 20px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 14px;
   cursor: pointer;
-}
-
-.qa-question-main {
-  min-width: 0;
-}
-
-.qa-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: rgba(47, 104, 181, 0.1);
-  border: 1px solid rgba(47, 104, 181, 0.16);
-  color: #1f3f72;
-  font-size: 0.75rem;
-  font-weight: 1000;
-}
-
-.qa-question h4 {
-  margin: 0;
-  font-size: 1.01rem;
-  line-height: 1.4;
-  color: var(--ser-ink);
-  letter-spacing: -0.01em;
-}
-
-.qa-caret {
-  flex: 0 0 auto;
-  font-size: 1.1rem;
-  color: rgba(15, 27, 51, 0.56);
-  transition: transform 0.22s ease, color 0.22s ease;
-}
-
-.qa-caret.is-open {
-  transform: rotate(180deg);
-  color: #1f3f72;
 }
 
 .qa-answer-wrap {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.22s ease;
+  transition: grid-template-rows 0.24s var(--ser-ease);
 }
 
 .qa-answer-wrap.open {
@@ -1031,60 +640,35 @@
 
 .qa-answer p {
   margin: 0;
-  padding: 0 18px 18px;
+  padding: 0 20px 20px;
   color: rgba(15, 27, 51, 0.78);
-  line-height: 1.72;
-  font-size: 0.97rem;
+  line-height: 1.75;
 }
 
-/* ============================================================
-   VIDEO MODAL
-============================================================ */
+/* Modal */
 .sermons-modal {
   position: fixed;
   inset: 0;
   z-index: 999999;
-  background: rgba(10, 20, 36, 0.62);
+  background: rgba(10, 20, 36, 0.64);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 18px;
+  backdrop-filter: blur(8px);
 }
 
 .sermons-modal-card {
   width: min(980px, 100%);
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow: 0 26px 90px rgba(0, 0, 0, 0.28);
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 24px;
   overflow: hidden;
 }
 
 .sermons-modal-top {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(15, 27, 51, 0.1);
-}
-
-.sermons-modal-title {
-  margin: 0;
-  font-size: 1.05rem;
-  color: rgba(15, 27, 51, 0.92);
-  font-weight: 1000;
-}
-
-.sermons-modal-close {
-  border: none;
-  background: rgba(15, 27, 51, 0.06);
-  border: 1px solid rgba(15, 27, 51, 0.12);
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 1000;
+  padding: 15px 17px;
 }
 
 .sermons-modal-video {
@@ -1102,31 +686,25 @@
   border: 0;
 }
 
-/* ============================================================
-   RESPONSIVE
-============================================================ */
+/* Responsive */
 @media (max-width: 1000px) {
+  .teaching-grid,
   .video-grid,
   .video-grid--youtube {
     grid-template-columns: 1fr;
   }
 
-  .teaching-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 900px) {
-  .teaching-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .sermons-skeleton-grid--teachings {
-    grid-template-columns: 1fr;
+  .teaching-media {
+    height: 300px;
   }
 }
 
 @media (max-width: 700px) {
+  .sermons-section {
+    margin-top: 34px;
+    padding: 0 14px 28px;
+  }
+
   .sermons-tabs--desktop {
     display: none;
   }
@@ -1137,10 +715,10 @@
 
   .sermons-toolbar {
     grid-template-columns: 1fr auto;
-    grid-auto-rows: auto;
     gap: 10px;
   }
 
+  .sermons-search,
   .sermons-sort {
     grid-column: 1 / -1;
   }
@@ -1153,47 +731,46 @@
     display: none;
   }
 
-  .video-grid,
-  .video-grid--youtube {
-    grid-template-columns: 1fr;
-    gap: 12px;
+  .sermons-tags {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
   }
 
-  .video-card,
-  .video-card--youtube {
-    border-radius: 18px;
+  .sermons-tags::-webkit-scrollbar {
+    display: none;
   }
 
-  .video-frame {
-    border-radius: 18px 18px 0 0;
+  .sermons-tag {
+    flex: 0 0 auto;
   }
 
-  .video-info,
-  .video-info--youtube {
-    padding: 12px;
+  .teaching-card {
+    border-radius: 24px;
   }
 
-  .featured-pill {
-    top: 8px;
-    right: 8px;
-    padding: 5px 8px;
-    font-size: 0.7rem;
+  .teaching-media {
+    height: 230px;
+    margin-bottom: 18px;
   }
 
-  .sermons-meta {
-    font-size: 0.72rem;
-    margin-bottom: 4px;
+  .teaching-top,
+  .teaching-card h3,
+  .sermons-submeta,
+  .teaching-card p,
+  .teaching-actions,
+  .mini-tags {
+    margin-left: 16px;
+    margin-right: 16px;
   }
 
-  .video-info h3,
-  .video-info--youtube h3 {
-    font-size: 0.98rem;
-    line-height: 1.25;
-    margin: 0 0 6px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .teaching-card h3 {
+    font-size: 1.35rem;
+  }
+
+  .teaching-btn {
+    width: 100%;
+    min-width: 0;
   }
 
   .video-desc,
@@ -1201,42 +778,8 @@
     display: none;
   }
 
-  .mini-tags {
-    margin-top: 6px;
-    gap: 6px;
-  }
-
-  .mini-tag {
-    font-size: 0.72rem;
-    padding: 4px 8px;
-  }
-
-  .teaching-media {
-    height: 160px;
-  }
-
-  .qa-question {
-    padding: 16px 14px;
-    gap: 12px;
-  }
-
-  .qa-answer p {
-    padding: 0 14px 16px;
-  }
-
-  .qa-question h4 {
-    font-size: 0.96rem;
-  }
-
-  .video-play--center {
-    min-width: 58px;
-    min-height: 58px;
-  }
-
-  .video-play--center .video-play-icon {
-    width: 28px;
-    height: 28px;
-    font-size: 0.92rem;
+  .sermons-modal {
+    padding: 10px;
   }
 }
 

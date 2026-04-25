@@ -9,6 +9,8 @@ import addis from "../assets/images/addis.JPG";
 import yohannes from "../assets/images/yohannes.JPG";
 import MissionImage from "../assets/images/eotc.jpg";
 import kaleb from "../assets/images/Kaleb_updated.JPG";
+import samuel from "../assets/images/samuel.JPG";
+import Kibret from "../assets/images/Kibret.JPG";
 
 import { useLanguage } from "../contexts/LanguageContext";
 import { texts } from "../i18n/texts";
@@ -16,60 +18,114 @@ import { texts } from "../i18n/texts";
 const clergyMembers = [
   {
     id: "priest1",
-    name: "Kesis Kefyalew",
+    name: "Melake Genet Kesis Kefyalew",
     title: "Parish Priest",
-    roleTag: "Shepherd of the parish",
+    roleTag: "Priest in charge",
     image: kefeyalew,
-    verse: "“The Lord is my shepherd; I shall not want.”",
-    reference: "Psalm 23:1",
+    bioBullets: [
+      "Moved to the UK in 2015.",
+      "Serves at Debre Genet Kidist Selassie Church, London.",
+      "Ordained priest in 2012 in Addis Ababa.",
+      "Ordained by His Grace Abune Hezkael.",
+      "Blessed with two children.",
+      "Abenet Memhir specialising in the New Testament and Divine Liturgy.",
+      "Dedicated to theological teaching and liturgical instruction.",
+    ],
   },
   {
     id: "priest2",
+    name: "Megabi Haddis Kesis Kibret Asnakew",
+    title: "Parish Priest",
+    roleTag: "Teacher & liturgical servant",
+    image: Kibret,
+    bioBullets: [
+      "Moved to the United Kingdom in 2015.",
+      "Serves at Debre Genet Kidist Selassie Church in London.",
+      "Ordained to the priesthood in 2012.",
+      "Serves as an Abenet Memhir, specialising in the New Testament and Divine Liturgy.",
+    ],
+  },
+  {
+    id: "priest3",
     name: "Kesis Addis",
     title: "Parish Priest",
     roleTag: "Shepherd of the parish",
     image: addis,
-    verse: "“The Lord is my shepherd; I shall not want.”",
-    reference: "Psalm 23:1",
+    bioBullets: [
+      "Serves the parish through worship, teaching, and pastoral care.",
+      "Supports the spiritual life of the church community.",
+      "Guides parishioners in faith, prayer, and service.",
+      "Helps strengthen the church family through dedicated ministry.",
+    ],
   },
   {
-    id: "priest3",
+    id: "priest4",
     name: "Kesis Feseha",
     title: "Priest",
     roleTag: "Supporting liturgy & teaching",
     image: Feseha,
-    verse: "“Let all that you do be done in love.”",
-    reference: "1 Corinthians 16:14",
-  },
-  {
-    id: "priest4",
-    name: "Kesis Kaleb",
-    title: "Priest",
-    roleTag: "Supporting liturgy & teaching",
-    image: kaleb,
-    verse: "“Let all that you do be done in love.”",
-    reference: "1 Corinthians 16:14",
+    bioBullets: [
+      "Supports the parish through liturgical service and teaching.",
+      "Serves the church community with humility and dedication.",
+      "Helps guide parishioners in Orthodox faith and spiritual growth.",
+      "Contributes to the worship and pastoral life of the parish.",
+    ],
   },
   {
     id: "priest5",
-    name: "Kesis Theodros",
+    name: "Qes Gebez Kaleb Tadesse",
     title: "Priest",
-    roleTag: "Supporting liturgy & teaching",
-    image: Theodros,
-    verse: "“Let all that you do be done in love.”",
-    reference: "1 Corinthians 16:14",
+    roleTag: "Liturgical & pastoral ministry",
+    image: kaleb,
+    bioBullets: [
+      "Moved to the United Kingdom in 2012.",
+      "Began his spiritual journey through Sunday School and church ministry.",
+      "Ordained deacon in 2012 and priest in 2022.",
+      "Currently serves as Qes Gebez, supporting liturgical and pastoral ministry.",
+    ],
   },
   {
     id: "priest6",
+    name: "Melake Mehiret Kesis Theodros Neguisse",
+    title: "Priest",
+    roleTag: "Spiritual leader, teacher & mentor",
+    image: Theodros,
+    bioBullets: [
+      "Founding member of Debre Genet Holy Trinity Ethiopian Orthodox Church.",
+      "Began serving as a deacon at Debre Amen Tekle Haymanot Church.",
+      "Ordained to the priesthood in 2012 in Belgium.",
+      "Served as Priest-in-Charge of Saint Michael Church in Sheffield for eight years.",
+    ],
+  },
+  {
+    id: "priest7",
     name: "Deacon Yohannes",
     title: "Deacon",
     roleTag: "Supporting liturgy & teaching",
     image: yohannes,
-    verse: "“Let all that you do be done in love.”",
-    reference: "1 Corinthians 16:14",
+    bioBullets: [
+      "Supports the clergy during liturgical services.",
+      "Serves the parish through prayer, worship, and church ministry.",
+      "Helps preserve the order and beauty of Orthodox worship.",
+      "Supports the spiritual life of the church community.",
+    ],
+  },
+
+  // ✅ Dummy additions
+  {
+    id: "priest8",
+    name: "Prist Samuel Kassa",
+    title: "Priest",
+    roleTag: "Parish support",
+    image: samuel,
+    bioBullets: [
+      "Serves the church community with dedication.",
+      "Supports liturgical and pastoral activities.",
+      "Guides parishioners in faith and prayer.",
+      "Committed to spiritual growth and service.",
+    ],
   },
 ];
-
 const stats = [
   { id: "stat-1", value: "2006", label: "Established in London" },
   { id: "stat-2", value: "Orthodox", label: "Ancient Christian tradition" },
@@ -96,13 +152,36 @@ function IconArrow() {
   );
 }
 
+function ClergyBackFace({ member }) {
+  return (
+    <div className="home-clergy-premium-face home-clergy-premium-face--back">
+      <span className="home-clergy-back-kicker">Biography</span>
+
+      <h3 className="home-clergy-back-name">{member.name}</h3>
+
+      <ul className="home-clergy-bio-list">
+        {member.bioBullets?.map((point, index) => (
+          <li key={`${member.id}-bio-${index}`}>{point}</li>
+        ))}
+      </ul>
+
+      <div className="home-clergy-back-meta">
+        <strong>{member.name}</strong>
+        <span>{member.title}</span>
+      </div>
+
+      <span className="home-clergy-tap-hint home-clergy-tap-hint--back">
+        Tap to return
+      </span>
+    </div>
+  );
+}
+
 export default function Home() {
   const { lang } = useLanguage();
   const t = texts[lang] || texts.en;
 
   const [flippedId, setFlippedId] = useState(null);
-
-  // Mobile carousel state
   const [mobileClergyIndex, setMobileClergyIndex] = useState(0);
   const [mobileClergyFlippedId, setMobileClergyFlippedId] = useState(null);
 
@@ -138,7 +217,6 @@ export default function Home() {
     setMobileClergyIndex(index);
   };
 
-  // Slower auto-slide and do not advance while reading back side
   useEffect(() => {
     if (mobileClergyFlippedId) return;
 
@@ -166,7 +244,6 @@ export default function Home() {
       <div className="home-page-glow home-page-glow-a" aria-hidden="true" />
       <div className="home-page-glow home-page-glow-b" aria-hidden="true" />
 
-      {/* HERO */}
       <section className="home-hero home-load home-load-delay-1">
         <div className="home-hero-grid">
           <div className="home-hero-copy">
@@ -236,7 +313,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CLERGY */}
       <section
         className="home-clergy-feature home-load home-load-delay-2"
         id="clergy"
@@ -251,7 +327,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* DESKTOP / TABLET MARQUEE */}
           <div className="home-clergy-scroller home-clergy-scroller--desktop">
             <div className="home-clergy-track">
               {carouselMembers.map((member, index) => {
@@ -269,7 +344,7 @@ export default function Home() {
                     } ${isFlipped ? "is-card-flipped" : ""}`}
                     onClick={() => handleCardClick(uniqueId)}
                     aria-pressed={isFlipped}
-                    aria-label={`View details for ${member.name}`}
+                    aria-label={`View biography for ${member.name}`}
                   >
                     <div
                       className={`home-clergy-premium-inner ${
@@ -288,27 +363,12 @@ export default function Home() {
                           <h3>{member.name}</h3>
                           <p className="home-clergy-role">{member.roleTag}</p>
                           <span className="home-clergy-tap-hint">
-                            Tap to read more
+                            Tap to read bio
                           </span>
                         </div>
                       </div>
 
-                      <div className="home-clergy-premium-face home-clergy-premium-face--back">
-                        <span className="home-clergy-back-kicker">
-                          Favourite Scripture
-                        </span>
-                        <p className="home-clergy-back-verse">{member.verse}</p>
-                        <p className="home-clergy-back-ref">{member.reference}</p>
-
-                        <div className="home-clergy-back-meta">
-                          <strong>{member.name}</strong>
-                          <span>{member.title}</span>
-                        </div>
-
-                        <span className="home-clergy-tap-hint home-clergy-tap-hint--back">
-                          Tap to return
-                        </span>
-                      </div>
+                      <ClergyBackFace member={member} />
                     </div>
                   </button>
                 );
@@ -316,7 +376,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* MOBILE SLIDER */}
           <div className="home-mobile-clergy-carousel">
             <div className="home-mobile-clergy-viewport">
               <div
@@ -337,7 +396,7 @@ export default function Home() {
                         }`}
                         onClick={() => handleMobileClergyFlip(member.id)}
                         aria-pressed={isFlipped}
-                        aria-label={`View details for ${member.name}`}
+                        aria-label={`View biography for ${member.name}`}
                       >
                         <div
                           className={`home-clergy-premium-inner ${
@@ -358,31 +417,12 @@ export default function Home() {
                                 {member.roleTag}
                               </p>
                               <span className="home-clergy-tap-hint">
-                                Tap to read more
+                                Tap to read bio
                               </span>
                             </div>
                           </div>
 
-                          <div className="home-clergy-premium-face home-clergy-premium-face--back">
-                            <span className="home-clergy-back-kicker">
-                              Favourite Scripture
-                            </span>
-                            <p className="home-clergy-back-verse">
-                              {member.verse}
-                            </p>
-                            <p className="home-clergy-back-ref">
-                              {member.reference}
-                            </p>
-
-                            <div className="home-clergy-back-meta">
-                              <strong>{member.name}</strong>
-                              <span>{member.title}</span>
-                            </div>
-
-                            <span className="home-clergy-tap-hint home-clergy-tap-hint--back">
-                              Tap to return
-                            </span>
-                          </div>
+                          <ClergyBackFace member={member} />
                         </div>
                       </button>
                     </div>
@@ -431,7 +471,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="home-cta home-load home-load-delay-4">
         <div className="home-cta-card">
           <div className="home-cta-copy">
