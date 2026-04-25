@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "../styling/events.css";
 import { useLanguage } from "../contexts/LanguageContext";
 import { sectionTexts } from "../i18n/sectionTexts";
@@ -6,11 +6,6 @@ import { sectionTexts } from "../i18n/sectionTexts";
 const EVENTS_FEED_URL =
   "https://dght.churchsuite.com/-/calendar/4b62ba5d-f1b0-45e3-86bc-7ac1e497980b/json";
 
-/**
- * Exclude sermon / reading categories from the Events page.
- * Category 13 = Sermons / Videos
- * Category 14 = Readings / PDFs
- */
 const EXCLUDED_CATEGORY_IDS = [13, 14];
 
 const EXCLUDED_CATEGORY_KEYWORDS = [
@@ -24,6 +19,7 @@ const EXCLUDED_CATEGORY_KEYWORDS = [
 
 const NEXT_EVENT_POPUP_STORAGE_KEY = "dght-next-event-popup-cooldown-v1";
 const POPUP_COOLDOWN_MS = 30 * 60 * 1000;
+const MOBILE_BREAKPOINT = 760;
 
 function stripHtml(html = "") {
   return String(html)
@@ -120,6 +116,7 @@ function formatEventRange(start, end, allDay, lang = "en") {
 
   const startTime = formatTime(start, lang);
   const endTime = end ? formatTime(end, lang) : "";
+
   return endTime ? `${startTime} – ${endTime}` : startTime;
 }
 
@@ -141,11 +138,7 @@ function sortByStartDateAsc(a, b) {
 
 function isUpcomingEvent(event) {
   if (!event?.startsAtDate) return false;
-
-  const eventTime = event.startsAtDate.getTime();
-  const now = Date.now();
-
-  return eventTime >= now - 15 * 60 * 1000;
+  return event.startsAtDate.getTime() >= Date.now() - 15 * 60 * 1000;
 }
 
 function getDayKeyFromDate(date) {
@@ -179,20 +172,15 @@ function getMonthGridDates(monthDate) {
   const gridStart = new Date(firstOfMonth);
   gridStart.setDate(firstOfMonth.getDate() - startDay);
 
-  const dates = [];
-
-  for (let i = 0; i < 42; i += 1) {
+  return Array.from({ length: 42 }, (_, index) => {
     const current = new Date(gridStart);
-    current.setDate(gridStart.getDate() + i);
-    dates.push(current);
-  }
-
-  return dates;
+    current.setDate(gridStart.getDate() + index);
+    return current;
+  });
 }
 
 function isDisplayableStatus(status) {
   if (!status) return true;
-
   const safeStatus = String(status).trim().toLowerCase();
   return ["confirmed", "published", "active", "live"].includes(safeStatus);
 }
@@ -200,9 +188,7 @@ function isDisplayableStatus(status) {
 function isExcludedEvent(event) {
   const categoryId = Number(event?.category_id);
 
-  if (EXCLUDED_CATEGORY_IDS.includes(categoryId)) {
-    return true;
-  }
+  if (EXCLUDED_CATEGORY_IDS.includes(categoryId)) return true;
 
   const categoryText = String(
     event?.category?.name ||
@@ -320,7 +306,7 @@ function EventDetailsCard({ event, lang, onClose, variant = "modal" }) {
         ×
       </button>
 
-      {hasImage ? (
+      {hasImage && (
         <div className="events-details-media">
           <img
             src={event.imageSrc}
@@ -329,7 +315,7 @@ function EventDetailsCard({ event, lang, onClose, variant = "modal" }) {
             loading="lazy"
           />
         </div>
-      ) : null}
+      )}
 
       <div className="events-details-content">
         <div className="events-details-pill-row">
@@ -337,11 +323,11 @@ function EventDetailsCard({ event, lang, onClose, variant = "modal" }) {
             {lang === "am" ? "የቤተክርስቲያን ፕሮግራም" : "Church Event"}
           </span>
 
-          {event.all_day ? (
+          {event.all_day && (
             <span className="events-details-pill events-details-pill--soft">
               {lang === "am" ? "ሙሉ ቀን" : "All day"}
             </span>
-          ) : null}
+          )}
         </div>
 
         <h3>{event.name || (lang === "am" ? "ፕሮግራም" : "Event")}</h3>
@@ -392,7 +378,7 @@ function EventDetailsCard({ event, lang, onClose, variant = "modal" }) {
         </div>
 
         <div className="events-details-actions">
-          {event.url ? (
+          {event.url && (
             <a
               href={event.url}
               target="_blank"
@@ -401,7 +387,7 @@ function EventDetailsCard({ event, lang, onClose, variant = "modal" }) {
             >
               {lang === "am" ? "ወደ ፕሮግራሙ ገጽ" : "Open Event Page"}
             </a>
-          ) : null}
+          )}
 
           <button
             type="button"
@@ -421,13 +407,21 @@ function Events() {
   const tRoot = sectionTexts[lang] || sectionTexts.en;
   const t = tRoot.events || {};
 
+  const today = useMemo(() => new Date(), []);
+  const todayKey = useMemo(() => getDayKeyFromDate(new Date()), []);
+
+  const calendarBoardRef = useRef(null);
+  const todayButtonRef = useRef(null);
+
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentMonth, setCurrentMonth] = useState(() => new Date());
+  const [currentMonth, setCurrentMonth] = useState(
+    () => new Date(today.getFullYear(), today.getMonth(), 1)
+  );
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [selectedDayKey, setSelectedDayKey] = useState("");
+  const [selectedDayKey, setSelectedDayKey] = useState(todayKey);
   const [showNextEventPopup, setShowNextEventPopup] = useState(false);
 
   useEffect(() => {
@@ -595,6 +589,30 @@ function Events() {
     return eventsByDay.get(selectedDayKey) || [];
   }, [eventsByDay, selectedDayKey]);
 
+  const todayEvents = useMemo(() => {
+    return eventsByDay.get(todayKey) || [];
+  }, [eventsByDay, todayKey]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!todayButtonRef.current) return;
+
+    const isMobile =
+      typeof window !== "undefined" && window.innerWidth <= MOBILE_BREAKPOINT;
+
+    if (!isMobile) return;
+
+    const timer = window.setTimeout(() => {
+      todayButtonRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
+    }, 350);
+
+    return () => window.clearTimeout(timer);
+  }, [loading, currentMonth]);
+
   function handlePreviousMonth() {
     setCurrentMonth(
       (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
@@ -605,6 +623,21 @@ function Events() {
     setCurrentMonth(
       (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
     );
+  }
+
+  function handleTodayClick() {
+    const now = new Date();
+
+    setCurrentMonth(new Date(now.getFullYear(), now.getMonth(), 1));
+    setSelectedDayKey(getDayKeyFromDate(now));
+
+    window.setTimeout(() => {
+      todayButtonRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
+    }, 120);
   }
 
   function openEventDetails(event, dayKey = "") {
@@ -618,11 +651,12 @@ function Events() {
   }
 
   function handleDayClick(date, dayEvents) {
-    if (!dayEvents?.length) return;
-
     const dayKey = getDayKeyFromDate(date);
     setSelectedDayKey(dayKey);
-    setSelectedEvent(dayEvents[0]);
+
+    if (dayEvents?.length) {
+      setSelectedEvent(dayEvents[0]);
+    }
   }
 
   function closeEventDetails() {
@@ -650,9 +684,13 @@ function Events() {
 
       <section className="events-calendar-wrap animate-fade-up">
         <div className="events-calendar-shell">
+          <div className="events-calendar-glow events-calendar-glow--one" />
+          <div className="events-calendar-glow events-calendar-glow--two" />
+
           <div className="events-calendar-topbar">
             <div className="events-calendar-topbar-copy">
               <div className="events-calendar-topbar-badge">
+                <span aria-hidden="true">✣</span>
                 {lang === "am"
                   ? "የቤተክርስቲያን ወርሃዊ መርሃ ግብር"
                   : "Monthly Church Calendar"}
@@ -680,6 +718,34 @@ function Events() {
               />
             </div>
           </div>
+
+          {nextEvent && (
+            <div className="events-next-banner">
+              <div>
+                <span className="events-next-banner-label">
+                  {lang === "am" ? "ቀጣይ ፕሮግራም" : "Next Event"}
+                </span>
+                <strong>{nextEvent.name}</strong>
+                <small>
+                  {formatFullDate(nextEvent.starts_at, lang)} •{" "}
+                  {formatEventRange(
+                    nextEvent.starts_at,
+                    nextEvent.ends_at,
+                    nextEvent.all_day,
+                    lang
+                  )}
+                </small>
+              </div>
+
+              <button
+                type="button"
+                className="events-next-banner-button"
+                onClick={() => openEventDetails(nextEvent, nextEvent.dayKey)}
+              >
+                {lang === "am" ? "ዝርዝር" : "View Details"}
+              </button>
+            </div>
+          )}
 
           {loading && (
             <div className="events-state events-loading">
@@ -710,8 +776,18 @@ function Events() {
                   ‹
                 </button>
 
-                <div className="events-calendar-month-label">
-                  {formatMonthYear(currentMonth, lang)}
+                <div className="events-calendar-month-group">
+                  <div className="events-calendar-month-label">
+                    {formatMonthYear(currentMonth, lang)}
+                  </div>
+
+                  <button
+                    type="button"
+                    className="events-calendar-today-button"
+                    onClick={handleTodayClick}
+                  >
+                    {lang === "am" ? "ዛሬ" : "Today"}
+                  </button>
                 </div>
 
                 <button
@@ -723,6 +799,22 @@ function Events() {
                   ›
                 </button>
               </div>
+
+              {todayEvents.length > 0 && (
+                <div className="events-today-strip">
+                  <span>{lang === "am" ? "ዛሬ" : "Today"}</span>
+                  <strong>
+                    {todayEvents.length}{" "}
+                    {todayEvents.length === 1
+                      ? lang === "am"
+                        ? "ፕሮግራም"
+                        : "event"
+                      : lang === "am"
+                      ? "ፕሮግራሞች"
+                      : "events"}
+                  </strong>
+                </div>
+              )}
 
               {searchTerm.trim() && (
                 <div className="events-search-results">
@@ -769,11 +861,11 @@ function Events() {
                             )}
                           </span>
 
-                          {event.shortDescription ? (
+                          {event.shortDescription && (
                             <span className="events-search-result-description">
                               {event.shortDescription}
                             </span>
-                          ) : null}
+                          )}
                         </button>
                       ))}
                     </div>
@@ -795,7 +887,7 @@ function Events() {
                 </div>
               )}
 
-              <div className="events-calendar-board">
+              <div className="events-calendar-board" ref={calendarBoardRef}>
                 <div className="events-calendar-weekdays">
                   {monthGridDates.slice(0, 7).map((date) => (
                     <div
@@ -808,18 +900,18 @@ function Events() {
                 </div>
 
                 <div className="events-calendar-grid">
-                  {monthGridDates.map((date) => {
+                  {monthGridDates.map((date, index) => {
                     const dayKey = getDayKeyFromDate(date);
                     const dayEvents = eventsByDay.get(dayKey) || [];
                     const isCurrentMonthDay = isSameMonth(date, currentMonth);
-                    const isToday =
-                      getDayKeyFromDate(date) === getDayKeyFromDate(new Date());
+                    const isToday = dayKey === todayKey;
                     const isSelected = selectedDayKey === dayKey;
 
                     return (
                       <button
                         type="button"
                         key={dayKey}
+                        ref={isToday ? todayButtonRef : null}
                         className={[
                           "events-calendar-day",
                           isCurrentMonthDay
@@ -833,8 +925,10 @@ function Events() {
                         ]
                           .filter(Boolean)
                           .join(" ")}
+                        style={{ "--day-index": index }}
                         onClick={() => handleDayClick(date, dayEvents)}
-                        aria-label={`${formatFullDate(
+                        aria-current={isToday ? "date" : undefined}
+                        aria-label={`${isToday ? "Today, " : ""}${formatFullDate(
                           date.toISOString(),
                           lang
                         )}${
@@ -845,8 +939,16 @@ function Events() {
                             : ""
                         }`}
                       >
-                        <div className="events-calendar-day-number">
-                          {date.getDate()}
+                        <div className="events-calendar-day-head">
+                          <span className="events-calendar-day-number">
+                            {date.getDate()}
+                          </span>
+
+                          {isToday && (
+                            <span className="events-calendar-today-pill">
+                              {lang === "am" ? "ዛሬ" : "Today"}
+                            </span>
+                          )}
                         </div>
 
                         <div className="events-calendar-day-events">
@@ -863,12 +965,12 @@ function Events() {
                             </span>
                           ))}
 
-                          {dayEvents.length > 2 ? (
+                          {dayEvents.length > 2 && (
                             <span className="events-calendar-event-more">
                               +{dayEvents.length - 2}{" "}
                               {lang === "am" ? "ተጨማሪ" : "more"}
                             </span>
-                          ) : null}
+                          )}
                         </div>
                       </button>
                     );
@@ -876,57 +978,74 @@ function Events() {
                 </div>
               </div>
 
-              {selectedDayEvents.length > 0 && (
+              {selectedDayKey && (
                 <section className="events-selected-day-panel">
                   <div className="events-selected-day-header">
                     <div>
                       <div className="events-selected-day-badge">
-                        {lang === "am" ? "የተመረጠ ቀን" : "Selected Date"}
+                        {selectedDayKey === todayKey
+                          ? lang === "am"
+                            ? "ዛሬ"
+                            : "Today"
+                          : lang === "am"
+                          ? "የተመረጠ ቀን"
+                          : "Selected Date"}
                       </div>
 
                       <h3>
-                        {selectedEvent?.starts_at
-                          ? formatFullDate(selectedEvent.starts_at, lang)
-                          : lang === "am"
-                          ? "የቀኑ ፕሮግራሞች"
-                          : "Events for this Day"}
+                        {formatFullDate(`${selectedDayKey}T12:00:00`, lang) ||
+                          (lang === "am"
+                            ? "የቀኑ ፕሮግራሞች"
+                            : "Events for this Day")}
                       </h3>
                     </div>
                   </div>
 
-                  <div className="events-selected-day-list">
-                    {selectedDayEvents.map((event) => (
-                      <button
-                        type="button"
-                        key={`selected-${event.id}`}
-                        className={`events-selected-day-item ${
-                          selectedEvent?.id === event.id
-                            ? "events-selected-day-item--active"
-                            : ""
-                        }`}
-                        onClick={() => openEventDetails(event, selectedDayKey)}
-                      >
-                        <span className="events-selected-day-item-title">
-                          {event.name}
-                        </span>
-
-                        <span className="events-selected-day-item-time">
-                          {formatEventRange(
-                            event.starts_at,
-                            event.ends_at,
-                            event.all_day,
-                            lang
-                          )}
-                        </span>
-
-                        {event.shortDescription ? (
-                          <span className="events-selected-day-item-description">
-                            {event.shortDescription}
+                  {selectedDayEvents.length > 0 ? (
+                    <div className="events-selected-day-list">
+                      {selectedDayEvents.map((event) => (
+                        <button
+                          type="button"
+                          key={`selected-${event.id}`}
+                          className={`events-selected-day-item ${
+                            selectedEvent?.id === event.id
+                              ? "events-selected-day-item--active"
+                              : ""
+                          }`}
+                          onClick={() => openEventDetails(event, selectedDayKey)}
+                        >
+                          <span className="events-selected-day-item-title">
+                            {event.name}
                           </span>
-                        ) : null}
-                      </button>
-                    ))}
-                  </div>
+
+                          <span className="events-selected-day-item-time">
+                            {formatEventRange(
+                              event.starts_at,
+                              event.ends_at,
+                              event.all_day,
+                              lang
+                            )}
+                          </span>
+
+                          {event.shortDescription && (
+                            <span className="events-selected-day-item-description">
+                              {event.shortDescription}
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="events-selected-day-empty">
+                      {selectedDayKey === todayKey
+                        ? lang === "am"
+                          ? "ለዛሬ የታቀደ ፕሮግራም የለም።"
+                          : "No event listed for today."
+                        : lang === "am"
+                        ? "በዚህ ቀን ፕሮግራም የለም።"
+                        : "No events listed for this date."}
+                    </div>
+                  )}
                 </section>
               )}
             </>
