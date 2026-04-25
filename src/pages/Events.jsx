@@ -8,10 +8,19 @@ const EVENTS_FEED_URL =
 
 /**
  * Exclude sermon / reading categories from the Events page.
- * Keep this category-based only so normal event descriptions
- * do not accidentally disappear.
+ * Category 13 = Sermons / Videos
+ * Category 14 = Readings / PDFs
  */
-const EXCLUDED_CATEGORY_IDS = [13];
+const EXCLUDED_CATEGORY_IDS = [13, 14];
+
+const EXCLUDED_CATEGORY_KEYWORDS = [
+  "sermon",
+  "sermons",
+  "reading",
+  "readings",
+  "teaching",
+  "teachings",
+];
 
 const NEXT_EVENT_POPUP_STORAGE_KEY = "dght-next-event-popup-cooldown-v1";
 const POPUP_COOLDOWN_MS = 30 * 60 * 1000;
@@ -165,16 +174,19 @@ function getMonthGridDates(monthDate) {
     monthDate.getMonth(),
     1
   );
+
   const startDay = firstOfMonth.getDay();
   const gridStart = new Date(firstOfMonth);
   gridStart.setDate(firstOfMonth.getDate() - startDay);
 
   const dates = [];
+
   for (let i = 0; i < 42; i += 1) {
     const current = new Date(gridStart);
     current.setDate(gridStart.getDate() + i);
     dates.push(current);
   }
+
   return dates;
 }
 
@@ -187,7 +199,22 @@ function isDisplayableStatus(status) {
 
 function isExcludedEvent(event) {
   const categoryId = Number(event?.category_id);
-  return EXCLUDED_CATEGORY_IDS.includes(categoryId);
+
+  if (EXCLUDED_CATEGORY_IDS.includes(categoryId)) {
+    return true;
+  }
+
+  const categoryText = String(
+    event?.category?.name ||
+      event?.category_name ||
+      event?.category ||
+      event?.category_slug ||
+      ""
+  ).toLowerCase();
+
+  return EXCLUDED_CATEGORY_KEYWORDS.some((keyword) =>
+    categoryText.includes(keyword)
+  );
 }
 
 function normalizeEvent(event) {
@@ -246,8 +273,7 @@ function renderDescriptionLines(descriptionText) {
           className="events-details-description-row events-details-description-row--label"
         >
           <span className="events-details-description-text">
-            <strong>{label.trim()}:</strong>{" "}
-            {rest}
+            <strong>{label.trim()}:</strong> {rest}
           </span>
         </div>
       );
@@ -349,9 +375,7 @@ function EventDetailsCard({ event, lang, onClose, variant = "modal" }) {
               </span>
               <span>
                 {event.location?.name || ""}
-                {event.location?.address
-                  ? ` • ${event.location.address}`
-                  : ""}
+                {event.location?.address ? ` • ${event.location.address}` : ""}
               </span>
             </div>
           )}
@@ -494,6 +518,7 @@ function Events() {
 
     const timer = window.setTimeout(() => {
       setShowNextEventPopup(true);
+
       window.localStorage.setItem(
         storageKey,
         JSON.stringify({
@@ -809,7 +834,10 @@ function Events() {
                           .filter(Boolean)
                           .join(" ")}
                         onClick={() => handleDayClick(date, dayEvents)}
-                        aria-label={`${formatFullDate(date.toISOString(), lang)}${
+                        aria-label={`${formatFullDate(
+                          date.toISOString(),
+                          lang
+                        )}${
                           dayEvents.length
                             ? ` - ${dayEvents.length} ${
                                 lang === "am" ? "ፕሮግራሞች" : "events"

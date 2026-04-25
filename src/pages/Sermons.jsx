@@ -14,6 +14,9 @@ const CHURCHSUITE_SERMONS_FEED_URL =
 const CHURCHSUITE_VIDEO_CATEGORY_ID = 13;
 const CHURCHSUITE_READING_CATEGORY_ID = 14;
 
+const DEFAULT_LATEST_VIDEOS = 6;
+const DEFAULT_LATEST_READING = 6;
+
 const trackEvent = (action, params = {}) => {
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
     window.gtag("event", action, params);
@@ -22,9 +25,6 @@ const trackEvent = (action, params = {}) => {
 
 const YT_EMBED = (id) =>
   `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
-
-const DEFAULT_LATEST_VIDEOS = 6;
-const DEFAULT_LATEST_READING = 6;
 
 function normalizeText(value) {
   return (value || "").toString().trim();
@@ -39,11 +39,15 @@ function htmlToPlainText(html = "") {
       .replace(/<\/p>/gi, "\n")
       .replace(/<\/div>/gi, "\n")
       .replace(/<\/li>/gi, "\n")
-      .replace(/&amp;/gi, "&");
+      .replace(/&amp;/gi, "&")
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;/gi, "'")
+      .replace(/&nbsp;/gi, " ");
 
     if (typeof window !== "undefined" && window.DOMParser) {
       const parser = new window.DOMParser();
       const doc = parser.parseFromString(withBreaks, "text/html");
+
       return (doc.body.textContent || "")
         .replace(/\u00a0/g, " ")
         .replace(/\r/g, "")
@@ -51,7 +55,12 @@ function htmlToPlainText(html = "") {
         .trim();
     }
 
-    return withBreaks.replace(/<[^>]*>/g, "").trim();
+    return withBreaks
+      .replace(/<[^>]*>/g, "")
+      .replace(/\u00a0/g, " ")
+      .replace(/\r/g, "")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
   } catch {
     return String(html).replace(/<[^>]*>/g, "").trim();
   }
@@ -61,10 +70,78 @@ function extractField(text = "", label = "") {
   if (!text || !label) return "";
 
   const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const regex = new RegExp(`^\\s*${escapedLabel}\\s*:\\s*(.+)\\s*$`, "im");
+
+  const regex = new RegExp(
+    `^\\s*${escapedLabel}\\s*:\\s*(.+?)(?=\\n\\s*(Author|Speaker|Series|PDF|YouTube|Tags|Language|Excerpt)\\s*:|$)`,
+    "ims"
+  );
+
   const match = text.match(regex);
 
-  return match?.[1]?.trim() || "";
+  return match?.[1]?.replace(/\s+/g, " ").trim() || "";
+}
+
+function extractFirstUrl(value = "") {
+  const raw = String(value || "");
+
+  const hrefMatch = raw.match(/href=["']([^"']+)["']/i);
+  if (hrefMatch?.[1]) return hrefMatch[1].trim();
+
+  const textMatch = raw.match(/https?:\/\/[^\s"'<>]+/i);
+  return textMatch?.[0]?.trim() || "";
+}
+
+function extractPdfUrl(rawDescription = "", plainDescription = "") {
+  const rawPdfField = extractField(rawDescription, "PDF");
+  const plainPdfField = extractField(plainDescription, "PDF");
+
+  const pdfFieldUrl =
+    extractFirstUrl(rawPdfField) || extractFirstUrl(plainPdfField);
+
+  if (pdfFieldUrl) return pdfFieldUrl;
+
+  const allUrls = [
+    ...String(rawDescription || "").matchAll(/https?:\/\/[^\s"'<>]+/gi),
+    ...String(plainDescription || "").matchAll(/https?:\/\/[^\s"'<>]+/gi),
+  ].map((match) => match[0]);
+
+  const pdfLikeUrl = allUrls.find((url) => {
+    const lower = url.toLowerCase();
+
+    return (
+      lower.includes("drive.google.com") ||
+      lower.includes(".pdf")
+    );
+  });
+
+  return pdfLikeUrl || "";
+}
+function hasYoutubeLink(event) {
+  const plainDescription = htmlToPlainText(event?.description || "");
+  const youtubeUrl = extractField(plainDescription, "YouTube");
+
+  return Boolean(extractYoutubeId(youtubeUrl));
+}
+function normalizeKey(value = "") {
+  return String(value)
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function dedupeByKey(items = [], getKey) {
+  const seen = new Set();
+
+  return items.filter((item) => {
+    const key = getKey(item);
+
+    if (!key || seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
 }
 
 function extractYoutubeId(value = "") {
@@ -91,6 +168,7 @@ function extractYoutubeId(value = "") {
 
       const parts = url.pathname.split("/").filter(Boolean);
       const embedIndex = parts.findIndex((part) => part === "embed");
+
       if (embedIndex >= 0 && parts[embedIndex + 1]) {
         return parts[embedIndex + 1].trim();
       }
@@ -110,26 +188,71 @@ function buildYoutubeThumbnail(youtubeId = "") {
 
 function splitTags(value = "") {
   if (!value) return [];
+
   return value
     .split(",")
     .map((tag) => tag.trim())
     .filter(Boolean);
 }
 
+function getChurchSuiteCategoryText(event) {
+  return String(
+    event?.category?.name ||
+      event?.category_name ||
+      event?.category ||
+      event?.category_slug ||
+      ""
+  ).toLowerCase();
+}
+
+function isChurchSuiteReadingEvent(event) {
+  const categoryId = Number(event?.category_id);
+  const categoryText = getChurchSuiteCategoryText(event);
+  const plainDescription = htmlToPlainText(event?.description || "");
+  const pdfUrl = extractPdfUrl(event?.description || "", plainDescription);
+
+  return (
+    !hasYoutubeLink(event) &&
+    (
+      categoryId === CHURCHSUITE_READING_CATEGORY_ID ||
+      categoryText.includes("reading") ||
+      categoryText.includes("readings") ||
+      categoryText.includes("material") ||
+      categoryText.includes("materials") ||
+      Boolean(pdfUrl)
+    )
+  );
+}
+
+function isChurchSuiteVideoEvent(event) {
+  const categoryId = Number(event?.category_id);
+  const categoryText = getChurchSuiteCategoryText(event);
+
+  return (
+    categoryId === CHURCHSUITE_VIDEO_CATEGORY_ID ||
+    categoryText.includes("video") ||
+    categoryText.includes("videos") ||
+    categoryText.includes("sermon") ||
+    categoryText.includes("sermons") ||
+    hasYoutubeLink(event)
+  );
+}
+
 function buildExcerptFromDescription(description = "") {
   const plain = htmlToPlainText(description);
   if (!plain) return "";
+
+  const explicitExcerpt = extractField(plain, "Excerpt");
+  if (explicitExcerpt) return explicitExcerpt;
 
   const lines = plain
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
 
-  const explicitExcerpt = extractField(plain, "Excerpt");
-  if (explicitExcerpt) return explicitExcerpt;
-
   const filtered = lines.filter((line) => {
     const lower = line.toLowerCase();
+
     return !(
       lower.startsWith("speaker:") ||
       lower.startsWith("author:") ||
@@ -147,6 +270,7 @@ function buildExcerptFromDescription(description = "") {
 
 function mapChurchSuiteEventToVideo(event) {
   const plainDescription = htmlToPlainText(event?.description || "");
+
   const speaker = extractField(plainDescription, "Speaker");
   const series = extractField(plainDescription, "Series");
   const youtubeUrl = extractField(plainDescription, "YouTube");
@@ -182,11 +306,13 @@ function mapChurchSuiteEventToVideo(event) {
 
 function mapChurchSuiteEventToTeaching(event) {
   const plainDescription = htmlToPlainText(event?.description || "");
+
   const author =
     extractField(plainDescription, "Author") ||
     extractField(plainDescription, "Speaker");
+
   const series = extractField(plainDescription, "Series");
-  const pdfUrl = extractField(plainDescription, "PDF");
+  const pdfUrl = extractPdfUrl(event?.description || "", plainDescription);
   const tagsValue = extractField(plainDescription, "Tags");
   const languageValue = extractField(plainDescription, "Language");
   const excerpt = buildExcerptFromDescription(plainDescription);
@@ -199,13 +325,14 @@ function mapChurchSuiteEventToTeaching(event) {
     "";
 
   return {
-    _id: event?.identifier || `churchsuite-reading-${event?.id || Math.random()}`,
+    _id:
+      event?.identifier || `churchsuite-reading-${event?.id || Math.random()}`,
     _createdAt: event?.starts_at || "",
     title: normalizeText(event?.name),
     excerpt: normalizeText(excerpt),
     description: plainDescription,
-    series: normalizeText(series),
-    author: normalizeText(author),
+    series: normalizeText(series) || "Reading Material",
+    author: normalizeText(author) || "Debre-Genet Holy Trinity",
     topicTags: splitTags(tagsValue),
     publishedAt: event?.starts_at || "",
     isFeatured: false,
@@ -238,6 +365,7 @@ export default function Sermons() {
 
   const formatDate = (iso) => {
     if (!iso) return "";
+
     try {
       return new Date(iso).toLocaleDateString(
         lang === "am" ? "am-ET" : "en-GB",
@@ -274,8 +402,11 @@ export default function Sermons() {
         const [churchSuiteRes, sanityRes] = await Promise.all([
           fetch(CHURCHSUITE_SERMONS_FEED_URL).then((res) => {
             if (!res.ok) {
-              throw new Error(`ChurchSuite fetch failed with status ${res.status}`);
+              throw new Error(
+                `ChurchSuite fetch failed with status ${res.status}`
+              );
             }
+
             return res.json();
           }),
           client.fetch(sanityQuery),
@@ -287,21 +418,33 @@ export default function Sermons() {
           ? churchSuiteRes.events
           : [];
 
-        const churchSuiteVideoEvents = churchSuiteEvents.filter(
-          (event) => Number(event?.category_id) === CHURCHSUITE_VIDEO_CATEGORY_ID
+        const churchSuiteReadingEvents = churchSuiteEvents.filter((event) =>
+          isChurchSuiteReadingEvent(event)
         );
 
-        const churchSuiteReadingEvents = churchSuiteEvents.filter(
-          (event) => Number(event?.category_id) === CHURCHSUITE_READING_CATEGORY_ID
+        const churchSuiteVideoEvents = churchSuiteEvents.filter((event) => {
+          return (
+            isChurchSuiteVideoEvent(event) && !isChurchSuiteReadingEvent(event)
+          );
+        });
+
+        const churchSuiteVideos = dedupeByKey(
+          churchSuiteVideoEvents
+            .map(mapChurchSuiteEventToVideo)
+            .filter((item) => item.title && item.youtubeId),
+          (item) =>
+            normalizeKey(
+              `${item.title}|${item.youtubeId || ""}|${item.series || ""}`
+            )
         );
 
-        const churchSuiteVideos = churchSuiteVideoEvents
-          .map(mapChurchSuiteEventToVideo)
-          .filter((item) => item.youtubeId);
-
-        const churchSuiteTeachings = churchSuiteReadingEvents
-          .map(mapChurchSuiteEventToTeaching)
-          .filter((item) => item.pdfUrl);
+        const churchSuiteTeachings = dedupeByKey(
+          churchSuiteReadingEvents
+            .map(mapChurchSuiteEventToTeaching)
+            .filter((item) => item.title),
+          (item) =>
+            normalizeKey(`${item.title}|${item.author || ""}|${item.series || ""}`)
+        );
 
         const safeQa =
           Array.isArray(sanityRes?.qaItems) && sanityRes.qaItems.length > 0
@@ -319,12 +462,16 @@ export default function Sermons() {
         setQaItems(safeQa);
       } catch (err) {
         console.error("Error fetching sermons content:", err);
+
         if (!isMounted) return;
+
         setVideos([]);
         setTeachings([]);
         setQaItems([]);
       } finally {
-        if (isMounted) setLoadingContent(false);
+        if (isMounted) {
+          setLoadingContent(false);
+        }
       }
     }
 
@@ -344,6 +491,7 @@ export default function Sermons() {
     };
 
     window.addEventListener("keydown", onKey);
+
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
@@ -351,12 +499,14 @@ export default function Sermons() {
     const onDown = (e) => {
       if (!mobileTabOpen) return;
       if (!mobileMenuRef.current) return;
+
       if (!mobileMenuRef.current.contains(e.target)) {
         setMobileTabOpen(false);
       }
     };
 
     document.addEventListener("pointerdown", onDown);
+
     return () => document.removeEventListener("pointerdown", onDown);
   }, [mobileTabOpen]);
 
@@ -371,24 +521,28 @@ export default function Sermons() {
   const allTags = useMemo(() => {
     const tags = new Set();
 
-    (videos || []).forEach((v) => {
-      (v.topicTags || []).forEach((tag) => {
-        if (tag) tags.add(tag);
+    if (activeTab === "videos") {
+      (videos || []).forEach((v) => {
+        (v.topicTags || []).forEach((tag) => {
+          if (tag) tags.add(tag);
+        });
       });
-    });
+    }
 
-    (teachings || []).forEach((d) => {
-      (d.topicTags || []).forEach((tag) => {
-        if (tag) tags.add(tag);
+    if (activeTab === "teachings") {
+      (teachings || []).forEach((d) => {
+        (d.topicTags || []).forEach((tag) => {
+          if (tag) tags.add(tag);
+        });
       });
-    });
+    }
 
     return [allLabel, ...Array.from(tags).sort((a, b) => a.localeCompare(b))];
-  }, [videos, teachings, allLabel]);
+  }, [videos, teachings, activeTab, allLabel]);
 
   useEffect(() => {
     setActiveTag(allLabel);
-  }, [allLabel]);
+  }, [allLabel, activeTab]);
 
   const matchesQuery = (item) => {
     const q = normalize(searchQuery);
@@ -401,6 +555,7 @@ export default function Sermons() {
       item.series,
       item.speaker,
       item.author,
+      item.language,
       ...(item.topicTags || []),
     ]
       .filter(Boolean)
@@ -418,6 +573,7 @@ export default function Sermons() {
   const sortByDate = (a, b) => {
     const da = new Date(a.publishedAt || a._createdAt || 0).getTime();
     const db = new Date(b.publishedAt || b._createdAt || 0).getTime();
+
     return sortMode === "newest" ? db - da : da - db;
   };
 
@@ -458,7 +614,8 @@ export default function Sermons() {
 
     setOpenVideo({
       youtubeId: video.youtubeId,
-      title: video.title || (lang === "am" ? "የቤተክርስቲያን ቪዲዮ" : "Church video"),
+      title:
+        video.title || (lang === "am" ? "የቤተክርስቲያን ቪዲዮ" : "Church video"),
     });
 
     trackEvent("sermon_video_opened", {
@@ -502,10 +659,12 @@ export default function Sermons() {
   const resetLabel = lang === "am" ? "እንደገና አስጀምር" : "Reset";
   const clearLabel = lang === "am" ? "ፈልግን አጥፋ" : "Clear search";
   const sortAria = lang === "am" ? "መደርደሪያ" : "Sort";
+
   const searchAria =
     lang === "am"
       ? "ስብከቶችን እና የንባብ ትምህርቶችን ፈልግ"
       : "Search sermons and reading materials";
+
   const tabsAria = lang === "am" ? "የስብከት ታቦች" : "Sermons tabs";
   const closeMenuLabel = lang === "am" ? "ሜኑን ዝጋ" : "Close menu";
 
@@ -541,17 +700,21 @@ export default function Sermons() {
           role="tab"
           aria-selected={activeTab === "videos"}
         >
-          {desktopLabels.videos} <span className="tab-count">({tabVideoCount})</span>
+          {desktopLabels.videos}{" "}
+          <span className="tab-count">({tabVideoCount})</span>
         </button>
 
         <button
           type="button"
-          className={`sermons-tab ${activeTab === "teachings" ? "active" : ""}`}
+          className={`sermons-tab ${
+            activeTab === "teachings" ? "active" : ""
+          }`}
           onClick={() => changeTab("teachings")}
           role="tab"
           aria-selected={activeTab === "teachings"}
         >
-          {desktopLabels.teachings} <span className="tab-count">({tabTeachCount})</span>
+          {desktopLabels.teachings}{" "}
+          <span className="tab-count">({tabTeachCount})</span>
         </button>
 
         <button
@@ -605,32 +768,45 @@ export default function Sermons() {
           </button>
 
           {mobileTabOpen && (
-            <div className="sermons-mobile-menu" id="sermons-mobile-menu" role="menu">
+            <div
+              className="sermons-mobile-menu"
+              id="sermons-mobile-menu"
+              role="menu"
+            >
               <button
                 type="button"
-                className={`sermons-mobile-item ${activeTab === "videos" ? "active" : ""}`}
+                className={`sermons-mobile-item ${
+                  activeTab === "videos" ? "active" : ""
+                }`}
                 role="menuitem"
                 onClick={() => changeTab("videos")}
               >
-                {desktopLabels.videos} <span className="tab-count">({tabVideoCount})</span>
+                {desktopLabels.videos}{" "}
+                <span className="tab-count">({tabVideoCount})</span>
               </button>
 
               <button
                 type="button"
-                className={`sermons-mobile-item ${activeTab === "teachings" ? "active" : ""}`}
+                className={`sermons-mobile-item ${
+                  activeTab === "teachings" ? "active" : ""
+                }`}
                 role="menuitem"
                 onClick={() => changeTab("teachings")}
               >
-                {desktopLabels.teachings} <span className="tab-count">({tabTeachCount})</span>
+                {desktopLabels.teachings}{" "}
+                <span className="tab-count">({tabTeachCount})</span>
               </button>
 
               <button
                 type="button"
-                className={`sermons-mobile-item ${activeTab === "qa" ? "active" : ""}`}
+                className={`sermons-mobile-item ${
+                  activeTab === "qa" ? "active" : ""
+                }`}
                 role="menuitem"
                 onClick={() => changeTab("qa")}
               >
-                {desktopLabels.qa} <span className="tab-count">({tabQaCount})</span>
+                {desktopLabels.qa}{" "}
+                <span className="tab-count">({tabQaCount})</span>
               </button>
             </div>
           )}
@@ -649,7 +825,11 @@ export default function Sermons() {
         </div>
 
         {(searchIsActive || sortMode !== "newest") && activeTab !== "qa" && (
-          <button className="sermons-reset" onClick={resetFilters} type="button">
+          <button
+            className="sermons-reset"
+            onClick={resetFilters}
+            type="button"
+          >
             {resetLabel}
           </button>
         )}
@@ -729,6 +909,7 @@ export default function Sermons() {
           >
             <div className="sermons-modal-top">
               <h3 className="sermons-modal-title">{openVideo.title}</h3>
+
               <button
                 className="sermons-modal-close"
                 onClick={() => setOpenVideo(null)}

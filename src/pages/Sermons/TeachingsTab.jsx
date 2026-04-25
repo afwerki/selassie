@@ -4,8 +4,12 @@ function toPlainText(value = "") {
   return String(value)
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/p>/gi, "\n")
+    .replace(/<\/div>/gi, "\n")
     .replace(/<[^>]*>/g, "")
     .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, " ")
     .replace(/\u00a0/g, " ")
     .replace(/\r/g, "")
     .trim();
@@ -14,11 +18,17 @@ function toPlainText(value = "") {
 function getStructuredField(text = "", label = "") {
   if (!text || !label) return "";
 
-  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const regex = new RegExp(`^\\s*${escaped}\\s*:\\s*(.+)\\s*$`, "im");
-  const match = text.match(regex);
+  const plainText = toPlainText(text);
+  const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-  return match?.[1]?.trim() || "";
+  const regex = new RegExp(
+    `^\\s*${escapedLabel}\\s*:\\s*(.+?)(?=\\n\\s*(Author|Speaker|Series|PDF|YouTube|Tags|Language|Excerpt)\\s*:|$)`,
+    "ims"
+  );
+
+  const match = plainText.match(regex);
+
+  return match?.[1]?.replace(/\s+/g, " ").trim() || "";
 }
 
 function getCleanExcerpt(item) {
@@ -27,6 +37,9 @@ function getCleanExcerpt(item) {
 
   const raw = toPlainText(item?.description || "");
   if (!raw) return "";
+
+  const structuredExcerpt = getStructuredField(raw, "Excerpt");
+  if (structuredExcerpt) return structuredExcerpt;
 
   const lines = raw
     .split("\n")
@@ -47,11 +60,7 @@ function getCleanExcerpt(item) {
     );
   });
 
-  const joined = filtered.join(" ").replace(/\s+/g, " ").trim();
-  if (joined) return joined;
-
-  const structuredExcerpt = getStructuredField(raw, "Excerpt");
-  return structuredExcerpt || "";
+  return filtered.join(" ").replace(/\s+/g, " ").trim();
 }
 
 function getAuthor(item) {
@@ -72,15 +81,16 @@ function getSeries(item) {
 }
 
 function getLanguage(item) {
-  return getStructuredField(item?.description || "", "Language") || "";
+  return item?.language || getStructuredField(item?.description || "", "Language") || "";
 }
 
 function getPdfUrl(item) {
-  return (
+  const pdfUrl =
     item?.pdfUrl ||
     getStructuredField(item?.description || "", "PDF") ||
-    ""
-  );
+    "";
+
+  return String(pdfUrl).trim();
 }
 
 export default function TeachingsTab({
@@ -130,6 +140,7 @@ export default function TeachingsTab({
 
                 <div className="teaching-top">
                   <span className="tag-pill">{series}</span>
+
                   {d.isFeatured && (
                     <span className="featured-pill featured-pill--soft">
                       Featured
@@ -192,11 +203,13 @@ export default function TeachingsTab({
         </div>
       )}
 
-      {!loading && !searchIsActive && filteredTeachings.length > defaultLatest && (
-        <div className="sermons-more-note">
-          More reading materials are available — use search or tags to explore more.
-        </div>
-      )}
+      {!loading &&
+        !searchIsActive &&
+        filteredTeachings.length > defaultLatest && (
+          <div className="sermons-more-note">
+            More reading materials are available — use search or tags to explore more.
+          </div>
+        )}
     </div>
   );
 }
