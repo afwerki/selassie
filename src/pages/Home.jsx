@@ -32,19 +32,26 @@ const clergyMembers = [
       "Dedicated to theological teaching and liturgical instruction.",
     ],
   },
+
+  // ✅ UPDATED
   {
     id: "priest2",
     name: "Megabi Haddis Kesis Kibret Asnakew",
     title: "Parish Priest",
-    roleTag: "Teacher & liturgical servant",
+    roleTag: "Abenet Memhir & liturgical teacher",
     image: Kibret,
     bioBullets: [
       "Moved to the United Kingdom in 2015.",
-      "Serves at Debre Genet Kidist Selassie Church in London.",
-      "Ordained to the priesthood in 2012.",
-      "Serves as an Abenet Memhir, specialising in the New Testament and Divine Liturgy.",
+      "Serves at Debre Genet Kidist Selassie Church, London.",
+      "Began his service as a deacon.",
+      "Ordained priest in 2012 in Addis Ababa.",
+      "Ordained by His Grace Abune Hezkael.",
+      "Blessed with two children — one son and one daughter.",
+      "Abenet Memhir specialising in the New Testament and Divine Liturgy.",
+      "Recognised for dedication to theological teaching and liturgical instruction.",
     ],
   },
+
   {
     id: "priest3",
     name: "Kesis Addis",
@@ -58,6 +65,7 @@ const clergyMembers = [
       "Helps strengthen the church family through dedicated ministry.",
     ],
   },
+
   {
     id: "priest4",
     name: "Kesis Feseha",
@@ -71,6 +79,8 @@ const clergyMembers = [
       "Contributes to the worship and pastoral life of the parish.",
     ],
   },
+
+  // ✅ UPDATED
   {
     id: "priest5",
     name: "Qes Gebez Kaleb Tadesse",
@@ -79,11 +89,16 @@ const clergyMembers = [
     image: kaleb,
     bioBullets: [
       "Moved to the United Kingdom in 2012.",
-      "Began his spiritual journey through Sunday School and church ministry.",
-      "Ordained deacon in 2012 and priest in 2022.",
-      "Currently serves as Qes Gebez, supporting liturgical and pastoral ministry.",
+      "Began spiritual journey through Sunday School and church ministry.",
+      "Ordained deacon in 2012 by His Grace Abune Entos.",
+      "Ordained priest in 2022 by His Grace Abune Yaqob.",
+      "Blessed with three daughters.",
+      "Serves as Qes Gebez supporting liturgical and pastoral ministry.",
+      "Believes service is an expression of love for God and humanity.",
     ],
   },
+
+  // ✅ UPDATED
   {
     id: "priest6",
     name: "Melake Mehiret Kesis Theodros Neguisse",
@@ -91,12 +106,16 @@ const clergyMembers = [
     roleTag: "Spiritual leader, teacher & mentor",
     image: Theodros,
     bioBullets: [
-      "Founding member of Debre Genet Holy Trinity Ethiopian Orthodox Church.",
+      "Founding member of Debre Genet Holy Trinity Church, London.",
       "Began serving as a deacon at Debre Amen Tekle Haymanot Church.",
-      "Ordained to the priesthood in 2012 in Belgium.",
-      "Served as Priest-in-Charge of Saint Michael Church in Sheffield for eight years.",
+      "Moved to the United Kingdom and pursued engineering studies.",
+      "Ordained priest in 2012 in Belgium by His Grace Abune Mussa.",
+      "Served as Priest-in-Charge in Sheffield for 8 years.",
+      "Married with four children — two sons and two daughters.",
+      "Respected spiritual leader known for teaching and mentorship.",
     ],
   },
+
   {
     id: "priest7",
     name: "Deacon Yohannes",
@@ -111,7 +130,6 @@ const clergyMembers = [
     ],
   },
 
-  // ✅ Dummy additions
   {
     id: "priest8",
     name: "Prist Samuel Kassa",

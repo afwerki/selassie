@@ -9,18 +9,69 @@ import slide2 from "../assets/images/church7.JPG";
 import slide3 from "../assets/images/church9.JPG";
 
 import heroVideo1 from "../assets/videos/modified_1.MP4";
-import heroVideo2 from "../assets/videos/kids.mov";
+import heroVideo2 from "../assets/videos/kids.mp4";
 import heroVideo3 from "../assets/videos/church_inside2.MP4";
 
 const heroImages = [slide1, slide2, slide3];
 const heroVideos = [heroVideo1, heroVideo2, heroVideo3];
+
 const IMAGE_SLIDE_DURATION = 7000;
+const VIDEO_FALLBACK_DURATION = 9000;
 const MOBILE_BREAKPOINT = 760;
 
 function getVideoType(src) {
   const lower = String(src || "").toLowerCase();
+
+  if (lower.endsWith(".webm")) return "video/webm";
   if (lower.endsWith(".mov")) return "video/quicktime";
+
   return "video/mp4";
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function splitTitleWords(title, highlightWords = []) {
+  if (!title) return [];
+
+  const highlights = highlightWords
+    .filter(Boolean)
+    .map((word) => escapeRegExp(word))
+    .join("|");
+
+  if (!highlights) {
+    return title.split(/(\s+)/).map((part) => ({
+      text: part,
+      isSpace: /^\s+$/.test(part),
+      isAccent: false,
+    }));
+  }
+
+  const regex = new RegExp(`(${highlights})`, "gi");
+  const parts = title.split(regex).filter(Boolean);
+
+  return parts.flatMap((part) => {
+    const isAccent = highlightWords.some(
+      (word) => word.toLowerCase() === part.toLowerCase()
+    );
+
+    if (isAccent) {
+      return [
+        {
+          text: part,
+          isSpace: false,
+          isAccent: true,
+        },
+      ];
+    }
+
+    return part.split(/(\s+)/).map((wordPart) => ({
+      text: wordPart,
+      isSpace: /^\s+$/.test(wordPart),
+      isAccent: false,
+    }));
+  });
 }
 
 function Hero() {
@@ -94,6 +145,7 @@ function Hero() {
 
   const [active, setActive] = useState(0);
   const [touchStartX, setTouchStartX] = useState(null);
+  const [textAnimationKey, setTextAnimationKey] = useState(0);
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.innerWidth <= MOBILE_BREAKPOINT;
@@ -104,15 +156,30 @@ function Hero() {
   const total = slides.length;
   const activeSlide = slides[active] || slides[0];
 
-  const goTo = (index) => setActive((index + total) % total);
-  const goNext = () => setActive((prev) => (prev + 1) % total);
-  const goPrev = () => setActive((prev) => (prev - 1 + total) % total);
+  const goTo = (index) => {
+    if (!total) return;
+    setActive((index + total) % total);
+  };
+
+  const goNext = () => {
+    if (!total) return;
+    setActive((prev) => (prev + 1) % total);
+  };
+
+  const goPrev = () => {
+    if (!total) return;
+    setActive((prev) => (prev - 1 + total) % total);
+  };
 
   useEffect(() => {
     if (active >= total) {
       setActive(0);
     }
   }, [active, total]);
+
+  useEffect(() => {
+    setTextAnimationKey((prev) => prev + 1);
+  }, [active, lang]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -131,57 +198,35 @@ function Hero() {
     const activeVideo = videoRefs.current[active];
     let timerId = null;
     let endedHandler = null;
-    let loadedMetadataHandler = null;
+    let errorHandler = null;
+
+    const moveNext = () => {
+      setActive((prev) => (prev + 1) % total);
+    };
 
     if (activeSlide?.video && activeVideo) {
-      endedHandler = () => {
-        setActive((prev) => (prev + 1) % total);
+      endedHandler = moveNext;
+      errorHandler = () => {
+        timerId = window.setTimeout(moveNext, IMAGE_SLIDE_DURATION);
       };
 
       activeVideo.addEventListener("ended", endedHandler);
+      activeVideo.addEventListener("error", errorHandler);
 
-      const setupFallback = () => {
-        if (
-          !Number.isFinite(activeVideo.duration) ||
-          activeVideo.duration <= 0
-        ) {
-          timerId = window.setTimeout(() => {
-            setActive((prev) => (prev + 1) % total);
-          }, IMAGE_SLIDE_DURATION);
-        }
-      };
-
-      if (activeVideo.readyState >= 1) {
-        setupFallback();
-      } else {
-        loadedMetadataHandler = () => {
-          setupFallback();
-        };
-        activeVideo.addEventListener(
-          "loadedmetadata",
-          loadedMetadataHandler
-        );
-      }
+      timerId = window.setTimeout(moveNext, VIDEO_FALLBACK_DURATION);
     } else {
-      timerId = window.setTimeout(() => {
-        setActive((prev) => (prev + 1) % total);
-      }, IMAGE_SLIDE_DURATION);
+      timerId = window.setTimeout(moveNext, IMAGE_SLIDE_DURATION);
     }
 
     return () => {
-      if (timerId) {
-        window.clearTimeout(timerId);
-      }
+      if (timerId) window.clearTimeout(timerId);
 
       if (activeVideo && endedHandler) {
         activeVideo.removeEventListener("ended", endedHandler);
       }
 
-      if (activeVideo && loadedMetadataHandler) {
-        activeVideo.removeEventListener(
-          "loadedmetadata",
-          loadedMetadataHandler
-        );
+      if (activeVideo && errorHandler) {
+        activeVideo.removeEventListener("error", errorHandler);
       }
     };
   }, [active, activeSlide, total]);
@@ -191,19 +236,29 @@ function Hero() {
       if (!videoEl) return;
 
       if (index === active) {
+        videoEl.muted = true;
+        videoEl.playsInline = true;
+
         try {
           videoEl.pause();
           videoEl.currentTime = 0;
+          videoEl.load();
         } catch {
-          // ignore
+          // ignore browser video reset issues
         }
 
         const playPromise = videoEl.play();
+
         if (playPromise && typeof playPromise.catch === "function") {
-          playPromise.catch(() => {});
+          playPromise.catch(() => {
+            setTimeout(() => {
+              videoEl.play().catch(() => {});
+            }, 300);
+          });
         }
       } else {
         videoEl.pause();
+
         try {
           videoEl.currentTime = 0;
         } catch {
@@ -247,41 +302,10 @@ function Hero() {
       ? activeSlide.mobileSubtitle
       : activeSlide?.subtitle;
 
-  const renderTitle = (title, highlightWords = []) => {
-    if (!title) return null;
-    if (!highlightWords.length) return title;
-
-    let processed = title;
-
-    highlightWords.forEach((word) => {
-      const safeWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      processed = processed.replace(
-        new RegExp(safeWord, "gi"),
-        `|||HIGHLIGHT_START|||$&|||HIGHLIGHT_END|||`
-      );
-    });
-
-    const parts = processed.split("|||");
-
-    return parts.map((part, index) => {
-      if (part === "HIGHLIGHT_START" || part === "HIGHLIGHT_END") {
-        return null;
-      }
-
-      const prev = parts[index - 1];
-      const next = parts[index + 1];
-
-      if (prev === "HIGHLIGHT_START" && next === "HIGHLIGHT_END") {
-        return (
-          <span key={`${part}-${index}`} className="heroText__titleAccent">
-            {part}
-          </span>
-        );
-      }
-
-      return <span key={`${part}-${index}`}>{part}</span>;
-    });
-  };
+  const titleParts = splitTitleWords(
+    currentTitle,
+    activeSlide?.highlightWords || []
+  );
 
   return (
     <section
@@ -322,8 +346,17 @@ function Hero() {
                           className="hero__video"
                           muted
                           playsInline
-                          preload="metadata"
+                          autoPlay={isActive}
+                          preload="auto"
                           poster={slide.image}
+                          style={{
+                            objectPosition: slide.position || "center center",
+                          }}
+                          onCanPlay={(e) => {
+                            if (isActive) {
+                              e.currentTarget.play().catch(() => {});
+                            }
+                          }}
                         >
                           <source
                             src={slide.video}
@@ -346,13 +379,37 @@ function Hero() {
               </div>
 
               <div className="hero__overlayContent">
-                <div className="heroText heroText--overlay">
+                <div
+                  key={textAnimationKey}
+                  className="heroText heroText--overlay"
+                >
                   <div className="heroText__eyebrow amharic-fix">
-                    {activeSlide?.eyebrow}
+                    <span className="heroText__eyebrowIcon" aria-hidden="true">
+                      ✣
+                    </span>
+                    <span>{activeSlide?.eyebrow}</span>
                   </div>
 
                   <h1 className="heroText__title amharic-fix">
-                    {renderTitle(currentTitle, activeSlide?.highlightWords)}
+                    {titleParts.map((part, index) => {
+                      if (part.isSpace) {
+                        return ` `;
+                      }
+
+                      return (
+                        <span
+                          key={`${part.text}-${index}`}
+                          className={
+                            part.isAccent
+                              ? "heroText__word heroText__titleAccent"
+                              : "heroText__word"
+                          }
+                          style={{ "--word-index": index }}
+                        >
+                          {part.text}
+                        </span>
+                      );
+                    })}
                   </h1>
 
                   <p className="heroText__subtitle amharic-fix">
@@ -361,8 +418,10 @@ function Hero() {
 
                   <div className="heroText__actions">
                     <Link to={primaryTo} className="heroBtn heroBtn--primary">
-                      {activeSlide?.cta}
-                      <span aria-hidden="true">→</span>
+                      <span>{activeSlide?.cta}</span>
+                      <span className="heroBtn__arrow" aria-hidden="true">
+                        →
+                      </span>
                     </Link>
 
                     <Link to={secondaryTo} className="heroBtn heroBtn--ghost">
@@ -377,13 +436,13 @@ function Hero() {
 
         {total > 1 && (
           <div className="heroDots" aria-label="Hero slide navigation">
-            {slides.map((_, index) => (
+            {slides.map((slide, index) => (
               <button
                 key={index}
                 type="button"
                 className={`heroDot ${index === active ? "is-active" : ""}`}
                 onClick={() => goTo(index)}
-                aria-label={`Go to slide ${index + 1}`}
+                aria-label={`Go to ${slide.title || `slide ${index + 1}`}`}
               >
                 <span className="heroDot__line" />
               </button>
