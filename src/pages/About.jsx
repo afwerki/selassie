@@ -7,6 +7,7 @@ import selasssie from "../assets/images/selassie.png";
 import slide1 from "../assets/images/churchAtendes.JPG";
 import slide2 from "../assets/images/Candles_inChurch.jpg";
 import slide3 from "../assets/images/church9.JPG";
+import kidsVideo from "../assets/videos/kids.mp4";
 
 const IconSpark = () => (
   <svg className="about-ic" viewBox="0 0 24 24" aria-hidden="true">
@@ -113,16 +114,16 @@ export default function About() {
       badge: "Ethiopian Orthodox Tewahedo Church",
       title: "About Debre Genet Holy Trinity Church",
       subtitle:
-        "A spiritual home in London rooted in ancient Orthodox faith, loving community, and living heritage.",
+        "An Ethiopian Orthodox Tewahedo parish in London—preserving ancient faith, serving a living community, and safeguarding a historic Grade II listed church building.",
       mobileSubtitle:
         "An Ethiopian Orthodox parish in London preserving ancient faith and serving a living community.",
-      eyebrow: "About Our Church",
+      eyebrow: "Ancient Faith. Living Community. Historic Home.",
       sectionTitle: "Who We Are",
       sectionLead:
-        "A welcoming church family where faith, prayer, tradition, and community grow together.",
+        "Established in London in 2006, Debre Genet Holy Trinity Church welcomes all who come to worship, learn, and grow in Orthodox Christian life.",
       paragraphs: [
-        "Debre Genet Holy Trinity Church is a parish of the Ethiopian Orthodox Tewahedo Church, one of the world's most ancient Christian traditions. Its faith, liturgy, sacred music, language, and spiritual customs have been preserved with reverence across generations.",
-        "Established in London in 2006, the Church serves as a spiritual home for the Ethiopian Orthodox Christian community in the United Kingdom and welcomes all who wish to worship, learn, and take part in community life.",
+        "Debre Genet Holy Trinity Church is a parish of the Ethiopian Orthodox Tewahedo Church, one of the world's most ancient Christian traditions. Its roots reach back to the earliest centuries of Christianity, and its faith, liturgy, sacred music, language, and spiritual customs have been preserved with reverence across generations.",
+        "Established in London in 2006, the Church serves under the Archbishop for the Diocese of the UK and Ireland. It is a spiritual home for the Ethiopian Orthodox Christian community in the United Kingdom and a welcoming place for all who wish to worship, learn, and take part in community life.",
         "Our worship continues through the ancient rites of the Church, especially in Ge'ez and Amharic, maintaining a living connection to the historic expressions of Orthodox Christian faith.",
         "The Church is also committed to pastoral care, youth formation, community support, and the preservation of Ethiopia's rich spiritual and cultural heritage.",
       ],
@@ -132,15 +133,15 @@ export default function About() {
       values: [
         {
           title: "Faithful Worship",
-          text: "We honour God through reverent liturgy, prayer, sacred music, and the sacramental life of the Church.",
+          text: "We honour God through reverent liturgy, prayer, fasting, sacred music, and the sacramental life of the Church.",
         },
         {
           title: "Loving Community",
-          text: "We seek to be a warm spiritual family where all are welcomed with dignity, care, and love.",
+          text: "We seek to be a welcoming spiritual family where children, youth, adults, elders, and visitors are received with dignity, care, and love.",
         },
         {
           title: "Living Tradition",
-          text: "We preserve and share the rich heritage of the Ethiopian Orthodox faith for future generations.",
+          text: "We preserve and share the rich heritage of the Ethiopian Orthodox faith, language, teachings, and spiritual practices for future generations.",
         },
       ],
       highlightLabel: "What shapes our church",
@@ -170,7 +171,9 @@ export default function About() {
       title: t.header?.title || fallback.title,
       subtitle: t.header?.subtitle || fallback.subtitle,
       mobileSubtitle:
-        t.header?.mobileSubtitle || t.hero?.mobileSubtitle || fallback.mobileSubtitle,
+        t.header?.mobileSubtitle ||
+        t.hero?.mobileSubtitle ||
+        fallback.mobileSubtitle,
       eyebrow: t.hero?.heading || fallback.eyebrow,
       sectionTitle: t.aboutUs?.title || fallback.sectionTitle,
       sectionLead: t.hero?.lead || fallback.sectionLead,
@@ -222,36 +225,51 @@ export default function About() {
             loop
             playsInline
             preload="metadata"
-            poster={slide2}
+            poster={slide3}
           >
-            <source src="/videos/selassie-bg.webm" type="video/webm" />
-            <source src="/videos/selassie-bg.mp4" type="video/mp4" />
+            <source src={kidsVideo} type="video/mp4" />
           </video>
 
           <div className="about-videoOverlay" />
+          <div className="about-videoVignette" />
           <div className="about-videoNoise" />
-          <div className="about-orb about-orbA" />
-          <div className="about-orb about-orbB" />
         </div>
 
         <div
           ref={heroRef}
-          className={`about-heroInner reveal-up ${heroVisible ? "is-visible" : ""}`}
+          className={`about-heroInner reveal-up ${
+            heroVisible ? "is-visible" : ""
+          }`}
         >
-          <div className="about-heroBadge">
-            <span className="about-heroBadgeIcon" aria-hidden="true">
-              <IconSpark />
-            </span>
-            <span className="about-heroBadgeText">{content.badge}</span>
+          <div className="about-heroContent">
+            <div className="about-heroBadge">
+              <span className="about-heroBadgeIcon" aria-hidden="true">
+                <IconSpark />
+              </span>
+              <span className="about-heroBadgeText">{content.badge}</span>
+            </div>
+
+            <h1 className="about-heroTitle">
+              {content.title.split(" ").map((word, index) => (
+                <span
+                  key={`${word}-${index}`}
+                  className="about-heroTitleWord"
+                  style={{ "--word-index": index }}
+                >
+                  {word}
+                </span>
+              ))}
+            </h1>
+
+            <p className="about-heroLead">{heroSubtitle}</p>
           </div>
 
-          <h1 className="about-heroTitle">{content.title}</h1>
-          <p className="about-heroLead">{heroSubtitle}</p>
-
           <div className="about-heroStats" aria-label={content.highlightLabel}>
-            {visibleStats.map((item) => (
+            {visibleStats.map((item, index) => (
               <div key={item} className="about-statChip">
-                <span className="about-statDot" aria-hidden="true" />
+                <span className="about-statNumber">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <span>{item}</span>
               </div>
             ))}
@@ -262,39 +280,56 @@ export default function About() {
       <section className="about-stage">
         <div
           ref={storyRef}
-          className={`about-storyGrid reveal-up ${storyVisible ? "is-visible" : ""}`}
+          className={`about-storyGrid reveal-up ${
+            storyVisible ? "is-visible" : ""
+          }`}
         >
-          <article className="about-glassCard about-storyCard" aria-label={content.sectionTitle}>
+          <article
+            className="about-glassCard about-storyCard"
+            aria-label={content.sectionTitle}
+          >
             <div className="about-cardTopLine" />
+
             <div className="about-glassTop">
               <div className="about-glassKicker">{content.eyebrow}</div>
-              <h2 className="about-glassTitle">{content.sectionTitle}</h2>
+
+              <h2 className="about-glassTitle">
+                <span>{content.sectionTitle}</span>
+              </h2>
+
               <p className="about-glassSub">{content.sectionLead}</p>
             </div>
 
             <div className="about-storyBody">
               <div
-                className={`about-prose ${isMobile && !expandedMobileText ? "is-collapsed" : ""}`}
+                className={`about-prose ${
+                  isMobile && !expandedMobileText ? "is-collapsed" : ""
+                }`}
               >
                 {mobilePreviewParagraphs.map((paragraph, index) => (
-                  <p key={`${index}-${paragraph.slice(0, 24)}`}>{paragraph}</p>
+                  <p key={`${index}-${paragraph.slice(0, 24)}`}>
+                    {paragraph}
+                  </p>
                 ))}
 
-                {isMobile && !expandedMobileText && content.paragraphs.length > mobilePreviewParagraphs.length && (
-                  <div className="about-proseMore">...</div>
-                )}
+                {isMobile &&
+                  !expandedMobileText &&
+                  content.paragraphs.length > mobilePreviewParagraphs.length && (
+                    <div className="about-proseMore">...</div>
+                  )}
               </div>
 
-              {isMobile && content.paragraphs.length > mobilePreviewParagraphs.length && (
-                <button
-                  type="button"
-                  className="about-readToggle"
-                  onClick={() => setExpandedMobileText((prev) => !prev)}
-                  aria-expanded={expandedMobileText}
-                >
-                  {expandedMobileText ? "Show less" : "Continue reading"}
-                </button>
-              )}
+              {isMobile &&
+                content.paragraphs.length > mobilePreviewParagraphs.length && (
+                  <button
+                    type="button"
+                    className="about-readToggle"
+                    onClick={() => setExpandedMobileText((prev) => !prev)}
+                    aria-expanded={expandedMobileText}
+                  >
+                    {expandedMobileText ? "Show less" : "Continue reading"}
+                  </button>
+                )}
             </div>
           </article>
 
@@ -303,7 +338,9 @@ export default function About() {
 
             <div className="about-stackWrap">
               {galleryImages.map((image, index) => {
-                const offset = (index - activeImage + galleryImages.length) % galleryImages.length;
+                const offset =
+                  (index - activeImage + galleryImages.length) %
+                  galleryImages.length;
                 const isActive = index === activeImage;
 
                 return (
@@ -320,7 +357,11 @@ export default function About() {
                     onClick={() => setActiveImage(index)}
                     aria-label={`Show image ${index + 1}`}
                   >
-                    <img src={image.src} alt={image.alt} className="about-stackImage" />
+                    <img
+                      src={image.src}
+                      alt={image.alt}
+                      className="about-stackImage"
+                    />
                   </button>
                 );
               })}
@@ -331,7 +372,9 @@ export default function About() {
                   className="about-stackNav"
                   onClick={() =>
                     setActiveImage(
-                      (prev) => (prev - 1 + galleryImages.length) % galleryImages.length
+                      (prev) =>
+                        (prev - 1 + galleryImages.length) %
+                        galleryImages.length
                     )
                   }
                   aria-label="Previous image"
@@ -339,12 +382,17 @@ export default function About() {
                   ‹
                 </button>
 
-                <div className="about-stackDots" aria-label="Gallery navigation">
+                <div
+                  className="about-stackDots"
+                  aria-label="Gallery navigation"
+                >
                   {galleryImages.map((_, index) => (
                     <button
                       key={index}
                       type="button"
-                      className={`about-stackDot ${index === activeImage ? "is-active" : ""}`}
+                      className={`about-stackDot ${
+                        index === activeImage ? "is-active" : ""
+                      }`}
                       onClick={() => setActiveImage(index)}
                       aria-label={`Go to image ${index + 1}`}
                     />
@@ -354,7 +402,9 @@ export default function About() {
                 <button
                   type="button"
                   className="about-stackNav"
-                  onClick={() => setActiveImage((prev) => (prev + 1) % galleryImages.length)}
+                  onClick={() =>
+                    setActiveImage((prev) => (prev + 1) % galleryImages.length)
+                  }
                   aria-label="Next image"
                 >
                   ›
@@ -376,11 +426,15 @@ export default function About() {
 
         <section
           ref={valuesRef}
-          className={`about-valuesSection reveal-up ${valuesVisible ? "is-visible" : ""}`}
+          className={`about-valuesSection reveal-up ${
+            valuesVisible ? "is-visible" : ""
+          }`}
           aria-labelledby="about-values-title"
         >
           <div className="about-sectionHeading">
-            <span className="about-sectionEyebrow">{content.valuesEyebrow}</span>
+            <span className="about-sectionEyebrow">
+              {content.valuesEyebrow}
+            </span>
             <h2 id="about-values-title">{content.valuesTitle}</h2>
             <p>{content.valuesIntro}</p>
           </div>
@@ -414,11 +468,15 @@ export default function About() {
 
         <section
           ref={missionRef}
-          className={`about-missionBand reveal-up ${missionVisible ? "is-visible" : ""}`}
+          className={`about-missionBand reveal-up ${
+            missionVisible ? "is-visible" : ""
+          }`}
           aria-labelledby="about-mission-title"
         >
           <div className="about-missionContent">
-            <span className="about-sectionEyebrow">{content.missionEyebrow}</span>
+            <span className="about-sectionEyebrow">
+              {content.missionEyebrow}
+            </span>
             <h2 id="about-mission-title">{content.missionTitle}</h2>
             <p>{content.missionText}</p>
           </div>

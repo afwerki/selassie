@@ -7,7 +7,7 @@ import Feseha from "../assets/images/Feseha_updated.JPG";
 import kefeyalew from "../assets/images/kefyalew.JPG";
 import addis from "../assets/images/addis.JPG";
 import yohannes from "../assets/images/yohannes.JPG";
-import MissionImage from "../assets/images/eotc.jpg";
+import MissionImage from "../assets/images/womens_side.JPG";
 import kaleb from "../assets/images/Kaleb_updated.JPG";
 import samuel from "../assets/images/samuel.JPG";
 import Kibret from "../assets/images/Kibret.JPG";
@@ -273,9 +273,20 @@ export default function Home() {
             </div>
 
             <h1 className="home-hero-title">
-              {t.home?.welcomeTitle || "Welcome"}
-            </h1>
-
+  {(t.home?.welcomeTitle || "Welcome")
+    .split(" ")
+    .map((word, index, arr) => (
+      <span
+        key={`${word}-${index}`}
+        className={`home-hero-word ${
+          index === arr.length - 1 ? "home-hero-word--accent" : ""
+        }`}
+        style={{ "--word-index": index }}
+      >
+        {word}
+      </span>
+    ))}
+</h1>
             <p className="home-hero-lead">
               {t.home?.welcomeP1 ||
                 "Welcome to Debre-Genet Holy Trinity Church in London, a spiritual home for worship, prayer, and community."}
@@ -485,32 +496,6 @@ export default function Home() {
                 ›
               </button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="home-cta home-load home-load-delay-4">
-        <div className="home-cta-card">
-          <div className="home-cta-copy">
-            <span className="section-chip section-chip--light">
-              Join our church family
-            </span>
-            <h2>Come worship, connect, and grow with us</h2>
-            <p>
-              We would be glad to welcome you whether you are visiting for the
-              first time or looking for a spiritual home.
-            </p>
-          </div>
-
-          <div className="home-cta-actions">
-            <Link to="/contact" className="home-btn home-btn-primary">
-              <span>Plan Your Visit</span>
-              <IconArrow />
-            </Link>
-
-            <Link to="/about" className="home-btn home-btn-ghost">
-              Explore More
-            </Link>
           </div>
         </div>
       </section>
