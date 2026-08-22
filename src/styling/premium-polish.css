@@ -1,0 +1,397 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;500;600;700&display=swap");
+
+:root {
+  --premium-ivory: #fbf8f1;
+  --premium-navy: #10233d;
+  --premium-navy-deep: #081728;
+  --premium-gold: #d5a13a;
+  --premium-gold-bright: #f1c86b;
+  --premium-ink: #12243e;
+  --premium-shadow: 0 24px 70px rgba(19, 36, 62, 0.12);
+  --premium-shadow-soft: 0 14px 38px rgba(19, 36, 62, 0.08);
+  --premium-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --premium-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --premium-sans: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --premium-ethiopic: "Noto Sans Ethiopic", "Manrope", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--premium-ivory);
+}
+
+body {
+  font-family: var(--premium-sans);
+  color: var(--premium-ink);
+  background:
+    radial-gradient(circle at 8% 6%, rgba(213, 161, 58, 0.1), transparent 26rem),
+    radial-gradient(circle at 92% 18%, rgba(54, 94, 151, 0.09), transparent 28rem),
+    linear-gradient(180deg, #fffdf8 0%, #f6f3ec 45%, #fbfaf6 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 25% 30%, rgba(241, 200, 107, 0.055), transparent 22rem),
+    radial-gradient(circle at 80% 70%, rgba(16, 35, 61, 0.045), transparent 30rem);
+  animation: premiumAmbient 18s ease-in-out infinite alternate;
+}
+
+::selection {
+  background: rgba(213, 161, 58, 0.27);
+  color: var(--premium-navy-deep);
+}
+
+:where(button, a, input, textarea, select):focus-visible {
+  outline: 3px solid rgba(213, 161, 58, 0.38);
+  outline-offset: 4px;
+}
+
+:lang(am),
+.amharic-fix {
+  font-family: var(--premium-ethiopic) !important;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--premium-serif);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.page {
+  max-width: 1380px;
+  padding-left: clamp(10px, 2vw, 28px);
+  padding-right: clamp(10px, 2vw, 28px);
+}
+
+.premium-reveal {
+  opacity: 0;
+  transform: translate3d(0, 34px, 0) scale(0.988);
+  filter: blur(3px);
+  transition:
+    opacity 900ms var(--premium-ease) var(--premium-delay, 0ms),
+    transform 900ms var(--premium-ease) var(--premium-delay, 0ms),
+    filter 900ms var(--premium-ease) var(--premium-delay, 0ms);
+}
+
+.premium-reveal.premium-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
+.navbar {
+  border-bottom: 1px solid transparent;
+  transition: background 360ms ease, box-shadow 360ms ease, border-color 360ms ease;
+}
+
+.navbar.navbar-scrolled,
+.navbar-scrolled {
+  background: rgba(255, 252, 245, 0.9) !important;
+  border-bottom-color: rgba(213, 161, 58, 0.16);
+  box-shadow: 0 16px 44px rgba(16, 35, 61, 0.09);
+  backdrop-filter: blur(22px) saturate(135%);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+}
+
+.logo-text {
+  font-family: var(--premium-serif);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.navbar-links a {
+  position: relative;
+  font-weight: 700;
+}
+
+.navbar-links a::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: -7px;
+  height: 2px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--premium-gold), var(--premium-gold-bright));
+  transition: left 260ms var(--premium-ease), right 260ms var(--premium-ease);
+}
+
+.navbar-links a:hover::after,
+.navbar-links a.active::after {
+  left: 12%;
+  right: 12%;
+}
+
+.hero__shell {
+  filter: drop-shadow(0 26px 54px rgba(8, 23, 40, 0.1));
+}
+
+.hero__mediaStage {
+  box-shadow:
+    0 32px 90px rgba(8, 23, 40, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.heroText__eyebrow {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.heroText__title {
+  font-family: var(--premium-serif);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  text-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+}
+
+.heroText__subtitle {
+  font-family: var(--premium-sans);
+  line-height: 1.75;
+}
+
+.heroBtn,
+.home-btn,
+.card-btn {
+  transition:
+    transform 280ms var(--premium-ease),
+    box-shadow 280ms var(--premium-ease),
+    background 280ms ease,
+    border-color 280ms ease !important;
+}
+
+.heroBtn:hover,
+.home-btn:hover,
+.card-btn:hover {
+  transform: translateY(-3px) scale(1.012);
+}
+
+.heroBtn--primary,
+.home-btn-primary {
+  box-shadow: 0 18px 42px rgba(213, 161, 58, 0.28) !important;
+}
+
+.section-heading h2,
+.section-header h2,
+.about-glassTitle,
+.project-title {
+  text-shadow: 0 8px 24px rgba(16, 35, 61, 0.055);
+}
+
+.section-heading p,
+.about-glassSub,
+.project-description {
+  line-height: 1.8;
+}
+
+.home-stat-card,
+.about-glassCard,
+.about-mediaCard,
+.project-card,
+.project-featured-card,
+.project-supportBox,
+.sermon-card,
+.contact-card,
+.card {
+  border-color: rgba(213, 161, 58, 0.12) !important;
+  box-shadow: var(--premium-shadow-soft);
+  transition:
+    transform 420ms var(--premium-ease),
+    box-shadow 420ms var(--premium-ease),
+    border-color 420ms ease;
+}
+
+.home-stat-card:hover,
+.about-glassCard:hover,
+.about-mediaCard:hover,
+.project-card:hover,
+.project-featured-card:hover,
+.sermon-card:hover,
+.contact-card:hover,
+.card:hover {
+  transform: translateY(-7px);
+  border-color: rgba(213, 161, 58, 0.3) !important;
+  box-shadow: var(--premium-shadow);
+}
+
+.home-clergy-premium-card,
+.home-mobile-clergy-card {
+  filter: drop-shadow(0 18px 28px rgba(10, 26, 46, 0.11));
+}
+
+.home-clergy-premium-card:hover {
+  filter: drop-shadow(0 26px 44px rgba(10, 26, 46, 0.16));
+}
+
+.home-clergy-premium-face--back {
+  overflow: hidden;
+}
+
+.home-clergy-bio {
+  position: relative;
+  margin: 17px 0 0;
+  padding: 0 5px 0 17px;
+  max-height: 225px;
+  overflow-y: auto;
+  color: rgba(255, 255, 255, 0.88);
+  font-family: var(--premium-sans);
+  font-size: clamp(0.81rem, 0.82vw, 0.91rem);
+  line-height: 1.67;
+  font-weight: 500;
+  text-align: left;
+  text-wrap: pretty;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(241, 200, 107, 0.54) transparent;
+}
+
+.home-clergy-bio::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.38em;
+  bottom: 0.38em;
+  width: 2px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, var(--premium-gold-bright), rgba(241, 200, 107, 0.12));
+}
+
+.home-clergy-bio::-webkit-scrollbar {
+  width: 4px;
+}
+
+.home-clergy-bio::-webkit-scrollbar-thumb {
+  background: rgba(241, 200, 107, 0.54);
+  border-radius: 99px;
+}
+
+.home-clergy-image-wrap-card img {
+  transition: transform 700ms var(--premium-ease), filter 700ms ease;
+}
+
+.home-clergy-premium-card:hover .home-clergy-image-wrap-card img {
+  transform: scale(1.045);
+  filter: saturate(1.04) contrast(1.02);
+}
+
+.about-stackImage,
+.project-carousel img {
+  transition: transform 900ms var(--premium-ease), filter 900ms ease;
+}
+
+.project-carousel__zoom-btn:hover img {
+  transform: scale(1.035);
+  filter: saturate(1.04) contrast(1.02);
+}
+
+input,
+textarea,
+select {
+  font-family: var(--premium-sans);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: rgba(213, 161, 58, 0.55) !important;
+  box-shadow: 0 0 0 4px rgba(213, 161, 58, 0.1) !important;
+}
+
+.site-footer {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% -30%, rgba(241, 200, 107, 0.2), transparent 24rem),
+    linear-gradient(145deg, #071522 0%, #102b48 62%, #0a1c30 100%) !important;
+  border-top: 1px solid rgba(241, 200, 107, 0.22);
+  box-shadow: 0 -20px 60px rgba(8, 23, 40, 0.08);
+}
+
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(241, 200, 107, 0.75), transparent);
+}
+
+.site-footer h3,
+.site-footer h4 {
+  font-family: var(--premium-serif);
+  color: #fff8e8;
+}
+
+.site-footer a {
+  color: var(--premium-gold-bright);
+}
+
+@media (max-width: 900px) {
+  .page {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .home-clergy-bio {
+    max-height: 235px;
+    font-size: 0.84rem;
+    line-height: 1.62;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .section-heading h2,
+  .section-header h2 {
+    font-size: clamp(2rem, 10vw, 2.8rem) !important;
+  }
+
+  .home-clergy-bio {
+    max-height: 245px;
+    padding-left: 14px;
+    font-size: 0.82rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .premium-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+@keyframes premiumAmbient {
+  from {
+    transform: translate3d(-1%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(1.5%, 1%, 0) scale(1.035);
+  }
+}

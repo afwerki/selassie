@@ -22,126 +22,71 @@ const clergyMembers = [
     title: "Parish Priest",
     roleTag: "Priest in charge",
     image: kefeyalew,
-    bioBullets: [
-      "Moved to the UK in 2015.",
-      "Serves at Debre Genet Kidist Selassie Church, London.",
-      "Ordained priest in 2012 in Addis Ababa.",
-      "Ordained by His Grace Abune Hezkael.",
-      "Blessed with two children.",
-      "Abenet Memhir specialising in the New Testament and Divine Liturgy.",
-      "Dedicated to theological teaching and liturgical instruction.",
-    ],
+    bio:
+      "Melake Genet Kesis Kefyalew moved to the United Kingdom in 2015 and serves at Debre Genet Kidist Selassie Church in London. He was ordained to the priesthood in Addis Ababa in 2012 by His Grace Abune Hezkael. An Abenet Memhir specialising in the New Testament and Divine Liturgy, he is dedicated to theological teaching and liturgical instruction. He is blessed with two children.",
   },
-
-  // ✅ UPDATED
   {
     id: "priest2",
     name: "Megabi Haddis Kesis Kibret Asnakew",
     title: "Parish Priest",
     roleTag: "Abenet Memhir & liturgical teacher",
     image: Kibret,
-    bioBullets: [
-      "Moved to the United Kingdom in 2015.",
-      "Serves at Debre Genet Kidist Selassie Church, London.",
-      "Began his service as a deacon.",
-      "Ordained priest in 2012 in Addis Ababa.",
-      "Ordained by His Grace Abune Hezkael.",
-      "Blessed with two children — one son and one daughter.",
-      "Abenet Memhir specialising in the New Testament and Divine Liturgy.",
-      "Recognised for dedication to theological teaching and liturgical instruction.",
-    ],
+    bio:
+      "Megabi Haddis Kesis Kibret Asnakew moved to the United Kingdom in 2015 and serves at Debre Genet Kidist Selassie Church in London. He began his ministry as a deacon before being ordained to the priesthood in Addis Ababa in 2012 by His Grace Abune Hezkael. He is an Abenet Memhir specialising in the New Testament and Divine Liturgy and is recognised for his dedication to theological teaching and liturgical instruction. He is blessed with two children, one son and one daughter.",
   },
-
   {
     id: "priest3",
     name: "Kesis Addis",
     title: "Parish Priest",
     roleTag: "Shepherd of the parish",
     image: addis,
-    bioBullets: [
-      "Serves the parish through worship, teaching, and pastoral care.",
-      "Supports the spiritual life of the church community.",
-      "Guides parishioners in faith, prayer, and service.",
-      "Helps strengthen the church family through dedicated ministry.",
-    ],
+    bio:
+      "Kesis Addis serves the parish through worship, teaching, and pastoral care, supporting the spiritual life of the church community. He guides parishioners in faith, prayer, and service and helps strengthen the church family through dedicated ministry.",
   },
-
   {
     id: "priest4",
     name: "Kesis Feseha",
     title: "Priest",
     roleTag: "Supporting liturgy & teaching",
     image: Feseha,
-    bioBullets: [
-      "Supports the parish through liturgical service and teaching.",
-      "Serves the church community with humility and dedication.",
-      "Helps guide parishioners in Orthodox faith and spiritual growth.",
-      "Contributes to the worship and pastoral life of the parish.",
-    ],
+    bio:
+      "Kesis Feseha supports the parish through liturgical service and teaching, serving the church community with humility and dedication. He helps guide parishioners in the Orthodox faith and in their spiritual growth while contributing to the worship and pastoral life of the parish.",
   },
-
-  // ✅ UPDATED
   {
     id: "priest5",
     name: "Qes Gebez Kaleb Tadesse",
     title: "Priest",
     roleTag: "Liturgical & pastoral ministry",
     image: kaleb,
-    bioBullets: [
-      "Moved to the United Kingdom in 2012.",
-      "Began spiritual journey through Sunday School and church ministry.",
-      "Ordained deacon in 2012 by His Grace Abune Entos.",
-      "Ordained priest in 2022 by His Grace Abune Yaqob.",
-      "Blessed with three daughters.",
-      "Serves as Qes Gebez supporting liturgical and pastoral ministry.",
-      "Believes service is an expression of love for God and humanity.",
-    ],
+    bio:
+      "Qes Gebez Kaleb Tadesse moved to the United Kingdom in 2012 after beginning his spiritual journey through Sunday School and church ministry. He was ordained a deacon in 2012 by His Grace Abune Entos and later ordained a priest in 2022 by His Grace Abune Yaqob. He serves as Qes Gebez, supporting the liturgical and pastoral ministry of the parish, and believes that service is an expression of love for God and humanity. He is blessed with three daughters.",
   },
-
-  // ✅ UPDATED
   {
     id: "priest6",
     name: "Melake Mehiret Kesis Theodros Neguisse",
     title: "Priest",
     roleTag: "Spiritual leader, teacher & mentor",
     image: Theodros,
-    bioBullets: [
-      "Founding member of Debre Genet Holy Trinity Church, London.",
-      "Began serving as a deacon at Debre Amen Tekle Haymanot Church.",
-      "Moved to the United Kingdom and pursued engineering studies.",
-      "Ordained priest in 2012 in Belgium by His Grace Abune Mussa.",
-      "Served as Priest-in-Charge in Sheffield for 8 years.",
-      "Married with four children — two sons and two daughters.",
-      "Respected spiritual leader known for teaching and mentorship.",
-    ],
+    bio:
+      "Melake Mehiret Kesis Theodros Neguisse is a founding member of Debre Genet Holy Trinity Church in London. He began serving as a deacon at Debre Amen Tekle Haymanot Church, later moved to the United Kingdom, and pursued engineering studies. He was ordained to the priesthood in Belgium in 2012 by His Grace Abune Mussa and went on to serve as Priest-in-Charge in Sheffield for eight years. A respected spiritual leader known for teaching and mentorship, he is married and blessed with four children, two sons and two daughters.",
   },
-
   {
     id: "priest7",
     name: "Deacon Yohannes",
     title: "Deacon",
     roleTag: "Supporting liturgy & teaching",
     image: yohannes,
-    bioBullets: [
-      "Supports the clergy during liturgical services.",
-      "Serves the parish through prayer, worship, and church ministry.",
-      "Helps preserve the order and beauty of Orthodox worship.",
-      "Supports the spiritual life of the church community.",
-    ],
+    bio:
+      "Deacon Yohannes supports the clergy during liturgical services and serves the parish through prayer, worship, and church ministry. Through his service he helps preserve the order and beauty of Orthodox worship and supports the spiritual life of the church community.",
   },
-
   {
     id: "priest8",
-    name: "Prist Samuel Kassa",
+    name: "Priest Samuel Kassa",
     title: "Priest",
     roleTag: "Parish support",
     image: samuel,
-    bioBullets: [
-      "Serves the church community with dedication.",
-      "Supports liturgical and pastoral activities.",
-      "Guides parishioners in faith and prayer.",
-      "Committed to spiritual growth and service.",
-    ],
+    bio:
+      "Priest Samuel Kassa serves the church community with dedication, supporting its liturgical and pastoral activities. He guides parishioners in faith and prayer and is committed to spiritual growth and service within the parish.",
   },
 ];
 const stats = [
@@ -177,11 +122,7 @@ function ClergyBackFace({ member }) {
 
       <h3 className="home-clergy-back-name">{member.name}</h3>
 
-      <ul className="home-clergy-bio-list">
-        {member.bioBullets?.map((point, index) => (
-          <li key={`${member.id}-bio-${index}`}>{point}</li>
-        ))}
-      </ul>
+      <p className="home-clergy-bio">{member.bio}</p>
 
       <div className="home-clergy-back-meta">
         <strong>{member.name}</strong>

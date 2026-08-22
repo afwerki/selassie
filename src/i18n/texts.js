@@ -35,8 +35,8 @@ export const texts = {
       {
         title: "Rooted in Ancient Wisdom",
         subtitle: "Preserving the timeless teachings of the Orthodox faith.",
-        cta: "Upcoming Events",
-        href: "#events",
+        cta: "Meet Our Clergy",
+        href: "#clergy",
       },
     ],
 
@@ -150,8 +150,8 @@ Pictures to add: Sunday School, Begena, Kirrar, and Mezmure.`,
       {
         title: "እምነትን፣ትውፊትን፣ባህልን ጠብቀን ለትውልድ እናስተላልፍ።",
         subtitle: "የተለያዩ መረሃግብሮችን አይተው፤ ይምጡ፣ የበረከቱ ተካፋይ ይሁኑ።",
-        cta: "መረሃግብሮችን ይመልከቱ",
-        href: "#events",
+        cta: "ካህናቶቻችንን ይተዋወቁ",
+        href: "#clergy",
       },
     ],
 

@@ -106,8 +106,8 @@ function Hero() {
           "Preserving the timeless teachings of the Orthodox faith through worship, prayer, and spiritual community.",
         mobileSubtitle:
           "Preserving the timeless teachings of the Orthodox faith through worship, prayer, and spiritual community.",
-        cta: "Upcoming Events",
-        href: "/#events",
+        cta: "Meet Our Clergy",
+        href: "/#clergy",
         image: heroImages[1],
         video: heroVideos[1],
         position: "center center",

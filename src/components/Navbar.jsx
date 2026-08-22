@@ -120,17 +120,6 @@ function Navbar() {
             </a>
           </li>
 
-
-          <li>
-            <a
-              href={sectionHref("events")}
-              onClick={closeMenu}
-              className={isHashActive("events") ? "active" : ""}
-            >
-              {t.nav.events}
-            </a>
-          </li>
-
           <li>
             <a
               href={sectionHref("contact")}
