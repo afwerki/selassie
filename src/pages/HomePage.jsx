@@ -24,7 +24,6 @@ export default function HomePage() {
         <About />
         <Projects />
         <Sermons />
-        <Events />
         <Contact />
       </main>
 
