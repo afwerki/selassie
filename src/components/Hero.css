@@ -188,6 +188,12 @@
   display: block;
   transform: scale(1.04);
   filter: saturate(1.04) contrast(1.04) brightness(0.82);
+  opacity: 0;
+  transition: opacity 450ms ease;
+}
+
+.hero__video.is-ready {
+  opacity: 1;
 }
 
 .hero__imageFallback {
@@ -825,5 +831,18 @@
   .hero__video,
   .hero__imageFallback {
     transform: none !important;
+  }
+}
+
+
+/* Smooth mobile hero media crossfade.
+   The poster/image remains visible until each video is decoded. */
+@media (max-width: 760px) {
+  .hero__slide {
+    transition: opacity 1000ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .hero__video {
+    transition: opacity 500ms ease;
   }
 }

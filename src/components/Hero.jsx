@@ -146,6 +146,7 @@ function Hero() {
   const [active, setActive] = useState(0);
   const [touchStartX, setTouchStartX] = useState(null);
   const [textAnimationKey, setTextAnimationKey] = useState(0);
+  const [videoReady, setVideoReady] = useState({});
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.innerWidth <= MOBILE_BREAKPOINT;
@@ -240,30 +241,23 @@ function Hero() {
         videoEl.playsInline = true;
 
         try {
-          videoEl.pause();
           videoEl.currentTime = 0;
-          videoEl.load();
         } catch {
-          // ignore browser video reset issues
+          // Ignore browser seek issues.
         }
 
         const playPromise = videoEl.play();
 
         if (playPromise && typeof playPromise.catch === "function") {
           playPromise.catch(() => {
-            setTimeout(() => {
+            window.setTimeout(() => {
               videoEl.play().catch(() => {});
-            }, 300);
+            }, 250);
           });
         }
       } else {
+        // Keep decoded/buffered frames available for the next transition.
         videoEl.pause();
-
-        try {
-          videoEl.currentTime = 0;
-        } catch {
-          // ignore
-        }
       }
     });
   }, [active, slides, lang]);
@@ -338,21 +332,49 @@ function Hero() {
                       className={`hero__slide ${isActive ? "is-active" : ""}`}
                       aria-hidden={!isActive}
                     >
-                      {slide.video ? (
+                      <div
+                        className="hero__imageFallback"
+                        style={{
+                          backgroundImage: `url(${slide.image})`,
+                          backgroundPosition:
+                            slide.position || "center center",
+                        }}
+                        aria-hidden="true"
+                      />
+
+                      {slide.video && (
                         <video
                           ref={(el) => {
                             videoRefs.current[index] = el;
                           }}
-                          className="hero__video"
+                          className={`hero__video ${
+                            videoReady[index] ? "is-ready" : ""
+                          }`}
                           muted
                           playsInline
-                          autoPlay={isActive}
                           preload="auto"
                           poster={slide.image}
                           style={{
                             objectPosition: slide.position || "center center",
                           }}
+                          onLoadedData={(e) => {
+                            setVideoReady((prev) =>
+                              prev[index]
+                                ? prev
+                                : { ...prev, [index]: true }
+                            );
+
+                            if (isActive) {
+                              e.currentTarget.play().catch(() => {});
+                            }
+                          }}
                           onCanPlay={(e) => {
+                            setVideoReady((prev) =>
+                              prev[index]
+                                ? prev
+                                : { ...prev, [index]: true }
+                            );
+
                             if (isActive) {
                               e.currentTarget.play().catch(() => {});
                             }
@@ -363,15 +385,6 @@ function Hero() {
                             type={getVideoType(slide.video)}
                           />
                         </video>
-                      ) : (
-                        <div
-                          className="hero__imageFallback"
-                          style={{
-                            backgroundImage: `url(${slide.image})`,
-                            backgroundPosition:
-                              slide.position || "center center",
-                          }}
-                        />
                       )}
                     </div>
                   );
