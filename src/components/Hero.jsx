@@ -121,7 +121,7 @@ function Hero() {
           "Explore ministries, events, and meaningful ways to connect, serve, and grow together in Christ.",
         mobileSubtitle:
           "Explore ministries, events, and meaningful ways to connect, serve, and grow together in Christ.",
-        cta: "Watch Sermons",
+        cta: "Common Questions",
         href: "/#sermons",
         image: heroImages[2],
         video: heroVideos[2],

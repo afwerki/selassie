@@ -1,25 +1,30 @@
-import React, { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function QATab({ t, items = [], loading = false, trackEvent }) {
   const allLabel = t?.qa?.allCategoriesLabel || "All";
   const [openId, setOpenId] = useState(null);
   const [activeCategory, setActiveCategory] = useState(allLabel);
+  const [query, setQuery] = useState("");
 
   const sourceItems = items.length > 0 ? items : t?.qa?.items || [];
 
   const safeItems = useMemo(() => {
-    return sourceItems.map((item, index) => ({
-      id: item.id || item._id || `qa-${index}`,
-      question: item.question || "",
-      answer:
-        item.answer || "Please contact the church office for more information.",
-      category: item.category || (t?.qa?.defaultCategoryLabel || "General"),
-    }));
+    return sourceItems
+      .map((item, index) => ({
+        id: item.id || item._id || `qa-${index}`,
+        question: item.question || "",
+        answer:
+          item.answer ||
+          "Please contact the church office for more information.",
+        category: item.category || (t?.qa?.defaultCategoryLabel || "General"),
+      }))
+      .filter((item) => item.question && item.answer);
   }, [sourceItems, t]);
 
   useEffect(() => {
     setActiveCategory(allLabel);
     setOpenId(null);
+    setQuery("");
   }, [allLabel]);
 
   const categories = useMemo(() => {
@@ -33,9 +38,21 @@ export default function QATab({ t, items = [], loading = false, trackEvent }) {
   }, [safeItems, allLabel]);
 
   const visibleItems = useMemo(() => {
-    if (activeCategory === allLabel) return safeItems;
-    return safeItems.filter((item) => item.category === activeCategory);
-  }, [safeItems, activeCategory, allLabel]);
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return safeItems.filter((item) => {
+      const matchesCategory =
+        activeCategory === allLabel || item.category === activeCategory;
+
+      const matchesQuery =
+        !normalizedQuery ||
+        `${item.question} ${item.answer} ${item.category}`
+          .toLowerCase()
+          .includes(normalizedQuery);
+
+      return matchesCategory && matchesQuery;
+    });
+  }, [safeItems, activeCategory, allLabel, query]);
 
   const handleToggle = (item) => {
     const nextId = openId === item.id ? null : item.id;
@@ -51,18 +68,44 @@ export default function QATab({ t, items = [], loading = false, trackEvent }) {
   };
 
   return (
-    <div className="tab-panel active">
-      <div className="qa-shell">
-        <div className="qa-header">
-          <h3>{t?.qa?.title || "Questions & Answers"}</h3>
-          <p>
-            {t?.qa?.intro ||
-              "Find quick answers to common church questions."}
-          </p>
+    <div className="qa-shell">
+      <div className="qa-toolbar">
+        <div className="qa-search">
+          <span className="qa-search-icon" aria-hidden="true">
+            ⌕
+          </span>
+
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setOpenId(null);
+            }}
+            placeholder={t?.qa?.searchPlaceholder || "Search common questions…"}
+            aria-label={t?.qa?.searchPlaceholder || "Search common questions"}
+          />
+
+          {query && (
+            <button
+              type="button"
+              className="qa-search-clear"
+              onClick={() => {
+                setQuery("");
+                setOpenId(null);
+              }}
+              aria-label="Clear search"
+            >
+              ×
+            </button>
+          )}
         </div>
 
         {!loading && categories.length > 1 && (
-          <div className="qa-categories" role="tablist" aria-label={t?.qa?.title || "Questions & Answers"}>
+          <div
+            className="qa-categories"
+            aria-label={t?.qa?.title || "Questions & Answers"}
+          >
             {categories.map((category) => (
               <button
                 key={category}
@@ -80,64 +123,72 @@ export default function QATab({ t, items = [], loading = false, trackEvent }) {
             ))}
           </div>
         )}
+      </div>
 
-        {loading && (
-          <p className="qa-loading">
-            {t?.qa?.loadingLabel || "Loading questions…"}
-          </p>
-        )}
+      {loading && (
+        <div className="qa-loading-card">
+          <span className="qa-loading-orbit" aria-hidden="true" />
+          <span>{t?.qa?.loadingLabel || "Loading questions…"}</span>
+        </div>
+      )}
 
-        {!loading && visibleItems.length === 0 && (
-          <div className="qa-empty">
-            {t?.qa?.emptyLabel || "No questions available yet."}
-          </div>
-        )}
+      {!loading && visibleItems.length === 0 && (
+        <div className="qa-empty">
+          <strong>No matching questions found.</strong>
+          <span>Try another search or choose a different category.</span>
+        </div>
+      )}
 
-        {!loading && visibleItems.length > 0 && (
-          <div className="qa-list">
-            {visibleItems.map((item, index) => {
-              const isOpen = openId === item.id;
+      {!loading && visibleItems.length > 0 && (
+        <div className="qa-list">
+          {visibleItems.map((item, index) => {
+            const isOpen = openId === item.id;
 
-              return (
-                <article
-                  key={item.id}
-                  className={`qa-card wow-stagger ${isOpen ? "is-open" : ""}`}
-                  style={{ "--stagger": index }}
+            return (
+              <article
+                key={item.id}
+                className={`qa-card wow-stagger ${isOpen ? "is-open" : ""}`}
+                style={{ "--stagger": index }}
+              >
+                <button
+                  type="button"
+                  className="qa-question"
+                  onClick={() => handleToggle(item)}
+                  aria-expanded={isOpen}
+                  aria-controls={`qa-answer-${item.id}`}
                 >
-                  <button
-                    type="button"
-                    className="qa-question"
-                    onClick={() => handleToggle(item)}
-                    aria-expanded={isOpen}
-                    aria-controls={`qa-answer-${item.id}`}
-                  >
-                    <div className="qa-question-main">
-                      <span className="qa-badge">{item.category}</span>
-                      <h4>{item.question}</h4>
-                    </div>
+                  <span className="qa-number" aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
 
-                    <span
-                      className={`qa-caret ${isOpen ? "is-open" : ""}`}
-                      aria-hidden="true"
-                    >
-                      ▾
-                    </span>
-                  </button>
+                  <div className="qa-question-main">
+                    <span className="qa-badge">{item.category}</span>
+                    <h3>{item.question}</h3>
+                  </div>
 
-                  <div
-                    id={`qa-answer-${item.id}`}
-                    className={`qa-answer-wrap ${isOpen ? "open" : ""}`}
-                  >
-                    <div className="qa-answer">
+                  <span className="qa-toggle" aria-hidden="true">
+                    {isOpen ? "−" : "+"}
+                  </span>
+                </button>
+
+                <div
+                  id={`qa-answer-${item.id}`}
+                  className={`qa-answer-wrap ${isOpen ? "open" : ""}`}
+                >
+                  <div className="qa-answer">
+                    <div className="qa-answer-inner">
+                      <span className="qa-answer-label">
+                        {t?.qa?.answerLabel || "Answer"}
+                      </span>
                       <p>{item.answer}</p>
                     </div>
                   </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
